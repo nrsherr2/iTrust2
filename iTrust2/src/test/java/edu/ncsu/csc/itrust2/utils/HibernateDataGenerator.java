@@ -157,6 +157,13 @@ public class HibernateDataGenerator {
                 "$2a$10$EblZqNptyYvcLm/VwDCVAuBjzZOI7khzdyGPBr08PpIi0na624b8.", Role.ROLE_HCP, 1 );
         lockoutUser2.save();
 
+        final User l = new User( "labtech", "$2a$10$EblZqNptyYvcLm/VwDCVAuBjzZOI7khzdyGPBr08PpIi0na624b8.",
+                Role.ROLE_LABTECH, 1 );
+        l.save();
+
+        final User e = new User( "Emergency", "$2a$10$EblZqNptyYvcLm/VwDCVAuBjzZOI7khzdyGPBr08PpIi0na624b8.",
+                Role.ROLE_ER, 1 );
+        e.save();
     }
 
     /**
