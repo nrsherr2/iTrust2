@@ -36,7 +36,7 @@ public class UserController {
      * @return response
      */
     @GetMapping ( value = "personnel/editDemographics" )
-    @PreAuthorize ( "hasRole('ROLE_HCP') or hasRole('ROLE_ADMIN')" )
+    @PreAuthorize ( "hasRole('ROLE_HCP') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LABTECH') or hasRole('ROLE_ER')" )
     public String viewDemographics ( final Model model ) {
         final User self = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
         final PersonnelForm form = new PersonnelForm( Personnel.getByName( self.getUsername() ) );
