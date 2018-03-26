@@ -4,4 +4,4 @@
  * 
  * @author Kai Presler-Marshall
  */
-package edu.ncsu.csc.itrust2.controllers.personnel;
+package edu.ncsu.csc.itrust2.controllers.labtech;
