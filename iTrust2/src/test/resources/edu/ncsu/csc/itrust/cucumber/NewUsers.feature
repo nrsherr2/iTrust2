@@ -7,18 +7,18 @@ Feature: As a developer, I want to automate
 		 
 Scenario: Creating a user with the Emergency Responder role should succeed
 Given the emergency responder does not exist
-And I log in as admin
-And I navigate to the Add User page
-When I fill in the values in the Add User form to create a new emergency responder
+And I log in as the admin
+And I navigate to the add user page
+When I fill in the values of the Add User form to create a new emergency responder
 Then the emergency responder should be created
 And the emergency responder should be able to login
 And they should see the emergency responder landing page
 
 Scenario: Creating a user with the Lab Tech role should succeed
 Given the lab tech does not exist
-And I log in as admin
-And I navigate to the Add User page
-When I fill in the values in the Add User form to create a new lab tech
+And I log in as the admin
+And I navigate to the add user page
+When I fill in the values of the Add User form to create a new lab tech
 Then the lab tech should be created
 And the lab tech should be able to login
 And they should see the lab tech landing page
@@ -34,6 +34,6 @@ Examples:
 
 Scenario: A Lab Tech should be able to edit their demographics
 Given I login to iTrust2 as a lab tech
-When I navigate to the Edit My Demographics page
-When I fill in new, updated demographics
-Then The demographics are updated
+When I navigate to the edit my demographics page
+When I fill in new demographics
+Then The demographics are successfully updated

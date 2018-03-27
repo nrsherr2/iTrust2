@@ -216,7 +216,7 @@ public class PersonalRepresentativesStepDefs {
      * @param representee
      *            The person they are a representative for
      */
-    @Given ( "I navigate to the personal representatives page for (.+)" )
+    @Given ( "I navigate to the page to view personal representatives for (.+)" )
     public void goToRepsPage ( final String representee ) {
         // TODO
     }

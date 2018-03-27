@@ -56,7 +56,7 @@ Examples:
 Scenario Outline: A patient should be able to undeclare themself as a personal representative
 Given I login to iTrust2 as Patient
 And I am a personal representative for <name>
-And I navigate to the personal representatives page for <name>
+And I navigate to the page to view personal representatives for <name>
 When I undeclare myself as a personal representative for <name>
 Then I should not see myself as a personal representative for <name>
 Examples:
