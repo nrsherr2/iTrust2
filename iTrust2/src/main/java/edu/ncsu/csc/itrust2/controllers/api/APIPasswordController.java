@@ -143,9 +143,13 @@ public class APIPasswordController extends APIController {
             body += "\nIf you did not request a password reset, please contact a system administrator.\n\n--iTrust2 Admin";
             EmailUtil.sendEmail( addr, "iTrust2 Password Reset", body );
 
+            // Set the users password temporarily while we await their response
+            user.setPassword( token.getTempPasswordPlaintext() );
+            user.save();
+
             LoggerUtil.log( TransactionType.PASSWORD_UPDATE_SUCCESS, user.getUsername(),
                     "Successfully changed password for user " + user.getUsername() );
-            return new ResponseEntity( successResponse( "" ), HttpStatus.OK );
+            return new ResponseEntity( successResponse( token.getId().toString() ), HttpStatus.OK );
         }
         catch ( final Exception e ) {
             e.printStackTrace();
