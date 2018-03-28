@@ -1,22 +1,10 @@
 package edu.ncsu.csc.itrust2.controllers.labtech;
 
-import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import edu.ncsu.csc.itrust2.forms.personnel.PersonnelForm;
-import edu.ncsu.csc.itrust2.models.enums.TransactionType;
-import edu.ncsu.csc.itrust2.models.persistent.LabTech;
-import edu.ncsu.csc.itrust2.models.persistent.User;
-import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * Controller for Labtech to edit their information

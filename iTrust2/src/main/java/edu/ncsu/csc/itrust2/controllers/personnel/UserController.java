@@ -58,7 +58,7 @@ public class UserController {
      * @return The page to display for the user
      */
     @PostMapping ( "/personnel/editDemographics" )
-    @PreAuthorize ( "hasRole('ROLE_HCP') or hasRole('ROLE_ADMIN')" )
+    @PreAuthorize ( "hasRole('ROLE_HCP') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LABTECH') or hasRole('ROLE_ER')" )
     public String demographicsSubmit ( @Valid @ModelAttribute ( "PersonnelForm" ) final PersonnelForm form,
             final BindingResult result, final Model model ) {
         Personnel p = null;

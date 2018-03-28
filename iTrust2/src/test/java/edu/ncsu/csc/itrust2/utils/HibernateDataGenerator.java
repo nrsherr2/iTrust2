@@ -110,7 +110,7 @@ public class HibernateDataGenerator {
         p.setSelf( hcp );
         p.setFirstName( "HCP" );
         p.setLastName( "HCP" );
-        p.setEmail( "csc326.201.1@gmail.com" );
+        p.setEmail( "csc326s18.201.5@gmail.com" );
         p.setAddress1( "1234 Road St." );
         p.setCity( "town" );
         p.setState( State.AK );
