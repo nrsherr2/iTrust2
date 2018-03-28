@@ -1,3 +1,9 @@
+# cscope db
+cscope.files
+cscope.in.out
+cscope.out
+cscope.po.out
+
 .metadata
 bin/
 tmp/
