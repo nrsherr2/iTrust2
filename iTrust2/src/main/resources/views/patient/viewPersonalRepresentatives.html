@@ -1,36 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="personalRepresentatives">
-
-	<script th:inline="javascript">
-			$(function() {
-				$http = angular.injector(["ng"]).get("$http");
-				$http.get("/iTrust2/api/v1/role").then(
-						function(response) {
-							console.log(response);
-							var role = response.data.message; //contains user role
-							var navbarparent = document.getElementById('navbar-parent');
-							var admindropdown = document.getElementById('admin-dropdown');
-							var patientdropdown = document.getElementById('patient-dropdown');
-							var hcpdropdown = document.getElementById('hcp-dropdown');
-							if (!role.includes('PATIENT')) {
-								navbarparent.removeChild(patientdropdown);
-							}
-							if (!role.includes('ADMIN')) {
-								navbarparent.removeChild(admindropdown);
-							}
-							if (!role.includes('HCP')) {
-								navbarparent.removeChild(hcpdropdown);
-							}
-						});
-				/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
-				/*<![CDATA[*/
-				
-			})
-			
-			/*]]>*/
-		</script>
 		
-	<!-- main function that loads logView.html -->
+	<!-- main function that loads personalRepresentatives.html -->
 	<div ng-app="personalRepresentativesApp" ng-controller="prCtrl as ctrl">
 		<div class="container">
 			<div class="row">
@@ -128,14 +99,32 @@
 			self.personalRepresentatives = [];
 			self.personalRepresentees = [];
 			self.numPages = 1;
-			//self.requestParams = {startDate: "", endDate: "", page: 1, pageLength: 10};
+			self.requestParams = {patientId: "", page: 1, pageLength: 10};
 			self.pageString = "Page: 1";
 			
-			self.updateTable = function(){
-				$http.post("/iTrust2/api/v1/patients/representatives/", self.requestParams).then(function (response) {
-					self.logs = response.data;
+			// Get Info about user
+			$http = angular.injector(["ng"]).get("$http");
+			$http.get("/iTrust2/api/v1/user").then(
+					function(response) {
+						self.requestParams.patientId = response.data;
+					});
+			
+			self.updateRepresentativeTable = function(){
+				$http.get("/iTrust2/api/v1/patients/representatives/", $scope.patientId).then(function (response) {
+					self.personalRepresentatives = response.data;
 					if(self.logs.length > 0){
-						self.isPatient = self.logs[0].isPatient;
+						self.numPages = self.logs[0].numPages;
+					}else{
+						self.numPages = 1;
+					}
+					self.updatePageString();
+				});	
+			}
+			
+			self.updateRepresenteeTable = function(){
+				$http.get("/iTrust2/api/v1/patients/representees/", $scope.patientId).then(function (response) {
+					self.personalRepresentees = response.data;
+					if(self.logs.length > 0){
 						self.numPages = self.logs[0].numPages;
 					}else{
 						self.numPages = 1;
