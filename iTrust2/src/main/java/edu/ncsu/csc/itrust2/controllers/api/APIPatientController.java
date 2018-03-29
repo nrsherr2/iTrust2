@@ -190,7 +190,7 @@ public class APIPatientController extends APIController {
         }
     }
 
-    @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
+    @GetMapping ( BASE_PATH + "/patients/representees/{patientId}" )
     public ResponseEntity getRepresentees ( @PathVariable String patientId ) {
         Patient p = Patient.getByName( patientId );
         if ( p == null ) {
