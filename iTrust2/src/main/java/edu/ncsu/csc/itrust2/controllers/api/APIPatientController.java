@@ -178,4 +178,46 @@ public class APIPatientController extends APIController {
         }
     }
 
+    @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
+    public ResponseEntity getRepresentatives ( @PathVariable String patientId ) {
+        Patient p = Patient.getByName( patientId );
+        if ( p == null ) {
+            return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
+        }
+        else {
+            return new ResponseEntity( p.getRepresentatives(), HttpStatus.OK );
+        }
+    }
+
+    @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
+    public ResponseEntity getRepresentees ( @PathVariable String patientId ) {
+        Patient p = Patient.getByName( patientId );
+        if ( p == null ) {
+            return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
+        }
+        else {
+            return new ResponseEntity( p.getRepresentees(), HttpStatus.OK );
+        }
+    }
+
+    @PostMapping ( BASE_PATH + "/patients/representatives/{representee}" )
+    public ResponseEntity addRepresentative ( @PathVariable String representee, @RequestBody String representative ) {
+        Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
+        }
+        Patient tive = Patient.getByName( representative );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
+        }
+        try {
+            tee.getRepresentatives().add( tive );
+        }
+        catch ( Exception e ) {
+            return new ResponseEntity( "Could not add representative", HttpStatus.BAD_REQUEST );
+        }
+        return new ResponseEntity( representative + " successfully added as representative of " + representee,
+                HttpStatus.OK );
+    }
+
 }
