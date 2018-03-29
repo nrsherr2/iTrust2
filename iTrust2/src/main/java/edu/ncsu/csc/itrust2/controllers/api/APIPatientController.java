@@ -179,6 +179,13 @@ public class APIPatientController extends APIController {
         }
     }
 
+    /**
+     * get a list of everyone who represents this user
+     * 
+     * @param patientId
+     *            the patient you want to know about
+     * @return the list of that patient's representatives
+     */
     @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
     public ResponseEntity getRepresentatives ( @PathVariable String patientId ) {
         Patient p = Patient.getByName( patientId );
@@ -190,6 +197,13 @@ public class APIPatientController extends APIController {
         }
     }
 
+    /**
+     * get a list of everyone a patient represents
+     * 
+     * @param patientId
+     *            the patient you want to know about
+     * @return the list of representees associated with that patient
+     */
     @GetMapping ( BASE_PATH + "/patients/representees/{patientId}" )
     public ResponseEntity getRepresentees ( @PathVariable String patientId ) {
         Patient p = Patient.getByName( patientId );
@@ -201,6 +215,17 @@ public class APIPatientController extends APIController {
         }
     }
 
+    /**
+     * adds a representative to a patient's list of personal representatives.
+     * should map the other way as well, so the representative's list will be
+     * updated as well.
+     * 
+     * @param representee
+     *            the person who's list you will add to
+     * @param representative
+     *            the person you will add to the list
+     * @return a status saying you could or could not add this person.
+     */
     @PostMapping ( BASE_PATH + "/patients/representatives/{representee}" )
     public ResponseEntity addRepresentative ( @PathVariable String representee, @RequestBody String representative ) {
         Patient tee = Patient.getByName( representee );
@@ -211,17 +236,28 @@ public class APIPatientController extends APIController {
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
         }
-        try {
-            tee.getRepresentatives().add( tive );
+        if ( tee.getRepresentatives().add( tive ) ) {
             tee.save();
-            return new ResponseEntity( representative + " successfully added as representative of " + representee,
-                    HttpStatus.OK );
+            return new ResponseEntity(
+                    "Successfully added " + representative + " as a representative of " + representee, HttpStatus.OK );
         }
-        catch ( Exception e ) {
+        else {
             return new ResponseEntity( "Could not add representative", HttpStatus.BAD_REQUEST );
         }
     }
 
+    /**
+     * deletes a representative from a patient's list of personal
+     * representatives. mapping works both ways, so the representative will lose
+     * their reference to the representee as well.
+     * 
+     * @param representee
+     *            the patient whose list will be changed
+     * @param representative
+     *            the patient you will add to the list
+     * @return a response saying if you could or could not delete the
+     *         representative
+     */
     @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
     public ResponseEntity deleteRepresentative ( @PathVariable String representee,
             @RequestBody String representative ) {
