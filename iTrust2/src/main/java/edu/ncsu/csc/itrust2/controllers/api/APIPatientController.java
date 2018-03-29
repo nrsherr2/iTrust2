@@ -212,6 +212,7 @@ public class APIPatientController extends APIController {
         }
         try {
             tee.getRepresentatives().add( tive );
+            tee.save();
         }
         catch ( Exception e ) {
             return new ResponseEntity( "Could not add representative", HttpStatus.BAD_REQUEST );
