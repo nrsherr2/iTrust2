@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -213,12 +214,35 @@ public class APIPatientController extends APIController {
         try {
             tee.getRepresentatives().add( tive );
             tee.save();
+            return new ResponseEntity( representative + " successfully added as representative of " + representee,
+                    HttpStatus.OK );
         }
         catch ( Exception e ) {
             return new ResponseEntity( "Could not add representative", HttpStatus.BAD_REQUEST );
         }
-        return new ResponseEntity( representative + " successfully added as representative of " + representee,
-                HttpStatus.OK );
+    }
+
+    @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
+    public ResponseEntity deleteRepresentative ( @PathVariable String representee,
+            @RequestBody String representative ) {
+        Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
+        }
+        Patient tive = Patient.getByName( representative );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
+        }
+
+        if ( tee.getRepresentatives().remove( tive ) ) {
+            tee.save();
+            return new ResponseEntity(
+                    "Successfully removed " + representative + " as a representative of " + representee,
+                    HttpStatus.OK );
+        }
+        else {
+            return new ResponseEntity( "Could not remove representative", HttpStatus.BAD_REQUEST );
+        }
     }
 
 }
