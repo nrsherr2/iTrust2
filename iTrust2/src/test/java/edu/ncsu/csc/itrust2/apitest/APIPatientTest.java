@@ -1,5 +1,7 @@
 package edu.ncsu.csc.itrust2.apitest;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +35,7 @@ import edu.ncsu.csc.itrust2.models.enums.State;
 import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.mvc.config.WebMvcConfiguration;
+import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 
 /**
  * Test for API functionality for interacting with Patients
@@ -195,4 +198,45 @@ public class APIPatientTest {
                 .content( TestUtils.asJsonString( patient ) ) ).andExpect( status().isUnauthorized() );
     }
 
+    /**
+     * Test the API functionality for editing a patient's personal
+     * representatives and representees
+     *
+     * @throws Exception
+     */
+    @Test
+    @WithMockUser ( username = "patient", roles = { "PATIENT" } )
+    public void testHcpEditReps () throws Exception {
+        HibernateDataGenerator.refreshDB();
+        final Patient alice = Patient.getByName( "AliceThirteen" );
+        final Patient tim = Patient.getByName( "TimTheOneYearOld" );
+        final Patient bob = Patient.getByName( "BobTheFourYearOld" );
+
+        // alice represents tim
+        mvc.perform( post( "/api/v1/patients/representatives/tim" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( alice ) ) ).andExpect( status().isOk() );
+
+        // bob represents alice
+        mvc.perform( post( "/api/v1/patients/representatives/alice" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( bob ) ) ).andExpect( status().isOk() );
+
+        // tim represents bob
+        mvc.perform( post( "/api/v1/patients/representatives/bob" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( tim ) ) ).andExpect( status().isOk() );
+
+        // TODO add some more POST requests if necessary
+
+        assertTrue( bob.getRepresentatives().contains( tim ) );
+        assertTrue( alice.getRepresentatives().contains( bob ) );
+        assertTrue( tim.getRepresentatives().contains( alice ) );
+
+        mvc.perform( get( "/api/v1/patients/representatives/bob" ) ).andExpect( status().isOk() );
+
+        mvc.perform( get( "/api/v1/patients/representees/bob" ) ).andExpect( status().isOk() );
+
+        mvc.perform( delete( "/api/v1/patients/representatives/bob" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( tim ) ) ).andExpect( status().isOk() );
+
+        assertFalse( bob.getRepresentatives().contains( tim ) );
+    }
 }
