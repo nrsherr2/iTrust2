@@ -206,36 +206,45 @@ public class APIPatientTest {
      */
     @Test
     @WithMockUser ( username = "patient", roles = { "PATIENT" } )
-    public void testHcpEditReps () throws Exception {
+    public void testEditReps () throws Exception {
         HibernateDataGenerator.refreshDB();
         final Patient alice = Patient.getByName( "AliceThirteen" );
         final Patient tim = Patient.getByName( "TimTheOneYearOld" );
         final Patient bob = Patient.getByName( "BobTheFourYearOld" );
+        alice.save();
+        tim.save();
+        bob.save();
 
         // alice represents tim
-        mvc.perform( post( "/api/v1/patients/representatives/tim" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( alice ) ) ).andExpect( status().isOk() );
+        mvc.perform( post( "/api/v1/patients/representatives/TimTheOneYearOld" )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "AliceThirteen" ) ) )
+                .andExpect( status().isOk() );
 
         // bob represents alice
-        mvc.perform( post( "/api/v1/patients/representatives/alice" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( bob ) ) ).andExpect( status().isOk() );
+        mvc.perform( post( "/api/v1/patients/representatives/AliceThirteen" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( "BobTheFourYearOld" ) ) ).andExpect( status().isOk() );
 
         // tim represents bob
-        mvc.perform( post( "/api/v1/patients/representatives/bob" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( tim ) ) ).andExpect( status().isOk() );
+        mvc.perform( post( "/api/v1/patients/representatives/BobTheFourYearOld" )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "TimTheOneYearOld" ) ) )
+                .andExpect( status().isOk() );
 
         // TODO add some more POST requests if necessary
 
+        System.out.println( "**************BOB***************\n" + bob.getRepresentatives() );
+        System.out.println( "**************TIM***************\n" + tim.getRepresentatives() );
+        System.out.println( "**************ALICE***************\n" + alice.getRepresentatives() );
         assertTrue( bob.getRepresentatives().contains( tim ) );
         assertTrue( alice.getRepresentatives().contains( bob ) );
         assertTrue( tim.getRepresentatives().contains( alice ) );
 
-        mvc.perform( get( "/api/v1/patients/representatives/bob" ) ).andExpect( status().isOk() );
+        mvc.perform( get( "/api/v1/patients/representatives/BobTheFourYearOld" ) ).andExpect( status().isOk() );
 
-        mvc.perform( get( "/api/v1/patients/representees/bob" ) ).andExpect( status().isOk() );
+        mvc.perform( get( "/api/v1/patients/representees/BobTheFourYearOld" ) ).andExpect( status().isOk() );
 
-        mvc.perform( delete( "/api/v1/patients/representatives/bob" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( tim ) ) ).andExpect( status().isOk() );
+        mvc.perform( delete( "/api/v1/patients/representatives/BobTheFourYearOld" )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( tim ) ) )
+                .andExpect( status().isOk() );
 
         assertFalse( bob.getRepresentatives().contains( tim ) );
     }

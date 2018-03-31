@@ -236,7 +236,7 @@ public class APIPatientController extends APIController {
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
         }
-        final Patient tive = Patient.getByName( representative );
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
         }
