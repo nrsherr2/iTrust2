@@ -181,14 +181,15 @@ public class APIPatientController extends APIController {
 
     /**
      * get a list of everyone who represents this user
-     * 
+     *
      * @param patientId
      *            the patient you want to know about
      * @return the list of that patient's representatives
      */
     @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
-    public ResponseEntity getRepresentatives ( @PathVariable String patientId ) {
-        Patient p = Patient.getByName( patientId );
+    @PreAuthorize ( "hasRole('ROLE_PATIENT') or hasRole('ROLE_HCP')" )
+    public ResponseEntity getRepresentatives ( @PathVariable final String patientId ) {
+        final Patient p = Patient.getByName( patientId );
         if ( p == null ) {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
         }
@@ -199,14 +200,15 @@ public class APIPatientController extends APIController {
 
     /**
      * get a list of everyone a patient represents
-     * 
+     *
      * @param patientId
      *            the patient you want to know about
      * @return the list of representees associated with that patient
      */
     @GetMapping ( BASE_PATH + "/patients/representees/{patientId}" )
-    public ResponseEntity getRepresentees ( @PathVariable String patientId ) {
-        Patient p = Patient.getByName( patientId );
+    @PreAuthorize ( "hasRole('ROLE_PATIENT') or hasRole('ROLE_HCP')" )
+    public ResponseEntity getRepresentees ( @PathVariable final String patientId ) {
+        final Patient p = Patient.getByName( patientId );
         if ( p == null ) {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
         }
@@ -219,7 +221,7 @@ public class APIPatientController extends APIController {
      * adds a representative to a patient's list of personal representatives.
      * should map the other way as well, so the representative's list will be
      * updated as well.
-     * 
+     *
      * @param representee
      *            the person who's list you will add to
      * @param representative
@@ -227,12 +229,14 @@ public class APIPatientController extends APIController {
      * @return a status saying you could or could not add this person.
      */
     @PostMapping ( BASE_PATH + "/patients/representatives/{representee}" )
-    public ResponseEntity addRepresentative ( @PathVariable String representee, @RequestBody String representative ) {
-        Patient tee = Patient.getByName( representee );
+    @PreAuthorize ( "hasRole('ROLE_PATIENT') or hasRole('ROLE_HCP')" )
+    public ResponseEntity addRepresentative ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        final Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
         }
-        Patient tive = Patient.getByName( representative );
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
         }
@@ -250,7 +254,7 @@ public class APIPatientController extends APIController {
      * deletes a representative from a patient's list of personal
      * representatives. mapping works both ways, so the representative will lose
      * their reference to the representee as well.
-     * 
+     *
      * @param representee
      *            the patient whose list will be changed
      * @param representative
@@ -259,13 +263,14 @@ public class APIPatientController extends APIController {
      *         representative
      */
     @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
-    public ResponseEntity deleteRepresentative ( @PathVariable String representee,
-            @RequestBody String representative ) {
-        Patient tee = Patient.getByName( representee );
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public ResponseEntity deleteRepresentative ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        final Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
         }
-        Patient tive = Patient.getByName( representative );
+        final Patient tive = Patient.getByName( representative );
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
         }
@@ -280,5 +285,4 @@ public class APIPatientController extends APIController {
             return new ResponseEntity( "Could not remove representative", HttpStatus.BAD_REQUEST );
         }
     }
-
 }

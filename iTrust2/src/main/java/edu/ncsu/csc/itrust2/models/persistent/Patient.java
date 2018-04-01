@@ -205,7 +205,7 @@ public class Patient extends DomainObject<Patient> implements Serializable {
     /**
      * A set that references which patients represent this one
      */
-    @ManyToMany ( cascade = { CascadeType.ALL }, fetch = FetchType.EAGER )
+    @ManyToMany ( cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER )
     @JoinTable ( name = "PERSONAL_REPRESENTATIVES", joinColumns = { @JoinColumn ( name = "REPRESENTING" ) },
             inverseJoinColumns = { @JoinColumn ( name = "REPRESENTED_BY" ) } )
     private final Set<Patient> representatives = new HashSet<Patient>();
@@ -213,7 +213,7 @@ public class Patient extends DomainObject<Patient> implements Serializable {
     /**
      * A set that references which patients this patient represents
      */
-    @ManyToMany ( mappedBy = "representatives" )
+    @ManyToMany ( mappedBy = "representatives", fetch = FetchType.EAGER )
     private final Set<Patient> representing    = new HashSet<Patient>();
 
     /**

@@ -17,8 +17,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import edu.ncsu.csc.itrust2.config.RootConfiguration;
 import edu.ncsu.csc.itrust2.forms.admin.UserForm;
@@ -141,6 +145,78 @@ public class APIPasswordTest {
     }
 
     /**
+     * This tests that an unauthenticated user can properly request and finish
+     * changing their password
+     *
+     * @throws Exception
+     *             if the request fails
+     */
+    @WithMockUser ( username = "patientPW", roles = { "USER", "ADMIN" } )
+    @Test
+    public void testValidAPIPasswordChange () throws Exception {
+
+        // Create testing User
+        final UserForm patient = new UserForm( "PWPatient1", "123456", Role.ROLE_PATIENT, 1 );
+
+        User user = new User( patient );
+        user.save();
+
+        user = User.getByName( "PWPatient1" ); // ensure they exist
+
+        Personnel.deleteAll( Personnel.class );
+        final PersonnelForm personnel = new PersonnelForm();
+        personnel.setAddress1( "1 Test Street" );
+        personnel.setAddress2( "Address Part 2" );
+        personnel.setCity( "Prag" );
+        personnel.setEmail( "csc326.201.1@gmail.com" );
+        personnel.setFirstName( "Test" );
+        personnel.setLastName( "HCP" );
+        personnel.setPhone( "123-456-7890" );
+        personnel.setSelf( user.getUsername() );
+        personnel.setState( State.NC.toString() );
+        personnel.setZip( "27514" );
+        mvc.perform( post( "/api/v1/personnel" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( personnel ) ) ).andExpect( status().isOk() );
+
+        assertTrue( pe.matches( "123456", user.getPassword() ) );
+
+        // Start the change password process
+        final MvcResult result = mvc.perform( post( "/api/v1/requestPasswordReset" )
+                .contentType( MediaType.APPLICATION_JSON ).content( "PWPatient1" ) ).andExpect( status().isOk() )
+                .andReturn();
+
+        // Use of Gson to parse a JSON string
+        // https://stackoverflow.com/questions/20152710/gson-get-json-value-from-string
+        final String jsonString = result.getResponse().getContentAsString();
+        final JsonObject jobj = new Gson().fromJson( jsonString, JsonObject.class );
+        final long activationId = jobj.get( "message" ).getAsLong();
+
+        // Create PasswordResetForm
+        user = User.getByName( "PWPatient1" ); // update the user to get
+                                               // the password reset token
+                                               // (aka current password)
+        final String newP = "654321";
+        final PasswordChangeForm form = new PasswordChangeForm();
+        form.setCurrentPassword( user.getPassword() );
+        form.setNewPassword( newP );
+        form.setNewPassword2( newP );
+
+        // Finish change password process
+        mvc.perform( post( "/api/v1/resetPassword/" + activationId ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( form ) ) ).andExpect( status().isOk() );
+
+        user = User.getByName( "PWPatient1" ); // reload so changes are
+                                               // visible
+        assertFalse( pe.matches( "123456", user.getPassword() ) );
+        assertTrue( pe.matches( "654321", user.getPassword() ) );
+
+        final Personnel p = Personnel.getByName( user );
+        p.delete();
+        user.delete();
+
+    }
+
+    /**
      * This tests that invalid api requests fail. Invalid passwords and
      * expiration testing handled in unit tests.
      *
@@ -148,7 +224,7 @@ public class APIPasswordTest {
      */
     @WithMockUser ( username = "patientPW", roles = { "USER", "ADMIN" } )
     @Test
-    public void testInvalidPasswordChanges () throws Exception {
+    public void testInvalidPasswordReset () throws Exception {
 
         // test unknown user
         final String pw = "123456";
@@ -160,9 +236,145 @@ public class APIPasswordTest {
         mvc.perform( post( "/api/v1/changePassword" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( form ) ) ).andExpect( status().isBadRequest() );
 
-        mvc.perform( post( "/api/v1/requestReset" ).contentType( MediaType.APPLICATION_JSON ).content( "patientPW" ) )
-                .andExpect( status().is4xxClientError() );
+        // test unknown user
+        mvc.perform( post( "/api/v1/requestPasswordReset" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "neverAUsersName" ) ).andExpect( status().isBadRequest() );
 
+    }
+
+    /**
+     * This tests that an authenticated user cannot complete a password change
+     * using an invalid PasswordChangeForm.
+     *
+     * @throws Exception
+     */
+    @WithMockUser ( username = "PWPatient2", roles = { "USER", "ADMIN" } )
+    @Test
+    public void testChangePasswordInvalidForm () throws Exception {
+
+        final UserForm patient = new UserForm( "PWPatient2", "123456", Role.ROLE_PATIENT, 1 );
+
+        User user = new User( patient );
+        user.save();
+
+        user = User.getByName( "PWPatient2" ); // ensure they exist
+
+        Personnel.deleteAll( Personnel.class );
+        final PersonnelForm personnel = new PersonnelForm();
+        personnel.setAddress1( "1 Test Street" );
+        personnel.setAddress2( "Address Part 2" );
+        personnel.setCity( "Prag" );
+        personnel.setEmail( "csc326.201.5@gmail.com" );
+        personnel.setFirstName( "Test" );
+        personnel.setLastName( "HCP" );
+        personnel.setPhone( "123-456-7890" );
+        personnel.setSelf( user.getUsername() );
+        personnel.setState( State.NC.toString() );
+        personnel.setZip( "27514" );
+        mvc.perform( post( "/api/v1/personnel" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( personnel ) ) );
+
+        // Make invalid PasswordChange
+        final String pw = "123456";
+        final String newP = "654321";
+        final PasswordChangeForm form = new PasswordChangeForm();
+        form.setCurrentPassword( pw );
+        form.setNewPassword( newP );
+        form.setNewPassword2( newP + "1" );
+        mvc.perform( post( "/api/v1/changePassword" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( form ) ) ).andExpect( status().isBadRequest() );
+
+        user = User.getByName( "PWPatient2" ); // reload so changes are visible
+        assertTrue( pe.matches( "123456", user.getPassword() ) );
+
+        final Personnel p = Personnel.getByName( user );
+        p.delete();
+        user.delete();
+
+    }
+
+    /**
+     * This tests that a user is unable to finish a password change request
+     * using an invalid token
+     *
+     * @throws Exception
+     */
+    @WithMockUser ( username = "patientPW", roles = { "USER", "ADMIN" } )
+    @Test
+    public void testFinishChangeInvalidToken () throws Exception {
+        final String pw = "123456";
+        final String newP = "654321";
+        final PasswordChangeForm form = new PasswordChangeForm();
+        form.setCurrentPassword( pw );
+        form.setNewPassword( newP );
+        form.setNewPassword2( newP );
+        mvc.perform( post( "/api/v1/resetPassword/123456" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( form ) ) ).andExpect( status().isBadRequest() );
+    }
+
+    /**
+     * This tests that a user cannot make a password change request using
+     * invalid parameters
+     *
+     * @throws Exception
+     */
+    @WithMockUser ( username = "patientPW", roles = { "USER", "ADMIN" } )
+    @Test
+    public void testFinishActivationInvalidForm () throws Exception {
+        // Create testing User
+        final UserForm patient = new UserForm( "PWPatient3", "123456", Role.ROLE_PATIENT, 1 );
+
+        User user = new User( patient );
+        user.save();
+
+        user = User.getByName( "PWPatient3" ); // ensure they exist
+
+        Personnel.deleteAll( Personnel.class );
+        final PersonnelForm personnel = new PersonnelForm();
+        personnel.setAddress1( "1 Test Street" );
+        personnel.setAddress2( "Address Part 2" );
+        personnel.setCity( "Prag" );
+        personnel.setEmail( "csc326s18.201.5@gmail.com" );
+        personnel.setFirstName( "Test" );
+        personnel.setLastName( "HCP" );
+        personnel.setPhone( "123-456-7890" );
+        personnel.setSelf( user.getUsername() );
+        personnel.setState( State.NC.toString() );
+        personnel.setZip( "27514" );
+        mvc.perform( post( "/api/v1/personnel" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( personnel ) ) ).andExpect( status().isOk() );
+
+        assertTrue( pe.matches( "123456", user.getPassword() ) );
+
+        // Start the change password process
+        final MvcResult result = mvc.perform( post( "/api/v1/requestPasswordReset" )
+                .contentType( MediaType.APPLICATION_JSON ).content( "PWPatient3" ) ).andExpect( status().isOk() )
+                .andReturn();
+
+        // Create Invalid PasswordResetForm
+        final String pw = "123456";
+        final String newP = "654321";
+        final PasswordChangeForm form = new PasswordChangeForm();
+        form.setCurrentPassword( pw );
+        form.setNewPassword( newP );
+        form.setNewPassword2( newP + "1" );
+
+        // Use of Gson to parse a JSON string
+        // https://stackoverflow.com/questions/20152710/gson-get-json-value-from-string
+        final String jsonString = result.getResponse().getContentAsString();
+        final JsonObject jobj = new Gson().fromJson( jsonString, JsonObject.class );
+        final long activationId = jobj.get( "message" ).getAsLong();
+
+        // Finish change password process
+        mvc.perform( post( "/api/v1/resetPassword/" + activationId ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( form ) ) ).andExpect( status().isBadRequest() );
+
+        user = User.getByName( "PWPatient3" ); // reload so changes are
+                                               // visible
+
+        final Personnel p = Personnel.getByName( user );
+        p.delete();
+        user.delete();
     }
 
 }
