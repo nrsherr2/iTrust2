@@ -163,6 +163,17 @@ public class APIUserController extends APIController {
     }
 
     /**
+     * Gets the current logged in role.
+     *
+     * @return role of the currently logged in user.
+     */
+    @GetMapping ( BASE_PATH + "/user" )
+    public ResponseEntity getUser () {
+        return new ResponseEntity( successResponse( SecurityContextHolder.getContext().getAuthentication().getName() ),
+                HttpStatus.OK );
+    }
+
+    /**
      * Checks if the current user has a `role`.
      *
      * @param role

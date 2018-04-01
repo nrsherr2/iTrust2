@@ -1,0 +1,154 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="personalRepresentatives">
+		
+	<!-- main function that loads personalRepresentatives.html -->
+	<div ng-app="personalRepresentativesApp" ng-controller="prCtrl as ctrl">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-primary">
+
+						<!-- log entry header -->
+						<div class="panel-heading">
+							<h3>Personal Representatives</h3>
+						</div>
+						<div class="panel-body">
+							<table class="table table-bordered">
+
+								<!-- table column headers -->
+								<thead>
+									<tr>
+										<th>Full Name</th>
+										<th>MID</th>
+									</tr>
+								</thead>
+
+								<!-- log entry for every row, ordered by date -->
+								<tbody>
+									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
+										<td name="nameCell">{{l.name}}</td>
+										<td name="midCell">{{l.id}}</td>
+									</tr>
+								</tbody>
+							</table>
+									
+									<div class="row" style="width: 300px; margin: 0 auto;">
+										<button class="btn btn-success" style="float:left;"
+											ng-click="ctrl.prevPage()">Previous</button>
+										<button class="btn btn-success" style="float:right"
+											ng-click="ctrl.nextPage()">Next</button>
+										<p style="margin: 10 auto; width: 100px; text-align:center;"
+											ng-bind="ctrl.pageString">Page: 1</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-primary">
+
+					<!-- log entry header -->
+						<div class="panel-heading">
+							<h3>Personal Representees</h3>
+						</div>
+						<div class="panel-body">
+							<table class="table table-bordered">
+
+								<!-- table column headers -->
+								<thead>
+									<tr>
+										<th>Full Name</th>
+										<th>MID</th>
+									</tr>
+								</thead>
+
+								<!-- log entry for every row, ordered by date -->
+								<tbody>
+									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
+										<td name="nameCell">{{l.name}}</td>
+										<td name="midCell">{{l.id}}</td>
+									</tr>
+								</tbody>
+							</table>
+
+						
+						<div class="row" style="width: 300px; margin: 0 auto;">
+							<button class="btn btn-success" style="float:left;"
+								ng-click="ctrl.prevPage()">Previous</button>
+							<button class="btn btn-success" style="float:right"
+								ng-click="ctrl.nextPage()">Next</button>
+							<p style="margin: 10 auto; width: 100px; text-align:center;"
+								ng-bind="ctrl.pageString">Page: 1</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		
+		var App = angular.module('personalRepresentativesApp',[]);
+		
+		angular.module("personalRepresentativesApp").controller('prCtrl', function($scope, $http, $filter) {
+			var self = this;
+			self.personalRepresentatives = [];
+			self.personalRepresentees = [];
+			self.numPages = 1;
+			self.requestParams = {patientId: "", page: 1, pageLength: 10};
+			self.pageString = "Page: 1";
+			
+			// HCP defines user through a textbox?
+			// GET PATIENT ID
+			
+			self.updateRepresentativeTable = function(){
+				$http.get("/iTrust2/api/v1/patients/representatives/", $scope.patientId).then(function (response) {
+					self.personalRepresentatives = response.data;
+					if(self.logs.length > 0){
+						self.numPages = self.logs[0].numPages;
+					}else{
+						self.numPages = 1;
+					}
+					self.updatePageString();
+				});	
+			}
+			
+			self.updateRepresenteeTable = function(){
+				$http.get("/iTrust2/api/v1/patients/representees/", $scope.patientId).then(function (response) {
+					self.personalRepresentees = response.data;
+					if(self.logs.length > 0){
+						self.numPages = self.logs[0].numPages;
+					}else{
+						self.numPages = 1;
+					}
+					self.updatePageString();
+				});	
+			}
+			
+			self.updatePageString = function(){
+				self.pageString = "Page: " + self.requestParams.page + " of " + self.numPages;
+			}
+			
+			self.nextPage = function(){
+				if(self.requestParams.page >= self.numPages) return;
+				self.requestParams.page++;
+				
+				self.updateTable();
+			}
+			
+			self.prevPage = function(){
+				if(self.requestParams.page <= 1) return;
+				self.requestParams.page--;
+				
+				self.updateTable();
+			}
+		});
+			
+	</script>
+	</div>
+</div>
+</html>
