@@ -1,0 +1,32 @@
+#Author amshafe2
+
+Feature: As a developer, I want to automate
+		 our System Test plan for the Emergency Health Records
+		 so that necessary functionality can easily
+		 be confirmed through the UI 
+		 
+Scenario: HCP views emergency health records
+Given the HCP exists
+And the patient exists
+And I log in as the HCP
+And I navigate to the emergency records page
+When I fill in the MID of the patient
+Then the patients medical information is displayed
+And the MID matches the patients MID
+And they should see the emergency health records of the patient
+Examples:
+	|MID    |
+	|AliceThirteen|
+
+Scenario: ER views emergency health records
+Given the ER exists
+And the patient exists
+And I log in as the ER
+And I navigate to the emergency records page
+When I fill in the MID of the patient
+Then the patients medical information is displayed
+And the MID matches the patients MID
+And they should see the emergency health records of the patient
+Examples:
+	|MID    |
+	|AliceThirteen|

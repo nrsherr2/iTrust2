@@ -1,0 +1,48 @@
+#Author amshafe2
+
+Feature: As a developer, I want to automate
+		 our System Test plan for the lab procedures
+		 so that necessary functionality can easily
+		 be confirmed through the UI 
+
+Scenario: Create lab procedure
+Given the admin exists
+And I log in as the admin
+And I navigate to the lab procedures page
+When I add new lab procedure with name <name>
+Then I can see the lab procedures
+And the lab procedure is listed with name <name>
+Examples:
+	|name |
+	|hug  |
+	|replace organ|
+	|give lolipop |
+
+Scenario: Assign lab procedure
+Given the HCP exists
+And the lab tech exists
+And I log in as the HCP
+And I navigate to the office visits page
+When I assign new lab procedure with name <name> and priority <priority> 
+Then I can see the lab procedures
+And the lab procedure is listed with name <name> and priority <priority>
+Examples:
+	|name |priority |
+	|hug  |4	|
+	|replace organ|1|
+	|give lolipop |1|
+
+Scenario: Lab tech views lab procedures assigned to them
+Given the lab tech exists
+And I log in as the lab tech
+And I navigate to the view lab procedures page
+Then I can see my lab procedures
+
+Scenario: HCP views lab procedures in their office visit
+Given the HCP exists
+And the office visit exists
+And I log in as the HCP
+And I navigate to the view office visits page
+Then I can see my office visits
+
+
