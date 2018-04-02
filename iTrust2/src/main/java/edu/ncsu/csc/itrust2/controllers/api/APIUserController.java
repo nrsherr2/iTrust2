@@ -40,9 +40,9 @@ public class APIUserController extends APIController {
     /** constant for hcp role */
     private static final String ROLE_HCP     = "ROLE_HCP";
     /** constant for hcp role */
-    private static final String ROLE_LABTECH     = "ROLE_LABTECH";
+    private static final String ROLE_LABTECH = "ROLE_LABTECH";
     /** constant for hcp role */
-    private static final String ROLE_ER     = "ROLE_ER";
+    private static final String ROLE_ER      = "ROLE_ER";
 
     /**
      * Retrieves and returns a list of all Users in the system, regardless of
@@ -163,11 +163,11 @@ public class APIUserController extends APIController {
     }
 
     /**
-     * Gets the current logged in role.
+     * Gets the MID of the currently logged in user
      *
-     * @return role of the currently logged in user.
+     * @return MID of the currently logged in user.
      */
-    @GetMapping ( BASE_PATH + "/user" )
+    @GetMapping ( BASE_PATH + "/authentication" )
     public ResponseEntity getUser () {
         return new ResponseEntity( successResponse( SecurityContextHolder.getContext().getAuthentication().getName() ),
                 HttpStatus.OK );

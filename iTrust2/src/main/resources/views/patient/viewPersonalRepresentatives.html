@@ -26,8 +26,8 @@
 								<!-- log entry for every row, ordered by date -->
 								<tbody>
 									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-										<td name="nameCell">{{l.name}}</td>
-										<td name="midCell">{{l.id}}</td>
+										<td name="nameCell">{{pr.name}}</td>
+										<td name="midCell">{{pr.id}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -69,9 +69,9 @@
 
 								<!-- log entry for every row, ordered by date -->
 								<tbody>
-									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-										<td name="nameCell">{{l.name}}</td>
-										<td name="midCell">{{l.id}}</td>
+									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
+										<td name="nameCell">{{pr.name}}</td>
+										<td name="midCell">{{pr.id}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -110,7 +110,7 @@
 					});
 			
 			self.updateRepresentativeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representatives/", $scope.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representatives/", self.requestParams.patientId).then(function (response) {
 					self.personalRepresentatives = response.data;
 					if(self.logs.length > 0){
 						self.numPages = self.logs[0].numPages;
@@ -122,7 +122,7 @@
 			}
 			
 			self.updateRepresenteeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representees/", $scope.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representees/", self.requestParams.patientId).then(function (response) {
 					self.personalRepresentees = response.data;
 					if(self.logs.length > 0){
 						self.numPages = self.logs[0].numPages;
