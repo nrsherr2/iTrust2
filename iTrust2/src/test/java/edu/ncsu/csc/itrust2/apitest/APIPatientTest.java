@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
+import java.io.PrintStream;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -208,9 +211,9 @@ public class APIPatientTest {
     @WithMockUser ( username = "patient", roles = { "PATIENT" } )
     public void testEditReps () throws Exception {
         HibernateDataGenerator.refreshDB();
-        final Patient alice = Patient.getByName( "AliceThirteen" );
-        final Patient tim = Patient.getByName( "TimTheOneYearOld" );
-        final Patient bob = Patient.getByName( "BobTheFourYearOld" );
+        Patient alice = Patient.getByName( "AliceThirteen" );
+        Patient tim = Patient.getByName( "TimTheOneYearOld" );
+        Patient bob = Patient.getByName( "BobTheFourYearOld" );
         alice.save();
         tim.save();
         bob.save();
@@ -219,24 +222,108 @@ public class APIPatientTest {
         mvc.perform( post( "/api/v1/patients/representatives/TimTheOneYearOld" )
                 .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "AliceThirteen" ) ) )
                 .andExpect( status().isOk() );
+        alice = Patient.getByName( "AliceThirteen" );
+        tim = Patient.getByName( "TimTheOneYearOld" );
+        bob = Patient.getByName( "BobTheFourYearOld" );
+
+        // TODO add some more POST requests if necessary
+
+        System.out.println( "**************BOB***************\n" );
+        for ( int i = 0; i < bob.getRepresentatives().size(); i++ ) {
+            System.out.println( bob.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************TIM***************\n" );
+        for ( int i = 0; i < tim.getRepresentatives().size(); i++ ) {
+            System.out.println( tim.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************ALICE***************\n" );
+        for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
+            System.out.println( alice.getRepresentatives().toArray()[i].toString() );
+        }
+        Thread.sleep( 5000 );
 
         // bob represents alice
-        mvc.perform( post( "/api/v1/patients/representatives/AliceThirteen" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( "BobTheFourYearOld" ) ) ).andExpect( status().isOk() );
+        /*
+         * mvc.perform( post( "/api/v1/patients/representatives/AliceThirteen"
+         * ).contentType( MediaType.APPLICATION_JSON ) .content(
+         * TestUtils.asJsonString( "BobTheFourYearOld" ) ) ).andExpect(
+         * status().isOk() );
+         */
 
         // tim represents bob
         mvc.perform( post( "/api/v1/patients/representatives/BobTheFourYearOld" )
                 .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "TimTheOneYearOld" ) ) )
                 .andExpect( status().isOk() );
+        alice = Patient.getByName( "AliceThirteen" );
+        tim = Patient.getByName( "TimTheOneYearOld" );
+        bob = Patient.getByName( "BobTheFourYearOld" );
 
         // TODO add some more POST requests if necessary
 
-        System.out.println( "**************BOB***************\n" + bob.getRepresentatives() );
-        System.out.println( "**************TIM***************\n" + tim.getRepresentatives() );
-        System.out.println( "**************ALICE***************\n" + alice.getRepresentatives() );
-        assertTrue( bob.getRepresentatives().contains( tim ) );
-        assertTrue( alice.getRepresentatives().contains( bob ) );
+        System.out.println( "**************BOB***************\n" );
+        for ( int i = 0; i < bob.getRepresentatives().size(); i++ ) {
+            System.out.println( bob.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************TIM***************\n" );
+        for ( int i = 0; i < tim.getRepresentatives().size(); i++ ) {
+            System.out.println( tim.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************ALICE***************\n" );
+        for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
+            System.out.println( alice.getRepresentatives().toArray()[i].toString() );
+        }
+        Thread.sleep( 5000 );
+
+        // alice represents bob
+        mvc.perform( post( "/api/v1/patients/representatives/BobTheFourYearOld" )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "AliceThirteen" ) ) )
+                .andExpect( status().isOk() );
+        Thread.sleep( 5000 );
+        alice = Patient.getByName( "AliceThirteen" );
+        tim = Patient.getByName( "TimTheOneYearOld" );
+        bob = Patient.getByName( "BobTheFourYearOld" );
+
+        // TODO add some more POST requests if necessary
+
+        System.out.println( "**************BOB***************\n" );
+        for ( int i = 0; i < bob.getRepresentatives().size(); i++ ) {
+            System.out.println( bob.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************TIM***************\n" );
+        for ( int i = 0; i < tim.getRepresentatives().size(); i++ ) {
+            System.out.println( tim.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************ALICE***************\n" );
+        for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
+            System.out.println( alice.getRepresentatives().toArray()[i].toString() );
+        }
+        Thread.sleep( 5000 );
+        System.out.println( "**************done with post***********************" );
+        Thread.sleep( 10000 );
+
+        alice = Patient.getByName( "AliceThirteen" );
+        tim = Patient.getByName( "TimTheOneYearOld" );
+        bob = Patient.getByName( "BobTheFourYearOld" );
+
+        // TODO add some more POST requests if necessary
+
+        System.out.println( "**************BOB***************\n" );
+        for ( int i = 0; i < bob.getRepresentatives().size(); i++ ) {
+            System.out.println( bob.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************TIM***************\n" );
+        for ( int i = 0; i < tim.getRepresentatives().size(); i++ ) {
+            System.out.println( tim.getRepresentatives().toArray()[i].toString() );
+        }
+        System.out.println( "**************ALICE***************\n" );
+        for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
+            System.out.println( alice.getRepresentatives().toArray()[i].toString() );
+        }
+        Thread.sleep( 50000 );
+        assertTrue( bob.getRepresentatives().contains( alice ) );
+        assertFalse( alice.getRepresentatives().contains( bob ) );
         assertTrue( tim.getRepresentatives().contains( alice ) );
+        assertTrue( alice.getRepresentees().contains( bob ) );
 
         mvc.perform( get( "/api/v1/patients/representatives/BobTheFourYearOld" ) ).andExpect( status().isOk() );
 
