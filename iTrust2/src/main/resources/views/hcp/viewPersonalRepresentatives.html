@@ -1,5 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="personalRepresentatives">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>View Personal Representatives</title>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
 		
 	<!-- main function that loads personalRepresentatives.html -->
 	<div ng-app="personalRepresentativesApp" ng-controller="prCtrl as ctrl">
