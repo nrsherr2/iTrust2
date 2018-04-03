@@ -234,6 +234,7 @@ public class APIPatientController extends APIController {
     public ResponseEntity addRepresentative ( @PathVariable final String representee,
             @RequestBody final String representative ) {
         System.out.println( "adding " + representative + " to " + representee );
+        //make sure the patients exist
         final Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
@@ -242,11 +243,19 @@ public class APIPatientController extends APIController {
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
         }
+        //now add the rep
         try {
+            //isolate the set
             Set<Patient> reps = tee.getRepresentatives();
+            //add the new guy
             reps.add( tive );
-            reps.addAll( tee.getRepresentatives() );
+            //add all of the other patients back in (Kai solution)
+            for (Patient r:tee.getRepresentatives()) {
+                reps.add( r );
+            }
+            //set the patients rep list to this new list
             tee.setRepresenatives( reps );
+            //save the patient
             tee.save();
 
             return new ResponseEntity(
