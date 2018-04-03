@@ -200,7 +200,7 @@ public class Patient extends DomainObject<Patient> implements Serializable {
     @OneToOne
     @JoinColumn ( name = "self_id", columnDefinition = "varchar(100)" )
     @Id
-    private User               self;
+    private User         self;
 
     /**
      * A set that references which patients represent this one
@@ -208,13 +208,13 @@ public class Patient extends DomainObject<Patient> implements Serializable {
     @ManyToMany ( cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER )
     @JoinTable ( name = "PERSONAL_REPRESENTATIVES", joinColumns = { @JoinColumn ( name = "REPRESENTING" ) },
             inverseJoinColumns = { @JoinColumn ( name = "REPRESENTED_BY" ) } )
-    private final Set<Patient> representatives = new HashSet<Patient>();
+    private Set<Patient> representatives = new HashSet<Patient>();
 
     /**
      * A set that references which patients this patient represents
      */
     @ManyToMany ( mappedBy = "representatives", fetch = FetchType.EAGER )
-    private final Set<Patient> representing    = new HashSet<Patient>();
+    private Set<Patient> representing    = new HashSet<Patient>();
 
     /**
      * For keeping track of the User who is the mother of this patient.
@@ -222,7 +222,7 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      */
     @ManyToOne
     @JoinColumn ( name = "mother_id", columnDefinition = "varchar(100)" )
-    private User               mother;
+    private User         mother;
 
     /**
      * For keeping track of the User who is the father of this patient.
@@ -230,106 +230,106 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      */
     @ManyToOne
     @JoinColumn ( name = "father_id", columnDefinition = "varchar(100)" )
-    private User               father;
+    private User         father;
 
     /**
      * The first name of this patient
      */
     @Length ( max = 20 )
-    private String             firstName;
+    private String       firstName;
 
     /**
      * The preferred name of this patient
      */
     @Length ( max = 20 )
-    private String             preferredName;
+    private String       preferredName;
 
     /**
      * The last name of this patient
      */
     @Length ( max = 30 )
-    private String             lastName;
+    private String       lastName;
 
     /**
      * The email address of this patient
      */
     @Length ( max = 30 )
-    private String             email;
+    private String       email;
 
     /**
      * The address line 1 of this patient
      */
     @Length ( max = 50 )
-    private String             address1;
+    private String       address1;
 
     /**
      * The address line 2 of this patient
      */
     @Length ( max = 50 )
-    private String             address2;
+    private String       address2;
 
     /**
      * The city of residence of this patient
      */
     @Length ( max = 15 )
-    private String             city;
+    private String       city;
 
     /**
      * The state of residence of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private State              state;
+    private State        state;
 
     /**
      * The zip code of this patient
      */
     @Length ( min = 5, max = 10 )
-    private String             zip;
+    private String       zip;
 
     /**
      * The phone number of this patient
      */
     @Length ( min = 12, max = 12 )
-    private String             phone;
+    private String       phone;
 
     /**
      * The birthday of this patient
      */
-    private Calendar           dateOfBirth;
+    private Calendar     dateOfBirth;
 
     /**
      * The date of death of this patient
      */
-    private Calendar           dateOfDeath;
+    private Calendar     dateOfDeath;
 
     /**
      * The cause of death of this patient
      */
-    private String             causeOfDeath;
+    private String       causeOfDeath;
 
     /**
      * The blood type of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private BloodType          bloodType;
+    private BloodType    bloodType;
 
     /**
      * The ethnicity of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private Ethnicity          ethnicity;
+    private Ethnicity    ethnicity;
 
     /**
      * The gender of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private Gender             gender;
+    private Gender       gender;
 
     /**
      * The id of this patient
      */
     @GeneratedValue ( strategy = GenerationType.AUTO )
-    private Long               id;
+    private Long         id;
 
     /**
      * Set the id of this patient
@@ -370,12 +370,26 @@ public class Patient extends DomainObject<Patient> implements Serializable {
     }
 
     /**
+     * sets the list of representatives if it's been changed.
+     * 
+     * @param other
+     *            the edited list to be set
+     */
+    public void setRepresenatives ( Set<Patient> other ) {
+        this.representatives = other;
+    }
+
+    /**
      * gives the user a list of this patient's representees
      *
      * @return the list of representees
      */
     public Set<Patient> getRepresentees () {
         return representing;
+    }
+
+    public void setRepresentees ( Set<Patient> other ) {
+        this.representing = other;
     }
 
     /**
