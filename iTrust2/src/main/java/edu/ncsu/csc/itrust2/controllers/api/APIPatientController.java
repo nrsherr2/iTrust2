@@ -234,7 +234,7 @@ public class APIPatientController extends APIController {
     public ResponseEntity addRepresentative ( @PathVariable final String representee,
             @RequestBody final String representative ) {
         System.out.println( "adding " + representative + " to " + representee );
-        //make sure the patients exist
+        // make sure the patients exist
         final Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
@@ -243,21 +243,37 @@ public class APIPatientController extends APIController {
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
         }
-        //now add the rep
+        // now add the rep
         try {
-            //isolate the set
-            Set<Patient> reps = tee.getRepresentatives();
-            //add the new guy
-            reps.add( tive );
-            //add all of the other patients back in (Kai solution)
-            for (Patient r:tee.getRepresentatives()) {
-                reps.add( r );
-            }
-            //set the patients rep list to this new list
-            tee.setRepresenatives( reps );
-            //save the patient
+            // I'm going to try the solution Kai proposed on piazza.
+            /*
+             * try copying the Set to a temporary array (or list, or whatever
+             * you want), then clearing the list, saving, re-adding everything,
+             * and saving again. You may need to do this on both sides (for both
+             * users who get updated when someone is added/removed).
+             */
+            Set<Patient> oldReps = tee.getRepresentatives();
+            System.out.println( "**********************************tee.getrepresentatives contains " + tee.getRepresentatives().size() + " elements" );
+            Set<Patient> newReps = tee.getRepresentatives();
+            System.out.println( "***********************************oldreps contains " + oldReps.size() + " elements" );
+            Thread.sleep( 3000 );
+            /*for ( Patient r : newReps ) {
+                newReps.remove( r );
+            }*/
+            System.out.println( "*****************************newreps contains " + newReps.size() + " elements" );
+            Thread.sleep( 3000 );
+            tee.setRepresenatives( newReps );
             tee.save();
-
+            System.out.println( "********************************tee.getrepresentatives contains " + tee.getRepresentatives().size() + " elements" );
+            System.out.println( "*********************************oldreps contains " + oldReps.size() + " elements" );
+            Thread.sleep( 3000 );
+            oldReps.add( tive );
+            System.out.println( "*************************************oldreps contains " + oldReps.size() + " elements" );
+            Thread.sleep( 3000 );
+            tee.setRepresenatives( oldReps );
+            tee.save();
+            System.out.println( "********************************tee.getrepresentatives contains " + tee.getRepresentatives().size() + " elements" );
+            Thread.sleep( 3000 );
             return new ResponseEntity(
                     "Successfully added " + representative + " as a representative of " + representee, HttpStatus.OK );
         }

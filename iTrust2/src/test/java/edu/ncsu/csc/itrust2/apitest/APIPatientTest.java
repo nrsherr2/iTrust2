@@ -278,10 +278,10 @@ public class APIPatientTest {
         mvc.perform( post( "/api/v1/patients/representatives/BobTheFourYearOld" )
                 .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "AliceThirteen" ) ) )
                 .andExpect( status().isOk() );
-        Thread.sleep( 5000 );
         alice = Patient.getByName( "AliceThirteen" );
         tim = Patient.getByName( "TimTheOneYearOld" );
         bob = Patient.getByName( "BobTheFourYearOld" );
+        System.out.println( "bob's list contains " + bob.getRepresentatives().size() + " elements" );
 
         // TODO add some more POST requests if necessary
 
