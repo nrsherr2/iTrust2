@@ -240,7 +240,7 @@ public class APIPatientTest {
         for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
             System.out.println( alice.getRepresentatives().toArray()[i].toString() );
         }
-        Thread.sleep( 5000 );
+        //Thread.sleep( 5000 );
 
         // bob represents alice
         /*
@@ -272,7 +272,7 @@ public class APIPatientTest {
         for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
             System.out.println( alice.getRepresentatives().toArray()[i].toString() );
         }
-        Thread.sleep( 5000 );
+        //Thread.sleep( 5000 );
 
         // alice represents bob
         mvc.perform( post( "/api/v1/patients/representatives/BobTheFourYearOld" )
@@ -297,9 +297,9 @@ public class APIPatientTest {
         for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
             System.out.println( alice.getRepresentatives().toArray()[i].toString() );
         }
-        Thread.sleep( 5000 );
+        //Thread.sleep( 5000 );
         System.out.println( "**************done with post***********************" );
-        Thread.sleep( 1000 );
+        //Thread.sleep( 1000 );
 
         alice = Patient.getByName( "AliceThirteen" );
         tim = Patient.getByName( "TimTheOneYearOld" );
@@ -332,7 +332,7 @@ public class APIPatientTest {
         for ( int i = 0; i < alice.getRepresentees().size(); i++ ) {
             System.out.println( alice.getRepresentees().toArray()[i].toString() );
         }
-        Thread.sleep( 5000 );
+        //Thread.sleep( 5000 );
 
         mvc.perform( get( "/api/v1/patients/representatives/BobTheFourYearOld" ) ).andExpect( status().isOk() );
 
@@ -357,6 +357,6 @@ public class APIPatientTest {
         for ( int i = 0; i < alice.getRepresentatives().size(); i++ ) {
             System.out.println( alice.getRepresentatives().toArray()[i].toString() );
         }
-        Thread.sleep( 5000 );
+        //Thread.sleep( 5000 );
     }
 }
