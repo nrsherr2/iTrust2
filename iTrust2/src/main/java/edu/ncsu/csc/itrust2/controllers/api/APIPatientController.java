@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -195,6 +196,10 @@ public class APIPatientController extends APIController {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
         }
         else {
+            for ( Patient r : p.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
             return new ResponseEntity( p.getRepresentatives(), HttpStatus.OK );
         }
     }
@@ -214,6 +219,10 @@ public class APIPatientController extends APIController {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
         }
         else {
+            for ( Patient r : p.getRepresentees() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
             return new ResponseEntity( p.getRepresentees(), HttpStatus.OK );
         }
     }
@@ -235,7 +244,7 @@ public class APIPatientController extends APIController {
             @RequestBody final String representative ) {
         System.out.println( "adding " + representative + " to " + representee );
         // make sure the patients exist
-        final Patient tee = Patient.getByName( representee );
+        Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
         }
@@ -245,35 +254,11 @@ public class APIPatientController extends APIController {
         }
         // now add the rep
         try {
-            // I'm going to try the solution Kai proposed on piazza.
-            /*
-             * try copying the Set to a temporary array (or list, or whatever
-             * you want), then clearing the list, saving, re-adding everything,
-             * and saving again. You may need to do this on both sides (for both
-             * users who get updated when someone is added/removed).
-             */
-            Set<Patient> oldReps = tee.getRepresentatives();
-            System.out.println( "**********************************tee.getrepresentatives contains " + tee.getRepresentatives().size() + " elements" );
-            Set<Patient> newReps = tee.getRepresentatives();
-            System.out.println( "***********************************oldreps contains " + oldReps.size() + " elements" );
-            Thread.sleep( 3000 );
-            /*for ( Patient r : newReps ) {
-                newReps.remove( r );
-            }*/
-            System.out.println( "*****************************newreps contains " + newReps.size() + " elements" );
-            Thread.sleep( 3000 );
-            tee.setRepresenatives( newReps );
+            HashSet<Patient> newList = new HashSet<Patient>();
+            newList.addAll( tee.getRepresentatives() );
+            newList.add( tive );
+            tee.setRepresenatives( newList );
             tee.save();
-            System.out.println( "********************************tee.getrepresentatives contains " + tee.getRepresentatives().size() + " elements" );
-            System.out.println( "*********************************oldreps contains " + oldReps.size() + " elements" );
-            Thread.sleep( 3000 );
-            oldReps.add( tive );
-            System.out.println( "*************************************oldreps contains " + oldReps.size() + " elements" );
-            Thread.sleep( 3000 );
-            tee.setRepresenatives( oldReps );
-            tee.save();
-            System.out.println( "********************************tee.getrepresentatives contains " + tee.getRepresentatives().size() + " elements" );
-            Thread.sleep( 3000 );
             return new ResponseEntity(
                     "Successfully added " + representative + " as a representative of " + representee, HttpStatus.OK );
         }
@@ -293,37 +278,41 @@ public class APIPatientController extends APIController {
      *            the patient you will add to the list
      * @return a response saying if you could or could not delete the
      *         representative
+     * @throws InterruptedException 
      */
     @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
     public ResponseEntity deleteRepresentative ( @PathVariable final String representee,
-            @RequestBody final String representative ) {
+            @RequestBody final String representative ) throws InterruptedException {
         final Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
+        } else {
+            System.out.println("found tee");
+            Thread.sleep( 5000 );
         }
         final Patient tive = Patient.getByName( representative );
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
+        } else {
+            System.out.println( "found tive" );
+            Thread.sleep(5000);
         }
 
         try {
-            Set<Patient> tives = tee.getRepresentatives();
-            tives.remove( tive );
-            tee.setRepresenatives( tives );
-
-            Set<Patient> tees = tive.getRepresentees();
-            tees.remove( tive );
-            tive.setRepresentees( tees );
-
+            HashSet<Patient> reps = new HashSet<Patient>();
+            for ( Patient p : tee.getRepresentatives() ) {
+                reps.add( p );
+            }
+            reps.remove( tive );
+            tee.setRepresenatives( reps );
             tee.save();
-            tive.save();
             return new ResponseEntity(
                     "Successfully removed " + representative + " as a representative of " + representee,
                     HttpStatus.OK );
         }
         catch ( Exception e ) {
-            return new ResponseEntity( "Could not remove representative", HttpStatus.OK );
+            return new ResponseEntity( "Could not remove representative because " + e.getMessage(), HttpStatus.BAD_REQUEST );
         }
     }
 }

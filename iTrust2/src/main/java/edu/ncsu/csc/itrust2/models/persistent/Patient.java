@@ -388,6 +388,12 @@ public class Patient extends DomainObject<Patient> implements Serializable {
         return representing;
     }
 
+    /**
+     * sets the representees list to contain everything in this new list
+     * 
+     * @param other
+     *            the list that will become the new representee list
+     */
     public void setRepresentees ( Set<Patient> other ) {
         this.representing = other;
     }
