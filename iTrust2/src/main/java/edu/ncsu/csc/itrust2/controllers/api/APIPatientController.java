@@ -283,7 +283,7 @@ public class APIPatientController extends APIController {
     @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
     public ResponseEntity deleteRepresentative ( @PathVariable final String representee,
-            @RequestBody final String representative ) throws InterruptedException {
+            @RequestBody final String representative ) {
         final Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
@@ -294,8 +294,6 @@ public class APIPatientController extends APIController {
         }
         Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
         if ( tive == null ) {
-            System.out.println( representative );
-            Thread.sleep( 5000 );
             return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
         }
         else {
