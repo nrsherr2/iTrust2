@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -195,6 +196,10 @@ public class APIPatientController extends APIController {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
         }
         else {
+            for ( Patient r : p.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
             return new ResponseEntity( p.getRepresentatives(), HttpStatus.OK );
         }
     }
@@ -214,6 +219,10 @@ public class APIPatientController extends APIController {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
         }
         else {
+            for ( Patient r : p.getRepresentees() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
             return new ResponseEntity( p.getRepresentees(), HttpStatus.OK );
         }
     }
@@ -234,8 +243,8 @@ public class APIPatientController extends APIController {
     public ResponseEntity addRepresentative ( @PathVariable final String representee,
             @RequestBody final String representative ) {
         System.out.println( "adding " + representative + " to " + representee );
-        //make sure the patients exist
-        final Patient tee = Patient.getByName( representee );
+        // make sure the patients exist
+        Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
         }
@@ -243,21 +252,13 @@ public class APIPatientController extends APIController {
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
         }
-        //now add the rep
+        // now add the rep
         try {
-            //isolate the set
-            Set<Patient> reps = tee.getRepresentatives();
-            //add the new guy
-            reps.add( tive );
-            //add all of the other patients back in (Kai solution)
-            for (Patient r:tee.getRepresentatives()) {
-                reps.add( r );
-            }
-            //set the patients rep list to this new list
-            tee.setRepresenatives( reps );
-            //save the patient
+            HashSet<Patient> newList = new HashSet<Patient>();
+            newList.addAll( tee.getRepresentatives() );
+            newList.add( tive );
+            tee.setRepresenatives( newList );
             tee.save();
-
             return new ResponseEntity(
                     "Successfully added " + representative + " as a representative of " + representee, HttpStatus.OK );
         }
@@ -277,6 +278,7 @@ public class APIPatientController extends APIController {
      *            the patient you will add to the list
      * @return a response saying if you could or could not delete the
      *         representative
+     * @throws InterruptedException
      */
     @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
@@ -286,28 +288,34 @@ public class APIPatientController extends APIController {
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
         }
-        final Patient tive = Patient.getByName( representative );
+        else {
+            System.out.println( "found tee" );
+            // Thread.sleep( 5000 );
+        }
+        Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
         }
+        else {
+            System.out.println( "found tive" );
+            // Thread.sleep(5000);
+        }
 
         try {
-            Set<Patient> tives = tee.getRepresentatives();
-            tives.remove( tive );
-            tee.setRepresenatives( tives );
-
-            Set<Patient> tees = tive.getRepresentees();
-            tees.remove( tive );
-            tive.setRepresentees( tees );
-
+            HashSet<Patient> reps = new HashSet<Patient>();
+            for ( Patient p : tee.getRepresentatives() ) {
+                reps.add( p );
+            }
+            reps.remove( tive );
+            tee.setRepresenatives( reps );
             tee.save();
-            tive.save();
             return new ResponseEntity(
                     "Successfully removed " + representative + " as a representative of " + representee,
                     HttpStatus.OK );
         }
         catch ( Exception e ) {
-            return new ResponseEntity( "Could not remove representative", HttpStatus.OK );
+            return new ResponseEntity( "Could not remove representative because " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST );
         }
     }
 }
