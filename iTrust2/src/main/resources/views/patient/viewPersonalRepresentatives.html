@@ -37,20 +37,19 @@
 								</tbody>
 							</table>
 									
-									<div class="row" style="width: 300px; margin: 0 auto;">
-										<button class="btn btn-success" style="float:left;"
-											ng-click="ctrl.prevPage()">Previous</button>
-										<button class="btn btn-success" style="float:right"
-											ng-click="ctrl.nextPage()">Next</button>
-										<p style="margin: 10 auto; width: 100px; text-align:center;"
-											ng-bind="ctrl.pageString">Page: 1</p>
-									</div>
-								</div>
+							<div class="row" style="width: 300px; margin: 0 auto;">
+								<button class="btn btn-success" style="float:left;"
+									ng-click="ctrl.prevPageTive()">Previous</button>
+								<button class="btn btn-success" style="float:right"
+									ng-click="ctrl.nextPageTive()">Next</button>
+								<p style="margin: 10 auto; width: 100px; text-align:center;"
+									ng-bind="ctrl.tivePageString">Page: 1</p>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 			
 		<div class="container">
 			<div class="row">
@@ -82,18 +81,18 @@
 							</table>
 
 						
-						<div class="row" style="width: 300px; margin: 0 auto;">
-							<button class="btn btn-success" style="float:left;"
-								ng-click="ctrl.prevPage()">Previous</button>
-							<button class="btn btn-success" style="float:right"
-								ng-click="ctrl.nextPage()">Next</button>
-							<p style="margin: 10 auto; width: 100px; text-align:center;"
-								ng-bind="ctrl.pageString">Page: 1</p>
+							<div class="row" style="width: 300px; margin: 0 auto;">
+								<button class="btn btn-success" style="float:left;"
+									ng-click="ctrl.prevPageTeee()">Previous</button>
+								<button class="btn btn-success" style="float:right"
+									ng-click="ctrl.nextPageTee()">Next</button>
+								<p style="margin: 10 auto; width: 100px; text-align:center;"
+									ng-bind="ctrl.teePageString">Page: 1</p>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
 		<script>
 		
@@ -103,57 +102,79 @@
 			var self = this;
 			self.personalRepresentatives = [];
 			self.personalRepresentees = [];
-			self.numPages = 1;
-			self.requestParams = {patientId: "", page: 1, pageLength: 10};
-			self.pageString = "Page: 1";
+			self.tiveNumPages = 1;
+			self.teeNumPages = 1;
+			self.tiveRequestParams = {patientId: "", page: 1, pageLength: 10};
+			self.teeRequestParams = {patientId: "", page: 1, pageLength: 10};
+			self.tivePageString = "Page: 1";
+			self.teePageString = "Page: 1";
 			
 			// Get Info about user
 			$http = angular.injector(["ng"]).get("$http");
-			$http.get("/iTrust2/api/v1/user").then(
+			$http.get("/iTrust2/api/v1/authentication").then(
 					function(response) {
-						self.requestParams.patientId = response.data;
+						self.tiveRequestParams.patientId = response.data.message;
+						self.teeRequestParams.patientId = response.data.message;
 					});
 			
 			self.updateRepresentativeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representatives/", self.requestParams.patientId).then(function (response) {
 					self.personalRepresentatives = response.data;
-					if(self.logs.length > 0){
-						self.numPages = self.logs[0].numPages;
+					if(self.personalRepresentatives.length > 0){
+						self.tiveNumPages = self.personalRepresentatives[0].numPages;
 					}else{
-						self.numPages = 1;
+						self.tiveNumPages = 1;
 					}
-					self.updatePageString();
+					self.updatePageStringTive();
 				});	
+			}
+			
+			self.updatePageStringTive = function(){
+				self.tivePageString = "Page: " + self.tiveRequestParams.page + " of " + self.tiveNumPages;
+			}
+			
+			self.nextPageTive = function(){
+				if(self.tiveRequestParams.page >= self.tiveNumPages) return;
+				self.tiveRequestParams.page++;
+				
+				self.updateRepresentativeTable();
+			}
+			
+			self.prevPageTive = function(){
+				if(self.tiveRequestParams.page <= 1) return;
+				self.tiveRequestParams.page--;
+				
+				self.updateRepresentativeTable();
 			}
 			
 			self.updateRepresenteeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representees/", self.requestParams.patientId).then(function (response) {
 					self.personalRepresentees = response.data;
-					if(self.logs.length > 0){
-						self.numPages = self.logs[0].numPages;
+					if(self.personalRepresentees.length > 0){
+						self.teeNumPages = self.personalRepresentees[0].numPages;
 					}else{
-						self.numPages = 1;
+						self.teeNumPages = 1;
 					}
-					self.updatePageString();
+					self.updatePageStringTee();
 				});	
 			}
 			
-			self.updatePageString = function(){
-				self.pageString = "Page: " + self.requestParams.page + " of " + self.numPages;
+			self.updatePageStringTee = function(){
+				self.teePageString = "Page: " + self.teeRequestParams.page + " of " + self.teeNumPages;
 			}
 			
-			self.nextPage = function(){
-				if(self.requestParams.page >= self.numPages) return;
-				self.requestParams.page++;
+			self.nextPageTee = function(){
+				if(self.teeRequestParams.page >= self.teeNumPages) return;
+				self.teeRequestParams.page++;
 				
-				self.updateTable();
+				self.updateRepresenteeTable();
 			}
 			
-			self.prevPage = function(){
-				if(self.requestParams.page <= 1) return;
-				self.requestParams.page--;
+			self.prevPageTee = function(){
+				if(self.teeRequestParams.page <= 1) return;
+				self.teeRequestParams.page--;
 				
-				self.updateTable();
+				self.updateRepresenteeTable();
 			}
 		});
 			
