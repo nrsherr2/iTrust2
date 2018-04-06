@@ -291,16 +291,6 @@ public class APIPatientTest {
         alice = Patient.getByName( "AliceThirteen" );
         tim = Patient.getByName( "TimTheOneYearOld" );
         bob = Patient.getByName( "BobTheFourYearOld" );
-
-        System.out.println( "*****************Alice's representees*****************" );
-        for ( Patient p : alice.getRepresentees() ) {
-            System.out.println( p.getSelf().getId() );
-        }
-        System.out.println( "********************Tim's Representatives**************" );
-        for ( Patient p : tim.getRepresentatives() ) {
-            System.out.println( p.getSelf().getId() );
-        }
-        Thread.sleep( 5000 );
         // check that size updated
         assertTrue( alice.getRepresentees().size() == 1 );
         // check that bob stayed in the list

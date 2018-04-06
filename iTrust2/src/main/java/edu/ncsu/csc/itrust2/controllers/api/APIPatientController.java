@@ -306,8 +306,6 @@ public class APIPatientController extends APIController {
         try {
             HashSet<Patient> reps = new HashSet<Patient>();
             for ( Patient p : tee.getRepresentatives() ) {
-                System.out.println( "comparing " + p.getSelf().getId() + " to " + tive.getSelf().getId() );
-                Thread.sleep( 2000 );
                 if ( !Patient.samePatient( tive, p ) ) {
                     reps.add( p );
                 }
