@@ -784,4 +784,63 @@ public class Patient extends DomainObject<Patient> implements Serializable {
         this.gender = gender;
     }
 
+    /**
+     * Tells the user if a specific patient is in this patient's list of
+     * representatives, based off the id long or user id. I'm going to program
+     * in a limitation that a patient must have a long id or a user id
+     * 
+     * @param comp
+     *            the patient that may or may not be in the list
+     * @return whether this patient has that patient as a representative
+     */
+    public boolean inRepresentatives ( Patient comp ) {
+        for ( Patient p : this.representatives ) {
+            if ( samePatient( comp, p ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Tells the user if a specific patient is in this patient's list of
+     * representees, based off the user id
+     * 
+     * @param comp
+     *            the patient that may or may not be in the list
+     * @return whether this patient has that patient as a representative
+     */
+    public boolean inRepresentees ( Patient comp ) {
+        for ( Patient p : this.representing ) {
+            if ( samePatient( comp, p ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * checks between two patients' user ids to see if they are the same
+     * patient, since their user ids are unique.
+     * 
+     * @param pat1
+     *            the basis patient
+     * @param pat2
+     *            the patient you are comparing to
+     * @return false if they either can't be compared or they are not the same
+     *         patient
+     */
+    public static boolean samePatient ( Patient pat1, Patient pat2 ) {
+        if ( pat1.getSelf() == null || pat2.getSelf() == null || pat1.getSelf().getId() == null
+                || pat2.getSelf().getId() == null ) {
+            return false;
+        }
+        else if ( !pat1.getSelf().getId().equals( pat2.getSelf().getId() ) ) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
 }

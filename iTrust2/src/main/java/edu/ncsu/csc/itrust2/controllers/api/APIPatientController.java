@@ -242,7 +242,9 @@ public class APIPatientController extends APIController {
     @PreAuthorize ( "hasRole('ROLE_PATIENT') or hasRole('ROLE_HCP')" )
     public ResponseEntity addRepresentative ( @PathVariable final String representee,
             @RequestBody final String representative ) {
-        System.out.println( "adding " + representative + " to " + representee );
+        if ( representee.equals( representative.substring( 1, representative.length() - 1 ) ) ) {
+            return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
+        }
         // make sure the patients exist
         Patient tee = Patient.getByName( representee );
         if ( tee == null ) {
@@ -256,7 +258,12 @@ public class APIPatientController extends APIController {
         try {
             HashSet<Patient> newList = new HashSet<Patient>();
             newList.addAll( tee.getRepresentatives() );
+            int oldSize = newList.size();
             newList.add( tive );
+            if ( newList.size() == oldSize ) {
+                return new ResponseEntity( representative + " is already a representative of " + representee,
+                        HttpStatus.BAD_REQUEST );
+            }
             tee.setRepresenatives( newList );
             tee.save();
             return new ResponseEntity(
@@ -288,25 +295,21 @@ public class APIPatientController extends APIController {
         if ( tee == null ) {
             return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
         }
-        else {
-            System.out.println( "found tee" );
-            // Thread.sleep( 5000 );
-        }
         Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
         if ( tive == null ) {
             return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
         }
-        else {
-            System.out.println( "found tive" );
-            // Thread.sleep(5000);
+        if ( !tee.inRepresentatives( tive ) ) {
+            return new ResponseEntity( representative + " didn't represent " + representee + " in the first place",
+                    HttpStatus.BAD_REQUEST );
         }
-
         try {
             HashSet<Patient> reps = new HashSet<Patient>();
             for ( Patient p : tee.getRepresentatives() ) {
-                reps.add( p );
+                if ( !Patient.samePatient( tive, p ) ) {
+                    reps.add( p );
+                }
             }
-            reps.remove( tive );
             tee.setRepresenatives( reps );
             tee.save();
             return new ResponseEntity(
