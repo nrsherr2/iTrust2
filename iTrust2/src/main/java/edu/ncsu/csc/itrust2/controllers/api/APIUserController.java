@@ -169,8 +169,18 @@ public class APIUserController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/authentication" )
     public ResponseEntity getUser () {
-        return new ResponseEntity( successResponse( SecurityContextHolder.getContext().getAuthentication().getName() ),
-                HttpStatus.OK );
+
+        final SecurityContext context = SecurityContextHolder.getContext();
+        if ( context == null ) {
+            return new ResponseEntity( errorResponse( "" ), HttpStatus.UNAUTHORIZED );
+        }
+
+        final Authentication authentication = context.getAuthentication();
+        if ( authentication == null ) {
+            return new ResponseEntity( errorResponse( "" ), HttpStatus.UNAUTHORIZED );
+        }
+
+        return new ResponseEntity( successResponse( authentication.getName() ), HttpStatus.OK );
     }
 
     /**

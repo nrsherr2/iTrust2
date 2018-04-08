@@ -1,97 +1,159 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{})">
 <title>View Personal Representatives</title>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<th:block th:replace="${links}" />
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
 <div th:fragment="content">
 		
 	<!-- main function that loads personalRepresentatives.html -->
 	<div ng-app="personalRepresentativesApp" ng-controller="prCtrl as ctrl">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-primary">
-
-						<!-- log entry header -->
-						<div class="panel-heading">
-							<h3>Personal Representatives</h3>
+		
+		<div style="float:left;width:30%;height:75%;overflow-y:auto">
+			<h2>Patients:</h2>
+			<!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
+				and https://docs.angularjs.org/api/ng/filter/filter -->
+			<h4>Search: <input type="text" name="search" ng-model="searchFilter"/></h4>
+			<!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+			<!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+			<ul style="overflow:auto;height=90%;">
+			<!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
+							<li ng-repeat="patient in patients | filter:filterPatients"><h4><label>
+									<input type="radio" ng-model="$parent.selectedPatient"
+									name="patient" value="{{patient.self.username}}"
+									ng-click='$parent.selectPatient(patient)' />&nbsp;{{$parent.displayName(patient)}}</label>
+							</h4></li>
+						</ul>
+		</div>
+		<div class="container" style="float:left;width:70%;border-left:1px solid #bbb;padding-left: 3%;height:75%;overflow-y:auto">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12" >
+						<div class="panel panel-primary">
+	
+							<!-- log entry header -->
+							<div class="panel-heading">
+								<h3>Personal Representatives</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-bordered">
+	
+									<!-- table column headers -->
+									<thead>
+										<tr>
+											<th>Full Name</th>
+											<th>MID</th>
+										</tr>
+									</thead>
+	
+									<!-- log entry for every row, ordered by date -->
+									<tbody>
+										<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
+											<td name="nameCell">{{pr.name}}</td>
+											<td name="midCell">{{pr.id}}</td>
+										</tr>
+									</tbody>
+								</table>
+								
+								<div class="row">
+									<div class="col-md-12">
+										<div class="panel panel-default">
+											<div class="panel-heading ">Add a Representative</div>
+											<div class="panel-body">
+												<form class="form-horizontal" role="form" name="addRepresentativeForm"
+													ng-submit="addRepresentative(addRepresentativeForm.$valid)">
+													<div class="row">
+														<div class="col-md-4">
+															<label>Name</label> <input type="text"
+																class="form-control" name="representative" ng-model="representative.name"
+																required />
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-md-12 text-right">
+															<button type="submit" class="btn btn-success"
+																name="submit">Submit</button>
+														</div>
+													</div>
+												</form>
+												<div>
+													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+												</div>
+											</div>
+										</div>
+									</div>
+		
+							</div>
 						</div>
-						<div class="panel-body">
-							<table class="table table-bordered">
-
-								<!-- table column headers -->
-								<thead>
-									<tr>
-										<th>Full Name</th>
-										<th>MID</th>
-									</tr>
-								</thead>
-
-								<!-- log entry for every row, ordered by date -->
-								<tbody>
-									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-										<td name="nameCell">{{pr.name}}</td>
-										<td name="midCell">{{pr.id}}</td>
-									</tr>
-								</tbody>
-							</table>
+					</div>
+				</div>
+			</div>
+				
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+	
+						<!-- Personal Representee header -->
+							<div class="panel-heading">
+								<h3>Personal Representees</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-bordered">
+	
+									<!-- table column headers -->
+									<thead>
+										<tr>
+											<th>Full Name</th>
+											<th>MID</th>
+										</tr>
+									</thead>
+	
+									<!-- representee for every row, ordered by name -->
+									<tbody>
+										<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
+											<td name="nameCell">{{pr.name}}</td>
+											<td name="midCell">{{pr.id}}</td>
+										</tr>
+									</tbody>
+								</table>
+								
+								<div class="row">
+									<div class="col-md-12">
+										<div class="panel panel-default">
+											<div class="panel-heading ">Add a Representee</div>
+											<div class="panel-body">
+												<form class="form-horizontal" role="form" name="addRepresenteeForm"
+													ng-submit="addRepresentee(addRepresenteeForm.$valid)">
+													<div class="row">
+														<div class="col-md-4">
+															<label>Name</label> <input type="text"
+																class="form-control" name="representee" ng-model="representee.name"
+																required />
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-md-12 text-right">
+															<button type="submit" class="btn btn-success"
+																name="submit">Submit</button>
+														</div>
+													</div>
+												</form>
+												<div>
+													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+												</div>
+											</div>
+										</div>
+									</div>
 									
-							<div class="row" style="width: 300px; margin: 0 auto;">
-								<button class="btn btn-success" style="float:left;"
-									ng-click="ctrl.prevPageTive()">Previous</button>
-								<button class="btn btn-success" style="float:right"
-									ng-click="ctrl.nextPageTive()">Next</button>
-								<p style="margin: 10 auto; width: 100px; text-align:center;"
-									ng-bind="ctrl.tivePageString">Page: 1</p>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-			
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-primary">
-
-					<!-- log entry header -->
-						<div class="panel-heading">
-							<h3>Personal Representees</h3>
-						</div>
-						<div class="panel-body">
-							<table class="table table-bordered">
-
-								<!-- table column headers -->
-								<thead>
-									<tr>
-										<th>Full Name</th>
-										<th>MID</th>
-									</tr>
-								</thead>
-
-								<!-- log entry for every row, ordered by date -->
-								<tbody>
-									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
-										<td name="nameCell">{{pr.name}}</td>
-										<td name="midCell">{{pr.id}}</td>
-									</tr>
-								</tbody>
-							</table>
-
-						
-							<div class="row" style="width: 300px; margin: 0 auto;">
-								<button class="btn btn-success" style="float:left;"
-									ng-click="ctrl.prevPageTeee()">Previous</button>
-								<button class="btn btn-success" style="float:right"
-									ng-click="ctrl.nextPageTee()">Next</button>
-								<p style="margin: 10 auto; width: 100px; text-align:center;"
-									ng-bind="ctrl.teePageString">Page: 1</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
 
 		<script>
 		
@@ -101,75 +163,63 @@
 			var self = this;
 			self.personalRepresentatives = [];
 			self.personalRepresentees = [];
-			self.tiveNumPages = 1;
-			self.teeNumPages = 1;
-			self.tiveRequestParams = {patientId: "", page: 1, pageLength: 10};
-			self.teeRequestParams = {patientId: "", page: 1, pageLength: 10};
-			self.tivePageString = "Page: 1";
-			self.teePageString = "Page: 1";
+			self.requestParams = {patientId: ""};
+
+			$scope.displayName = function(p) {
+				return p.firstName + " " + p.lastName + " (" + p.self.username + ")";
+			}
 			
-			// HCP defines user through a textbox?
-			// GET PATIENT ID
+			// documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+			$scope.searchFilter = "";
+			$scope.filterPatients = function(patient) {
+				return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+			}
+
+			$scope.selectPatient = function(patient, override) {
+				self.requestParams.patientId = patient.self.username;
+				self.updateRepresentativeTable();
+				self.updateRepresenteeTable();
+			}
+			
+			$http.get("/iTrust2/api/v1/patients").then(
+					function(response) {
+						$scope.patients = response.data;
+					});
 			
 			self.updateRepresentativeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representatives/", self.requestParams.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId).then(function (response) {
 					self.personalRepresentatives = response.data;
-					if(self.personalRepresentatives.length > 0){
-						self.tiveNumPages = self.personalRepresentatives[0].numPages;
-					}else{
-						self.tiveNumPages = 1;
-					}
-					self.updatePageStringTive();
 				});	
 			}
 			
-			self.updatePageStringTive = function(){
-				self.tivePageString = "Page: " + self.tiveRequestParams.page + " of " + self.tiveNumPages;
-			}
-			
-			self.nextPageTive = function(){
-				if(self.tiveRequestParams.page >= self.tiveNumPages) return;
-				self.tiveRequestParams.page++;
-				
-				self.updateRepresentativeTable();
-			}
-			
-			self.prevPageTive = function(){
-				if(self.tiveRequestParams.page <= 1) return;
-				self.tiveRequestParams.page--;
-				
-				self.updateRepresentativeTable();
-			}
 			
 			self.updateRepresenteeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representees/", self.requestParams.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId).then(function (response) {
 					self.personalRepresentees = response.data;
-					if(self.personalRepresentees.length > 0){
-						self.teeNumPages = self.personalRepresentees[0].numPages;
-					}else{
-						self.teeNumPages = 1;
-					}
-					self.updatePageStringTee();
 				});	
 			}
 			
-			self.updatePageStringTee = function(){
-				self.teePageString = "Page: " + self.teeRequestParams.page + " of " + self.teeNumPages;
-			}
-			
-			self.nextPageTee = function(){
-				if(self.teeRequestParams.page >= self.teeNumPages) return;
-				self.teeRequestParams.page++;
-				
-				self.updateRepresenteeTable();
-			}
-			
-			self.prevPageTee = function(){
-				if(self.teeRequestParams.page <= 1) return;
-				self.teeRequestParams.page--;
-				
-				self.updateRepresenteeTable();
-			}
+	        $scope.addPersonalRepresentative = function () {
+              $http.post("/iTrust2/api/v1/patients/representatives/" + $scope.representative).then(
+                function (response) {
+                  self.updateRepresentativeTable();
+                  $scope.representative.name = "";
+                  $scope.errorAdding = "";
+                }, function (rejection) {
+                  $scope.errorAdding = "Could not add drug";
+                });
+         	}
+	        
+	        $scope.addPersonalRepresentee = function () {
+	              $http.post("/iTrust2/api/v1/patients/representee/" +, $scope.representee).then(
+	                function (response) {
+	                  self.updateRepresenteeTable();
+	                  $scope.representee.name = "";
+	                  $scope.errorAdding = "";
+	                }, function (rejection) {
+	                  $scope.errorAdding = "Could not add drug";
+	                });
+         	}
 		});
 			
 	</script>
