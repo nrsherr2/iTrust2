@@ -24,7 +24,8 @@
 								<!-- table column headers -->
 								<thead>
 									<tr>
-										<th>Full Name</th>
+										<th>First Name</th>
+										<th>Last Name</th>		
 										<th>MID</th>
 									</tr>
 								</thead>
@@ -32,42 +33,74 @@
 								<!-- log entry for every row, ordered by date -->
 								<tbody>
 									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-										<td name="nameCell">{{pr.name}}</td>
-										<td name="midCell">{{pr.id}}</td>
+										<td name="firstNameCell">{{pr.firstName}}</td>
+										<td name="lastNameCell">{{pr.lastName}}</td>
+										<td name="midCell">{{pr.self.username}}</td>
 									</tr>
 								</tbody>
 							</table>
 							
-								<div class="row">
-									<div class="col-md-12">
-										<div class="panel panel-default">
-											<div class="panel-heading ">Add a Representative</div>
-											<div class="panel-body">
-												<form class="form-horizontal" role="form" name="addRepresentativeForm"
-													ng-submit="addRepresentative(addRepresentativeForm.$valid)">
-													<div class="row">
-														<div class="col-md-4">
-															<label>Name</label> <input type="text"
-																class="form-control" name="representative" ng-model="representative.name"
-																required />
-														</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading ">Add a Representative</div>
+										<div class="panel-body">
+											<form class="form-horizontal" role="form" name="addRepresentativeForm"
+												ng-submit="addPersonalRepresentative(addRepresentativeForm.$valid)">
+												<div class="row">
+													<div class="col-md-4">
+														<label>MID</label> <input type="text"
+															class="form-control" name="addRepresentative" ng-model="addRepresentative.name"
+															required />
 													</div>
-													<div class="row">
-														<div class="col-md-12 text-right">
-															<button type="submit" class="btn btn-success"
-																name="submit">Submit</button>
-														</div>
-													</div>
-												</form>
-												<div>
-													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
 												</div>
+												<div class="row">
+													<div class="col-md-12 text-right">
+														<button type="submit" class="btn btn-success"
+															name="submit">Submit</button>
+													</div>
+												</div>
+											</form>
+											<div>
+												<p style="color: red" ng-model="errorAdding" id="errorAddingTive">{{errorAdding}}</p>
 											</div>
 										</div>
 									</div>
-									
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading ">Delete a Representative</div>
+										<div class="panel-body">
+											<form class="form-horizontal" role="form" name="deleteRepresentativeForm"
+												ng-submit="deletePersonalRepresentative(deleteRepresentativeForm.$valid)">
+												<div class="row">
+													<div class="col-md-4">
+														<label>MID</label> <input type="text"
+															class="form-control" name="deleteRepresentative" ng-model="deleteRepresentative.name"
+															required />
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12 text-right">
+														<button type="submit" class="btn btn-success"
+															name="submit">Submit</button>
+													</div>
+												</div>
+											</form>
+											<div>
+												<p style="color: red" ng-model="errorDeletingTive" id="errorDeletingTive">{{errorDeletingTive}}</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
 						</div>
 					</div>
+								
 				</div>
 			</div>
 		</div>
@@ -87,16 +120,18 @@
 								<!-- table column headers -->
 								<thead>
 									<tr>
-										<th>Full Name</th>
+										<th>First Name</th>
+										<th>Last Name</th>
 										<th>MID</th>
 									</tr>
 								</thead>
 
-								<!-- log entry for every row, ordered by date -->
+								<!-- representee entry for every row, ordered by name -->
 								<tbody>
 									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
-										<td name="nameCell">{{pr.name}}</td>
-										<td name="midCell">{{pr.id}}</td>
+										<td name="firstNameCell">{{pr.firstName}}</td>
+										<td name="lastNameCell">{{pr.lastName}}</td>
+										<td name="midCell">{{pr.self.username}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -104,13 +139,13 @@
 								<div class="row">
 									<div class="col-md-12">
 										<div class="panel panel-default">
-											<div class="panel-heading ">Add a Representee</div>
+											<div class="panel-heading ">Delete a Representee</div>
 											<div class="panel-body">
-												<form class="form-horizontal" role="form" name="addRepresenteeForm"
-													ng-submit="addRepresentee(addRepresenteeForm.$valid)">
+												<form class="form-horizontal" role="form" name="deleteRepresenteeForm"
+													ng-submit="deletePersonalRepresentee(deleteRepresenteeForm.$valid)">
 													<div class="row">
 														<div class="col-md-4">
-															<label>Name</label> <input type="text"
+															<label>MID</label> <input type="text"
 																class="form-control" name="representee" ng-model="representee.name"
 																required />
 														</div>
@@ -123,16 +158,18 @@
 													</div>
 												</form>
 												<div>
-													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+													<p style="color: red" ng-model="errorDeletingTee" id="errorDeletingTee">{{errorDeletingTee}}</p>
 												</div>
 											</div>
 										</div>
 									</div>
-
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			
 
 		<script>
 		
@@ -149,44 +186,76 @@
 			$http.get("/iTrust2/api/v1/authentication").then(
 					function(response) {
 						self.requestParams.patientId = response.data.message;
-						self.updateRepresentativeTable();
-						self.updateRepresenteeTable();
+						$scope.updateRepresentativeTable();
+						$scope.updateRepresenteeTable();
 					});
 			
-			self.updateRepresentativeTable = function(){
+			$scope.updateRepresentativeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId).then(function (response) {
 					self.personalRepresentatives = response.data;
 				});	
 			}
 			
 			
-			self.updateRepresenteeTable = function(){
+			$scope.updateRepresenteeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId).then(function (response) {
 					self.personalRepresentees = response.data;
 				});	
 			}
 			
 	        $scope.addPersonalRepresentative = function () {
-	              $http.post("/iTrust2/api/v1/patients/representatives/" + $scope.representative).then(
-	                function (response) {
-	                  self.updateRepresentativeTable();
-	                  $scope.representative.name = "";
-	                  $scope.errorAdding = "";
-	                }, function (rejection) {
-	                  $scope.errorAdding = "Could not add drug";
-	                });
-	         	}
-		        
-		        $scope.addPersonalRepresentee = function () {
-		              $http.post("/iTrust2/api/v1/patients/representee/" + $scope.representee).then(
-		                function (response) {
-		                  self.updateRepresenteeTable();
-		                  $scope.representee.name = "";
-		                  $scope.errorAdding = "";
-		                }, function (rejection) {
-		                  $scope.errorAdding = "Could not add drug";
-		                });
-	         	}
+             	$http({
+             		method: 'POST',
+             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		data: "{" + $scope.addRepresentative.name + "}",
+             		headers: {
+             			'Content-Type': 'application/json'
+             		}
+           		})
+           		.then(function (response) {
+        			$scope.updateRepresentativeTable();
+                  	$scope.representative.name = "";
+                  	$scope.errorAdding = "";
+                }, function (rejection) {
+                  	$scope.errorAdding = "Could not add representative";
+                });
+	        }
+	        
+	        $scope.deletePersonalRepresentative = function () {
+             	$http({
+             		method: 'DELETE',
+             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		data: "{" + $scope.deleteRepresentative.name + "}",
+             		headers: {
+             			'Content-Type': 'application/json'
+             		}
+           		})
+           		.then(function (response) {
+        			$scope.updateRepresentativeTable();
+                  	$scope.representative.name = "";
+                  	$scope.errorDeleting = "";
+                }, function (rejection) {
+                  	$scope.errorDeletingTive = "Could not delete representative";
+                });
+         	}
+	        
+	        $scope.deletePersonalRepresentee = function () {
+             	$http({
+             		method: 'DELETE',
+             		url: "/iTrust2/api/v1/patients/representatives/" +  $scope.representee.name,
+             		data: "{" + self.requestParams.patientId + "}",
+             		headers: {
+             			'Content-Type': 'application/json'
+             		}
+           		})
+				.then(function (response) {
+					$scope.updateRepresenteeTable();
+                  	$scope.representee.name = "";
+                	$scope.errorDeleting = "";
+                }, function (rejection) {
+                  	$scope.errorDeletingTee = "Could not delete representee";
+                });
+         	}
 		});
 			
 	</script>

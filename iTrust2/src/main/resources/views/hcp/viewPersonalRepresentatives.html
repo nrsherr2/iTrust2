@@ -3,6 +3,7 @@
 <title>View Personal Representatives</title>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <th:block th:replace="${links}" />
+
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
 <div th:fragment="content">
@@ -10,6 +11,7 @@
 	<!-- main function that loads personalRepresentatives.html -->
 	<div ng-app="personalRepresentativesApp" ng-controller="prCtrl as ctrl">
 		
+		<!-- Patient Search used from editPatientDemographics for HCP  -->
 		<div style="float:left;width:30%;height:75%;overflow-y:auto">
 			<h2>Patients:</h2>
 			<!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
@@ -32,7 +34,7 @@
 					<div class="col-md-12" >
 						<div class="panel panel-primary">
 	
-							<!-- log entry header -->
+							<!-- personal representatives header -->
 							<div class="panel-heading">
 								<h3>Personal Representatives</h3>
 							</div>
@@ -42,16 +44,18 @@
 									<!-- table column headers -->
 									<thead>
 										<tr>
-											<th>Full Name</th>
+											<th>First Name</th>
+											<th>Last Name</th>		
 											<th>MID</th>
 										</tr>
 									</thead>
 	
-									<!-- log entry for every row, ordered by date -->
+									<!-- representative for every row, ordered by name -->
 									<tbody>
 										<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-											<td name="nameCell">{{pr.name}}</td>
-											<td name="midCell">{{pr.id}}</td>
+											<td name="firstNameCell">{{pr.firstName}}</td>
+											<td name="lastNameCell">{{pr.lastName}}</td>
+											<td name="midCell">{{pr.self.username}}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -62,10 +66,10 @@
 											<div class="panel-heading ">Add a Representative</div>
 											<div class="panel-body">
 												<form class="form-horizontal" role="form" name="addRepresentativeForm"
-													ng-submit="addRepresentative(addRepresentativeForm.$valid)">
+													ng-submit="addPersonalRepresentative(addRepresentativeForm.$valid)">
 													<div class="row">
 														<div class="col-md-4">
-															<label>Name</label> <input type="text"
+															<label>MID</label> <input type="text"
 																class="form-control" name="representative" ng-model="representative.name"
 																required />
 														</div>
@@ -78,7 +82,7 @@
 													</div>
 												</form>
 												<div>
-													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+													<p style="color: red" ng-model="errorAddingTive" id="errorAddingTive">{{errorAddingTive}}</p>
 												</div>
 											</div>
 										</div>
@@ -95,7 +99,7 @@
 					<div class="col-md-12">
 						<div class="panel panel-primary">
 	
-						<!-- Personal Representee header -->
+						<!-- Personal Representees header -->
 							<div class="panel-heading">
 								<h3>Personal Representees</h3>
 							</div>
@@ -105,7 +109,8 @@
 									<!-- table column headers -->
 									<thead>
 										<tr>
-											<th>Full Name</th>
+											<th>First Name</th>
+											<th>Last Name</th>		
 											<th>MID</th>
 										</tr>
 									</thead>
@@ -113,8 +118,9 @@
 									<!-- representee for every row, ordered by name -->
 									<tbody>
 										<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
-											<td name="nameCell">{{pr.name}}</td>
-											<td name="midCell">{{pr.id}}</td>
+											<td name="firstNameCell">{{pr.firstName}}</td>
+											<td name="lastNameCell">{{pr.lastName}}</td>
+											<td name="midCell">{{pr.self.username}}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -125,7 +131,7 @@
 											<div class="panel-heading ">Add a Representee</div>
 											<div class="panel-body">
 												<form class="form-horizontal" role="form" name="addRepresenteeForm"
-													ng-submit="addRepresentee(addRepresenteeForm.$valid)">
+													ng-submit="addPersonalRepresentee(addRepresenteeForm.$valid)">
 													<div class="row">
 														<div class="col-md-4">
 															<label>Name</label> <input type="text"
@@ -141,7 +147,7 @@
 													</div>
 												</form>
 												<div>
-													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+													<p style="color: red" ng-model="errorAddingTee" id="errorAddingTee">{{errorAddingTee}}</p>
 												</div>
 											</div>
 										</div>
@@ -161,8 +167,8 @@
 		
 		angular.module("personalRepresentativesApp").controller('prCtrl', function($scope, $http, $filter) {
 			var self = this;
-			self.personalRepresentatives = [];
-			self.personalRepresentees = [];
+			$scope.personalRepresentatives = [];
+			$scope.personalRepresentees = [];
 			self.requestParams = {patientId: ""};
 
 			$scope.displayName = function(p) {
@@ -177,8 +183,8 @@
 
 			$scope.selectPatient = function(patient, override) {
 				self.requestParams.patientId = patient.self.username;
-				self.updateRepresentativeTable();
-				self.updateRepresenteeTable();
+				$scope.updateRepresentativeTable();
+				$scope.updateRepresenteeTable();
 			}
 			
 			$http.get("/iTrust2/api/v1/patients").then(
@@ -186,39 +192,53 @@
 						$scope.patients = response.data;
 					});
 			
-			self.updateRepresentativeTable = function(){
+			$scope.updateRepresentativeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId).then(function (response) {
-					self.personalRepresentatives = response.data;
+					$scope.personalRepresentatives = response.data;
 				});	
 			}
 			
 			
-			self.updateRepresenteeTable = function(){
+			$scope.updateRepresenteeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId).then(function (response) {
-					self.personalRepresentees = response.data;
+					$scope.personalRepresentees = response.data;
 				});	
 			}
 			
 	        $scope.addPersonalRepresentative = function () {
-              $http.post("/iTrust2/api/v1/patients/representatives/" + $scope.representative).then(
-                function (response) {
-                  self.updateRepresentativeTable();
-                  $scope.representative.name = "";
-                  $scope.errorAdding = "";
+             	$http({
+             		method: 'POST',
+             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		data: "{" + $scope.representative.name + "}",
+             		headers: {
+             			'Content-Type': 'application/json'
+             		}
+           		})
+           		.then(function (response) {
+           			$scope.updateRepresentativeTable();
+                  	$scope.representative.name = "";
+                  	$scope.errorAddingTive = "";
                 }, function (rejection) {
-                  $scope.errorAdding = "Could not add drug";
+                  	$scope.errorAddingTive = "Could not add representative";
                 });
          	}
 	        
 	        $scope.addPersonalRepresentee = function () {
-	              $http.post("/iTrust2/api/v1/patients/representee/" +, $scope.representee).then(
-	                function (response) {
-	                  self.updateRepresenteeTable();
-	                  $scope.representee.name = "";
-	                  $scope.errorAdding = "";
-	                }, function (rejection) {
-	                  $scope.errorAdding = "Could not add drug";
-	                });
+             	$http({
+             		method: 'POST',
+             		url: "/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId,
+             		data: "{" + $scope.representee.name + "}",
+             		headers: {
+             			'Content-Type': 'application/json'
+             		}
+           		})
+				.then(function (response) {
+					$scope.updateRepresenteeTable();
+                	$scope.representee.name = "";
+                  	$scope.errorAddingTee = "";
+                }, function (rejection) {
+               	 	$scope.errorAddingTee = "Could not add representee";
+                });
          	}
 		});
 			
