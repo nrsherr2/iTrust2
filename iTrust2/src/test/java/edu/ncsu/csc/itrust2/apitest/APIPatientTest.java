@@ -208,8 +208,8 @@ public class APIPatientTest {
      * @throws Exception
      */
     @Test
-    @WithMockUser ( username = "patient", roles = { "PATIENT" } )
-    public void testEditReps () throws Exception {
+    @WithMockUser ( username = "hcpguy", roles = { "HCP" } )
+    public void testEditRepsHCP () throws Exception {
         HibernateDataGenerator.refreshDB();
         Patient alice = Patient.getByName( "AliceThirteen" );
         Patient tim = Patient.getByName( "TimTheOneYearOld" );
