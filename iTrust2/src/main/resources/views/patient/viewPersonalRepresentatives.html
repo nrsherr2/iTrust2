@@ -183,14 +183,14 @@
 			
 			
 			$scope.updateRepresentativeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representatives/").then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representatives").then(function (response) {
 					self.personalRepresentatives = response.data;
 				});	
 			}
 			
 			
 			$scope.updateRepresenteeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representees/").then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representees").then(function (response) {
 					self.personalRepresentees = response.data;
 				});	
 			}
@@ -201,7 +201,7 @@
 	        $scope.addPersonalRepresentative = function () {
              	$http({
              		method: 'POST',
-             		url: "/iTrust2/api/v1/patients/representatives/",
+             		url: "/iTrust2/api/v1/patients/representatives",
              		data: "{" + $scope.addRepresentative.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
@@ -219,7 +219,7 @@
 	        $scope.deletePersonalRepresentative = function () {
              	$http({
              		method: 'DELETE',
-             		url: "/iTrust2/api/v1/patients/representatives/",
+             		url: "/iTrust2/api/v1/patients/representatives",
              		data: "{" + $scope.deleteRepresentative.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
