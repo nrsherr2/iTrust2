@@ -53,9 +53,9 @@
 									<!-- representative for every row, ordered by name -->
 									<tbody>
 										<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-											<td name="firstNameCell">{{pr.firstName}}</td>
-											<td name="lastNameCell">{{pr.lastName}}</td>
-											<td name="midCell">{{pr.self.username}}</td>
+											<td name="representativeFirstNameCell">{{pr.firstName}}</td>
+											<td name="representativeLastNameCell">{{pr.lastName}}</td>
+											<td name="representativeMidCell">{{pr.self.username}}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -77,7 +77,7 @@
 													<div class="row">
 														<div class="col-md-12 text-right">
 															<button type="submit" class="btn btn-success"
-																name="submit">Submit</button>
+																name="representativeSubmit">Submit</button>
 														</div>
 													</div>
 												</form>
@@ -118,9 +118,9 @@
 									<!-- representee for every row, ordered by name -->
 									<tbody>
 										<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
-											<td name="firstNameCell">{{pr.firstName}}</td>
-											<td name="lastNameCell">{{pr.lastName}}</td>
-											<td name="midCell">{{pr.self.username}}</td>
+											<td name="representeeFirstNameCell">{{pr.firstName}}</td>
+											<td name="representeeLastNameCell">{{pr.lastName}}</td>
+											<td name="representeeMidCell">{{pr.self.username}}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -142,7 +142,7 @@
 													<div class="row">
 														<div class="col-md-12 text-right">
 															<button type="submit" class="btn btn-success"
-																name="submit">Submit</button>
+																name="representeeSubmit">Submit</button>
 														</div>
 													</div>
 												</form>

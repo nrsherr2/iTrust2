@@ -33,9 +33,9 @@
 								<!-- log entry for every row, ordered by date -->
 								<tbody>
 									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentatives">
-										<td name="firstNameCell">{{pr.firstName}}</td>
-										<td name="lastNameCell">{{pr.lastName}}</td>
-										<td name="midCell">{{pr.self.username}}</td>
+										<td name="representativeFirstNameCell">{{pr.firstName}}</td>
+										<td name="representativeLastNameCell">{{pr.lastName}}</td>
+										<td name="representativeMidCell">{{pr.self.username}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -57,7 +57,7 @@
 												<div class="row">
 													<div class="col-md-12 text-right">
 														<button type="submit" class="btn btn-success"
-															name="submit">Submit</button>
+															name="addRepresentativeSubmit">Submit</button>
 													</div>
 												</div>
 											</form>
@@ -86,7 +86,7 @@
 												<div class="row">
 													<div class="col-md-12 text-right">
 														<button type="submit" class="btn btn-success"
-															name="submit">Submit</button>
+															name="deleteRepresentativeSubmit">Submit</button>
 													</div>
 												</div>
 											</form>
@@ -129,9 +129,9 @@
 								<!-- representee entry for every row, ordered by name -->
 								<tbody>
 									<tr name="prRow" ng-repeat="pr in ctrl.personalRepresentees">
-										<td name="firstNameCell">{{pr.firstName}}</td>
-										<td name="lastNameCell">{{pr.lastName}}</td>
-										<td name="midCell">{{pr.self.username}}</td>
+										<td name="representeeFirstNameCell">{{pr.firstName}}</td>
+										<td name="representeeLastNameCell">{{pr.lastName}}</td>
+										<td name="representeeMidCell">{{pr.self.username}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -153,7 +153,7 @@
 													<div class="row">
 														<div class="col-md-12 text-right">
 															<button type="submit" class="btn btn-success"
-																name="submit">Submit</button>
+																name="deleteRepresenteeSubmit">Submit</button>
 														</div>
 													</div>
 												</form>
