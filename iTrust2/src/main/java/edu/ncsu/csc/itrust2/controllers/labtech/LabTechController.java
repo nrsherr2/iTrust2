@@ -27,17 +27,4 @@ public class LabTechController {
     public String index ( final Model model ) {
         return edu.ncsu.csc.itrust2.models.enums.Role.ROLE_LABTECH.getLanding();
     }
-
-    /**
-     * Landing screen for a Patient when they log in
-     *
-     * @param model
-     *            The data from the front end
-     * @return The page to show to the user
-     */
-    @RequestMapping ( value = "labtech/viewEmergencyRecords" )
-    @PreAuthorize ( "hasRole('ROLE_LABTECH')" ) 
-    public String viewEmergencyRecords ( final Model model ) {
-        return "labtech/viewEmergencyHealthRecords";
-    }
 }
