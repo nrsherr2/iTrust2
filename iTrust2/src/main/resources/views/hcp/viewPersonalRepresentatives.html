@@ -215,7 +215,7 @@
              		}
            		})
            		.then(function (response) {
-           			$scope.updateRepresentativeTable();
+           			$scope.personalRepresentatives = response.data;
                   	$scope.representative.name = "";
                   	$scope.errorAddingTive = "";
                 }, function (rejection) {
@@ -233,7 +233,7 @@
              		}
            		})
 				.then(function (response) {
-					$scope.updateRepresenteeTable();
+					$scope.personalRepresentees = response.data;
                 	$scope.representee.name = "";
                   	$scope.errorAddingTee = "";
                 }, function (rejection) {

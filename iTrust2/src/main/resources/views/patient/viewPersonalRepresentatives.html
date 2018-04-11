@@ -181,32 +181,27 @@
 			self.personalRepresentees = [];
 			self.requestParams = {patientId: ""};
 			
-			// Get Info about user
-			$http = angular.injector(["ng"]).get("$http");
-			$http.get("/iTrust2/api/v1/authentication").then(
-					function(response) {
-						self.requestParams.patientId = response.data.message;
-						$scope.updateRepresentativeTable();
-						$scope.updateRepresenteeTable();
-					});
 			
 			$scope.updateRepresentativeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representatives/").then(function (response) {
 					self.personalRepresentatives = response.data;
 				});	
 			}
 			
 			
 			$scope.updateRepresenteeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representees/").then(function (response) {
 					self.personalRepresentees = response.data;
 				});	
 			}
 			
+			$scope.updateRepresentativeTable();
+			$scope.updateRepresenteeTable();
+			
 	        $scope.addPersonalRepresentative = function () {
              	$http({
              		method: 'POST',
-             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		url: "/iTrust2/api/v1/patients/representatives/",
              		data: "{" + $scope.addRepresentative.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
@@ -224,7 +219,7 @@
 	        $scope.deletePersonalRepresentative = function () {
              	$http({
              		method: 'DELETE',
-             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		url: "/iTrust2/api/v1/patients/representatives/",
              		data: "{" + $scope.deleteRepresentative.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
@@ -242,8 +237,8 @@
 	        $scope.deletePersonalRepresentee = function () {
              	$http({
              		method: 'DELETE',
-             		url: "/iTrust2/api/v1/patients/representatives/" +  $scope.representee.name,
-             		data: "{" + self.requestParams.patientId + "}",
+             		url: "/iTrust2/api/v1/patients/representee/",
+             		data: "{" + self.representee.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
