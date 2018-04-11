@@ -76,23 +76,30 @@ public enum TransactionType {
      * User creates their demographics
      */
     CREATE_DEMOGRAPHICS ( 411, "Demographics created by user", true ),
-    /** 
-     * Patient adds a personal representative 
+    /**
+     * Patient adds a personal representative
      */
     ADD_REPRESENTATIVE ( 412, "Patient added a personal representative", true ),
     /**
+     * Patient adds a representee should we actually call this?
+     */
+    ADD_REPRESENTEE ( 413, "Patient added a representee", true ),
+    /**
      * Patient deleted one of their personal representatives
      */
-    DELETE_REPRESENTATIVE(413, "Patient deleted one of their personal representatives", true),
+    DELETE_REPRESENTATIVE ( 413, "Patient deleted one of their personal representatives", true ),
+    /**
+     * Patient deleted one of their personal representees
+     */
+    DELETE_REPRESENTEE ( 414, "Patient deletd one of their personal representees", true ),
     /**
      * Patient views their list of representatives
      */
-    VIEW_REPRESENTATIVES(414, "Patient viewed their list of personal representatives", true),
+    VIEW_REPRESENTATIVES ( 414, "Patient viewed their list of personal representatives", true ),
     /**
      * patient views their list of representees
      */
-    VIEW_REPRESENTEES(415,"Patient viewed their list of personal representees", true),
-    
+    VIEW_REPRESENTEES ( 415, "Patient viewed their list of personal representees", true ),
 
     /**
      * Hospital created
@@ -266,17 +273,20 @@ public enum TransactionType {
     /**
      * HCP views a patient's representatives
      */
-    HCP_VIEW_REPRESENTATIVES(1202, "HCP viewed the patient's personal representatives", true),
+    HCP_VIEW_REPRESENTATIVES ( 1202, "HCP viewed the patient's personal representatives", true ),
     /**
      * HCP views a patient's representees
      */
-    HCP_VIEW_REPRESENTEES(1203,"HCP viewed the patient's personal representees", true),
+    HCP_VIEW_REPRESENTEES ( 1203, "HCP viewed the patient's personal representees", true ),
     /**
      * HCP adds a representative for a patient
      */
-    HCP_ADD_REPRESENTATIVE(1204, "HCP added a personal representative", true),
+    HCP_ADD_REPRESENTATIVE ( 1204, "HCP added a personal representative", true ),
+    /**
+     * HCP deletes a representative for a patient
+     */
+    HCP_DELETE_REPRESENTATIVE(1205, "HCP deleted a personal representative", true),
     
-
     /**
      * User views their log entries
      */
