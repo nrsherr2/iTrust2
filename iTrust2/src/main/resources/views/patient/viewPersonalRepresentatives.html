@@ -208,8 +208,8 @@
              		}
            		})
            		.then(function (response) {
-        			$scope.updateRepresentativeTable();
-                  	$scope.representative.name = "";
+        			self.personalRepresentatives = response.data;
+                  	$scope.addRepresentative.name = "";
                   	$scope.errorAdding = "";
                 }, function (rejection) {
                   	$scope.errorAdding = "Could not add representative";
@@ -226,8 +226,8 @@
              		}
            		})
            		.then(function (response) {
-        			$scope.updateRepresentativeTable();
-                  	$scope.representative.name = "";
+        			self.personalRepresentatives = response.data;
+                  	$scope.deleteRepresentative.name = "";
                   	$scope.errorDeleting = "";
                 }, function (rejection) {
                   	$scope.errorDeletingTive = "Could not delete representative";
@@ -237,14 +237,14 @@
 	        $scope.deletePersonalRepresentee = function () {
              	$http({
              		method: 'DELETE',
-             		url: "/iTrust2/api/v1/patients/representee/",
-             		data: "{" + self.representee.name + "}",
+             		url: "/iTrust2/api/v1/patients/representees",
+             		data: "{" + $scope.representee.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
            		})
 				.then(function (response) {
-					$scope.updateRepresenteeTable();
+					self.personalRepresentees = response.data;
                   	$scope.representee.name = "";
                 	$scope.errorDeleting = "";
                 }, function (rejection) {

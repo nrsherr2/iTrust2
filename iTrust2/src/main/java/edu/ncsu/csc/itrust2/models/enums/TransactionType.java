@@ -81,17 +81,13 @@ public enum TransactionType {
      */
     ADD_REPRESENTATIVE ( 412, "Patient added a personal representative", true ),
     /**
-     * Patient adds a representee should we actually call this?
-     */
-    ADD_REPRESENTEE ( 413, "Patient added a representee", true ),
-    /**
      * Patient deleted one of their personal representatives
      */
     DELETE_REPRESENTATIVE ( 413, "Patient deleted one of their personal representatives", true ),
     /**
      * Patient deleted one of their personal representees
      */
-    DELETE_REPRESENTEE ( 414, "Patient deletd one of their personal representees", true ),
+    DELETE_REPRESENTEE ( 414, "Patient deleted one of their personal representees", true ),
     /**
      * Patient views their list of representatives
      */
@@ -285,8 +281,8 @@ public enum TransactionType {
     /**
      * HCP deletes a representative for a patient
      */
-    HCP_DELETE_REPRESENTATIVE(1205, "HCP deleted a personal representative", true),
-    
+    HCP_DELETE_REPRESENTATIVE ( 1205, "HCP deleted a personal representative", true ),
+
     /**
      * User views their log entries
      */

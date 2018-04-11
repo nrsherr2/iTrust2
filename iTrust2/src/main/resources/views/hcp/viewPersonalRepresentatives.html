@@ -167,8 +167,8 @@
 		
 		angular.module("personalRepresentativesApp").controller('prCtrl', function($scope, $http, $filter) {
 			var self = this;
-			$scope.personalRepresentatives = [];
-			$scope.personalRepresentees = [];
+			self.personalRepresentatives = [];
+			self.personalRepresentees = [];
 			self.requestParams = {patientId: ""};
 
 			$scope.displayName = function(p) {
@@ -194,14 +194,14 @@
 			
 			$scope.updateRepresentativeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId).then(function (response) {
-					$scope.personalRepresentatives = response.data;
+					self.personalRepresentatives = response.data;
 				});	
 			}
 			
 			
 			$scope.updateRepresenteeTable = function(){
 				$http.get("/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId).then(function (response) {
-					$scope.personalRepresentees = response.data;
+					self.personalRepresentees = response.data;
 				});	
 			}
 			
@@ -215,7 +215,7 @@
              		}
            		})
            		.then(function (response) {
-           			$scope.personalRepresentatives = response.data;
+           			self.personalRepresentatives = response.data;
                   	$scope.representative.name = "";
                   	$scope.errorAddingTive = "";
                 }, function (rejection) {
@@ -226,14 +226,14 @@
 	        $scope.addPersonalRepresentee = function () {
              	$http({
              		method: 'POST',
-             		url: "/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId,
-             		data: "{" + $scope.representee.name + "}",
+             		url: "/iTrust2/api/v1/patients/representatives/" +  $scope.representee.name,
+             		data: "{" + self.requestParams.patientId + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
            		})
 				.then(function (response) {
-					$scope.personalRepresentees = response.data;
+					self.personalRepresentees = response.data;
                 	$scope.representee.name = "";
                   	$scope.errorAddingTee = "";
                 }, function (rejection) {
