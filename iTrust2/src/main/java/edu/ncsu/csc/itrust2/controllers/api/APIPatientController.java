@@ -42,7 +42,12 @@ public class APIPatientController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/patients" )
     public List<Patient> getPatients () {
-        return Patient.getPatients();
+        List<Patient> pats = Patient.getPatients();
+        for ( Patient p : pats ) {
+            p.setRepresenatives( new HashSet<Patient>() );
+            p.setRepresentees( new HashSet<Patient>() );
+        }
+        return pats;
     }
 
     /**
@@ -62,6 +67,14 @@ public class APIPatientController extends APIController {
                     HttpStatus.NOT_FOUND );
         }
         else {
+            for ( Patient p : patient.getRepresentatives() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
+            for ( Patient p : patient.getRepresentees() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
             LoggerUtil.log( TransactionType.VIEW_DEMOGRAPHICS, LoggerUtil.currentUser(), self.getUsername(),
                     "Retrieved demographics for user " + self.getUsername() );
             return new ResponseEntity( patient, HttpStatus.OK );
@@ -84,6 +97,14 @@ public class APIPatientController extends APIController {
                     HttpStatus.NOT_FOUND );
         }
         else {
+            for ( Patient p : patient.getRepresentatives() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
+            for ( Patient p : patient.getRepresentees() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
             LoggerUtil.log( TransactionType.PATIENT_DEMOGRAPHICS_VIEW, LoggerUtil.currentUser(), username,
                     "HCP retrieved demographics for patient with username " + username );
             return new ResponseEntity( patient, HttpStatus.OK );
