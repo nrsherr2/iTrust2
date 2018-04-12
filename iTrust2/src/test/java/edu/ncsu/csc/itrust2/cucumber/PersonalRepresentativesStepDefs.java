@@ -2,13 +2,14 @@ package edu.ncsu.csc.itrust2.cucumber;
 
 import static org.junit.Assert.assertFalse;
 
-import java.util.HashSet;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -17,7 +18,7 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import io.github.bonigarcia.wdm.ChromeDriverManager;
 
 /**
  * Step Definitions for the Personal Representatives enhancement [UC 16]
@@ -38,8 +39,14 @@ public class PersonalRepresentativesStepDefs {
     @Before
     public void setup () {
 
-        driver = new HtmlUnitDriver( true );
-        wait = new WebDriverWait( driver, 10 );
+        // driver = new HtmlUnitDriver();
+        ChromeDriverManager.getInstance().setup();
+        final ChromeOptions options = new ChromeOptions();
+        options.addArguments( "headless" );
+        options.addArguments( "window-size=1200x600" );
+        options.addArguments( "blink-settings=imagesEnabled=false" );
+        driver = new ChromeDriver( options );
+        wait = new WebDriverWait( driver, 15 );
     }
 
     /**
@@ -48,6 +55,7 @@ public class PersonalRepresentativesStepDefs {
     @After
     public void tearDown () {
         driver.quit();
+        driver.close();
     }
 
     private void setTextField ( final By byval, final String value ) {
@@ -80,25 +88,22 @@ public class PersonalRepresentativesStepDefs {
     @Given ( "a patient with personal representatives exists" )
     public void patientHasReps () throws Exception {
         // bob represents alice
-        final Patient alice = Patient.getByName( "AliceThirteen" );
-        if ( alice == null ) {
-            throw new Exception( "cannot find alice" );
-        }
-        final Patient bob = Patient.getByName( "BobTheFourYearOld" );
-        if ( bob == null ) {
-            throw new Exception( "cannot find bob" );
-        }
-        // now add the rep
-        try {
-            final HashSet<Patient> newList = new HashSet<Patient>();
-            newList.addAll( alice.getRepresentatives() );
-            newList.add( bob );
-            alice.setRepresenatives( newList );
-            alice.save();
-        }
-        catch ( final Exception e ) {
-            System.out.println( e.getMessage() );
-        }
+        driver.get( baseUrl );
+        setTextField( By.name( "username" ), "hcp" );
+        setTextField( By.name( "password" ), "123456" );
+        driver.findElement( By.className( "btn" ) ).click();
+
+        ( (JavascriptExecutor) driver )
+                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
+        Thread.sleep( 500 );
+
+        setTextField( By.name( "search" ), "Alice" );
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ).click();
+        setTextField( By.name( "representative" ), "BobTheFourYearOld" );
+        driver.findElement( By.name( "representativeSubmit" ) ).click();
+        driver.findElement( By.id( "logout" ) ).click();
     }
 
     /**
@@ -115,15 +120,25 @@ public class PersonalRepresentativesStepDefs {
 
     /**
      * HCP should see the patient's reps
+     *
+     * @throws InterruptedException
      */
     @Then ( "I should see the patient's personal representatives" )
-    public void canSeePatientReps () {
+    public void canSeePatientReps () throws InterruptedException {
         setTextField( By.name( "search" ), "Alice" );
         wait.until( ExpectedConditions
                 .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
         driver.findElement( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ).click();
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representativeMidCell" ),
-                "BobTheFourYearOld" ) );
+        Thread.sleep( 500 );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( "BobTheFourYearOld" ) ) {
+                found = true;
+            }
+        }
+        assert ( found );
+        driver.findElement( By.id( "logout" ) ).click();
     }
 
     // ----------------------------------------
@@ -163,8 +178,15 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "the patient's personal representatives should be updated" )
     public void patientRepsUpdated () throws InterruptedException {
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representativeMidCell" ),
-                "TimTheOneYearOld" ) );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( "TimTheOneYearOld" ) ) {
+                found = true;
+            }
+        }
+        assert ( found );
+        driver.findElement( By.id( "logout" ) ).click();
     }
 
     // ------------------------------------------
@@ -216,8 +238,7 @@ public class PersonalRepresentativesStepDefs {
     @When ( "I navigate to my personal representatives page" )
     public void goToRepsPage () throws InterruptedException {
         ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
-        Thread.sleep( 1000 );
+                .executeScript( "document.getElementById('viewPersonalRepresentativesPatient').click();" );
     }
 
     /**
@@ -225,8 +246,14 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see my personal representatives" )
     public void viewReps () {
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representativeMidCell" ),
-                "TimTheOneYearOld" ) );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( "TimTheOneYearOld" ) ) {
+                found = true;
+            }
+        }
+        assert ( found );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -272,7 +299,14 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see that I am a personal representative for (.+)" )
     public void viewAmRepFor ( final String patient ) {
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representeeMidCell" ), patient ) );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( patient ) ) {
+                found = true;
+            }
+        }
+        assert ( found );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -290,7 +324,7 @@ public class PersonalRepresentativesStepDefs {
      */
     @When ( "I assign the personal representative (.+) to myself" )
     public void assignRep ( final String rep ) throws InterruptedException {
-        Thread.sleep( 1000 );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.id( "footer" ) ) );
         setTextField( By.id( "addRep" ), rep );
         driver.findElement( By.name( "addRepresentativeSubmit" ) ).click();
     }
@@ -305,7 +339,14 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see (.+) as one of my personal representatives" )
     public void seeRep ( final String rep ) throws InterruptedException {
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representativeMidCell" ), rep ) );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( rep ) ) {
+                found = true;
+            }
+        }
+        assert ( found );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -332,9 +373,11 @@ public class PersonalRepresentativesStepDefs {
      *
      * @param rep
      *            The personal representative they assigned to themself
+     * @throws InterruptedException
      */
     @Then ( "I should not see (.+) as one of my personal representatives" )
-    public void notSeeRep ( final String rep ) {
+    public void notSeeRep ( final String rep ) throws InterruptedException {
+        Thread.sleep( 100 );
         try {
             // if there exists a representative that's not the one we're
             // confirming isn't there, this will pass
@@ -369,9 +412,11 @@ public class PersonalRepresentativesStepDefs {
      *
      * @param representee
      *            The person they are a representative for
+     * @throws InterruptedException
      */
     @Then ( "I should not see myself as a personal representative for (.+)" )
-    public void notSeeRepresentee ( final String representee ) {
+    public void notSeeRepresentee ( final String representee ) throws InterruptedException {
+        Thread.sleep( 100 );
         try {
             // if there exists a representee that's not the one we're
             // confirming isn't there, this will pass

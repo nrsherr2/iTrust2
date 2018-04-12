@@ -7,14 +7,13 @@ Feature: As a developer, I want to automate
 		 #through the UI
 
 Scenario: An HCP should be able to view a patient's personal representatives
-Given I login to iTrust2 as HCP
-And a patient with personal representatives exists
+Given a patient with personal representatives exists
+And I login to iTrust2 as HCP
 When I navigate to the patient's personal representatives
 Then I should see the patient's personal representatives
 
 Scenario: An HCP should be able to add a personal representative for a patient
 Given I login to iTrust2 as HCP
-And A patient exists in the system
 And I navigate to the personal representatives page
 When I assign a new personal representative for the patient
 Then the patient's personal representatives should be updated
