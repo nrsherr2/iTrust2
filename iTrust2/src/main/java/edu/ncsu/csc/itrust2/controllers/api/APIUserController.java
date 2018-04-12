@@ -163,27 +163,6 @@ public class APIUserController extends APIController {
     }
 
     /**
-     * Gets the MID of the currently logged in user
-     *
-     * @return MID of the currently logged in user.
-     */
-    @GetMapping ( BASE_PATH + "/authentication" )
-    public ResponseEntity getUser () {
-
-        final SecurityContext context = SecurityContextHolder.getContext();
-        if ( context == null ) {
-            return new ResponseEntity( errorResponse( "" ), HttpStatus.UNAUTHORIZED );
-        }
-
-        final Authentication authentication = context.getAuthentication();
-        if ( authentication == null ) {
-            return new ResponseEntity( errorResponse( "" ), HttpStatus.UNAUTHORIZED );
-        }
-
-        return new ResponseEntity( successResponse( authentication.getName() ), HttpStatus.OK );
-    }
-
-    /**
      * Checks if the current user has a `role`.
      *
      * @param role

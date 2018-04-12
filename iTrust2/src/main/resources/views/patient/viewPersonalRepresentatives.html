@@ -50,7 +50,7 @@
 												<div class="row">
 													<div class="col-md-4">
 														<label>MID</label> <input type="text"
-															class="form-control" name="addRepresentative" ng-model="addRepresentative.name"
+															class="form-control" id="addRep" name="addRepresentative" ng-model="addRepresentative.name"
 															required />
 													</div>
 												</div>
@@ -181,40 +181,35 @@
 			self.personalRepresentees = [];
 			self.requestParams = {patientId: ""};
 			
-			// Get Info about user
-			$http = angular.injector(["ng"]).get("$http");
-			$http.get("/iTrust2/api/v1/authentication").then(
-					function(response) {
-						self.requestParams.patientId = response.data.message;
-						$scope.updateRepresentativeTable();
-						$scope.updateRepresenteeTable();
-					});
 			
 			$scope.updateRepresentativeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representatives").then(function (response) {
 					self.personalRepresentatives = response.data;
 				});	
 			}
 			
 			
 			$scope.updateRepresenteeTable = function(){
-				$http.get("/iTrust2/api/v1/patients/representees/" + self.requestParams.patientId).then(function (response) {
+				$http.get("/iTrust2/api/v1/patients/representees").then(function (response) {
 					self.personalRepresentees = response.data;
 				});	
 			}
 			
+			$scope.updateRepresentativeTable();
+			$scope.updateRepresenteeTable();
+			
 	        $scope.addPersonalRepresentative = function () {
              	$http({
              		method: 'POST',
-             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		url: "/iTrust2/api/v1/patients/representatives",
              		data: "{" + $scope.addRepresentative.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
            		})
            		.then(function (response) {
-        			$scope.updateRepresentativeTable();
-                  	$scope.representative.name = "";
+        			self.personalRepresentatives = response.data;
+                  	$scope.addRepresentative.name = "";
                   	$scope.errorAdding = "";
                 }, function (rejection) {
                   	$scope.errorAdding = "Could not add representative";
@@ -224,15 +219,15 @@
 	        $scope.deletePersonalRepresentative = function () {
              	$http({
              		method: 'DELETE',
-             		url: "/iTrust2/api/v1/patients/representatives/" + self.requestParams.patientId,
+             		url: "/iTrust2/api/v1/patients/representatives",
              		data: "{" + $scope.deleteRepresentative.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
            		})
            		.then(function (response) {
-        			$scope.updateRepresentativeTable();
-                  	$scope.representative.name = "";
+        			self.personalRepresentatives = response.data;
+                  	$scope.deleteRepresentative.name = "";
                   	$scope.errorDeleting = "";
                 }, function (rejection) {
                   	$scope.errorDeletingTive = "Could not delete representative";
@@ -242,14 +237,14 @@
 	        $scope.deletePersonalRepresentee = function () {
              	$http({
              		method: 'DELETE',
-             		url: "/iTrust2/api/v1/patients/representatives/" +  $scope.representee.name,
-             		data: "{" + self.requestParams.patientId + "}",
+             		url: "/iTrust2/api/v1/patients/representees",
+             		data: "{" + $scope.representee.name + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
            		})
 				.then(function (response) {
-					$scope.updateRepresenteeTable();
+					self.personalRepresentees = response.data;
                   	$scope.representee.name = "";
                 	$scope.errorDeleting = "";
                 }, function (rejection) {
