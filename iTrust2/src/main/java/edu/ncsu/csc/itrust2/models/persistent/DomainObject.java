@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,8 @@ public abstract class DomainObject <D extends DomainObject<D>> {
         final Session session = HibernateUtil.openSession();
         try {
             session.beginTransaction();
-            results = session.createCriteria( cls ).list();
+            results = session.createCriteria( cls ).setResultTransformer( CriteriaSpecification.DISTINCT_ROOT_ENTITY )
+                    .list();
         }
         finally {
             try {
