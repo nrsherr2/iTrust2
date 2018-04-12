@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.ncsu.csc.itrust2.forms.hcp.PrescriptionForm;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.Prescription;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
@@ -160,4 +162,22 @@ public class APIPrescriptionController extends APIController {
         }
     }
 
+    /**
+     * Returns a collection of all the prescriptions in the system.
+     *
+     * @return all saved prescriptions
+     */
+    @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ER')" )
+    @GetMapping ( BASE_PATH + "/prescriptions/patient/{id}" )
+    public List<Prescription> getPatientPrescriptions (@PathVariable ( "id" ) final String id) {
+	final User self = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
+        if ( self == null ) {
+            return null;
+        }
+	
+	LoggerUtil.log( TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL, self.getUsername(),
+			self.getUsername() + " requested a patetients prescriptions" );
+	
+	return Prescription.getForPatient( id );	
+    }
 }

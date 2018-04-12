@@ -177,6 +177,34 @@ public class APIDiagnosisTest {
         }
         assertTrue( flag );
 
+	// get the list of diagnoses for this office visit and make sure both
+        // are there
+	// CUSTOM
+        content = mvc.perform( get( "/api/v1/diagnoses/patient" + "Patient") )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( codeForm ) ) ).andReturn()
+                .getResponse().getContentAsString();
+        List<Diagnosis> dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        }.getType() );
+        boolean flag = false;
+        for ( final Diagnosis dd : dlist ) {
+            if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() )
+                    && dd.getVisit().getId().equals( visit.getId() ) ) {
+                flag = true;
+                d.setId( dd.getId() );
+
+            }
+        }
+        assertTrue( flag );
+        flag = false;
+        for ( final Diagnosis dd : dlist ) {
+            if ( dd.getCode().equals( d2.getCode() ) && dd.getNote().equals( d2.getNote() )
+                    && dd.getVisit().getId().equals( visit.getId() ) ) {
+                flag = true;
+                d2.setId( dd.getId() );
+            }
+        }
+        assertTrue( flag );
+
         // get the list of diagnoses for this patient and make sure both are
         // there
         final List<Diagnosis> forPatient = Diagnosis.getForPatient( User.getByName( "patient" ) );

@@ -120,14 +120,26 @@
 			    <!-- table column headers -->
 			    <thead>
 			      <tr>
-				<th>Prescriptions</th>
+				<th>Prescription Name</th>
+				<th>Drug Code</th>
+				<th>Drug Name</th>
+				<th>Drug Description</th>
+				<th>Dosage</th>
+				<th>Renewels</th>
+				<th>Username</th>
 			      </tr>
 			    </thead>
 
 			    <!-- log entry for every row, ordered by date -->
 			    <tbody>
 			      <tr name="preTableRow" ng-repeat="p in data.prescriptions">
-				<td name="preCell">{{p}}</td>
+				<td name="preCell">{{p.id}}</td>
+				<td name="preCell">{{p.drug.code}}</td>
+				<td name="preCell">{{p.drug.name}}</td>
+				<td name="preCell">{{p.drug.description}}</td>
+				<td name="preCell">{{p.dosage}}</td>
+				<td name="preCell">{{p.renewals}}</td>
+				<td name="preCell">{{p.patient.username}}</td>
 			      </tr>
 			    </tbody>
 			  </table>
@@ -173,6 +185,23 @@
 				},
 				function(rejection) {
 					$scope.data = "";
+					$scope.errorGetting = "Could not find patient";
+		                });
+		                $http.get("/iTrust2/api/v1/prescriptions/patient/" + $scope.searchname).then(function(response) {
+					$scope.data.prescriptions = response.data;
+		                        $scope.message = "";
+				},
+				function(rejection) {
+					$scope.data.prescriptions = "";
+					$scope.errorGetting = "Could not find patient";
+				});
+
+				$http.get("/iTrust2/api/v1/diagnosis/patient/" + $scope.searchname).then(function(response) {
+					$scope.data.diagnoses = response.data;
+		                        $scope.message = "";
+				},
+				function(rejection) {
+					$scope.data.diagnoses = "";
 					$scope.errorGetting = "Could not find patient";
 				});
 		    }		    
