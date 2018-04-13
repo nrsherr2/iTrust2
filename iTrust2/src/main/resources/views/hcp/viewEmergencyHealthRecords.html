@@ -101,14 +101,16 @@
 			    <!-- table column headers -->
 			    <thead>
 			      <tr>
-				<th>Diagnoses</th>
+				<th>Diagnosis Code</th>
+				<th>Description</th>
 			      </tr>
 			    </thead>
 
 			    <!-- log entry for every row, ordered by date -->
 			    <tbody>
 			      <tr name="diagTableRow" ng-repeat="d in data.diagnoses">
-				<td name="diagCell">{{d}}</td>
+				<td name="diagCell">{{d.code.code}}</td>
+				<td name="diagCell">{{d.code.description}}</td>
 			      </tr>
 			    </tbody>
 			  </table>

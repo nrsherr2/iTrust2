@@ -63,7 +63,7 @@ public class APIDiagnosisTest {
     }
 
     @Test
-    @WithMockUser ( username = "admin", roles = { "USER", "ADMIN" } )
+    @WithMockUser ( username = "admin", roles = { "USER", "ADMIN" , "HCP"} )
     public void testDiagnoses () throws UnsupportedEncodingException, Exception {
         /*
          * Create a HCP, admin and a Patient to use. If they already exist, this
@@ -180,12 +180,12 @@ public class APIDiagnosisTest {
 	// get the list of diagnoses for this office visit and make sure both
         // are there
 	// CUSTOM
-        content = mvc.perform( get( "/api/v1/diagnoses/patient" + "Patient") )
+        content = mvc.perform( get( "/api/v1/diagnosis/patient/" + "patient")
                 .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( codeForm ) ) ).andReturn()
                 .getResponse().getContentAsString();
-        List<Diagnosis> dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
         }.getType() );
-        boolean flag = false;
+        flag = false;
         for ( final Diagnosis dd : dlist ) {
             if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() )
                     && dd.getVisit().getId().equals( visit.getId() ) ) {
