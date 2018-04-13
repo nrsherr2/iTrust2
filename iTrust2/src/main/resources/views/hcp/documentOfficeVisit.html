@@ -155,6 +155,14 @@
               function (response) {
             	$scope.labcodes = response.data;
               });
+            $http.get("/iTrust2/api/v1/labtechs").then(
+              function (response) {
+                $scope.labtechs = response.data;
+              });
+            $http.get("/iTrust2/api/v1/priority").then(
+              function (response) {
+              	$scope.priority = response.data;
+              });
 
             $scope.submit = function () {
               $scope.errorMsg = "";
@@ -229,9 +237,10 @@
                   $scope.errorMsg += "Triglycerides can be a number between 100 and 600\n"
                 }
               }
-
+              
               $scope.visit.diagnoses = $scope.diagnoses;
               $scope.visit.prescriptions = $scope.prescriptions;
+              $scope.visit.procedures = $scope.procedures;
               $scope.visit.prescriptions.forEach(function (p) {
                 p.patient = $scope.visit.patient;
               });
@@ -256,6 +265,10 @@
             $scope.startEntry = "";
             $scope.endEntry = "";
             $scope.renewalEntry = "";
+            
+            $scope.procNoteEntry = "";
+            $scope.procCodeEntry = "";
+            $scope.procTechEntry = "";
 
 
             //clears local variables for diagnosis form
@@ -271,6 +284,13 @@
               $scope.startEntry = "";
               $scope.endEntry = "";
               $scope.renewalEntry = "";
+            }
+            
+          	//clears local variables for procedures form
+            function resetProceduresForm() {
+              $scope.procNoteEntry = "";
+              $scope.procCodeEntry = "";
+              $scope.procTechEntry = "";
             }
 
             // capture each diagnosis into an array
@@ -302,6 +322,18 @@
   	              resetPrescriptionForm();
                 }
             }
+            
+         	// capture each lab procedure into an array
+            $scope.procedures = [];
+            $scope.fillProcedure = function () {
+              $scope.procedures.push({
+                tech: $scope.procTechEntry,
+                code: $scope.procCodeEntry,
+                note: $scope.procNoteEntry,
+                priority: $scope.procPriorityEntry
+              });
+              resetProceduresForm();
+            }
 
             //remove local diagnosis from list
             $scope.removeDiagnosis = function ($index) {
@@ -321,6 +353,7 @@
             //call initally
             resetDiagnosisForm();
             resetPrescriptionForm();
+            resetProceduresForm();
 
 
           });
@@ -733,27 +766,77 @@
                       </div>
                     </div>
                   </div>
+                </div>
                   
                   <!-- Lab Procedures Panel -->
-                  <div class="row">
-                  	<div class="col-md-4">
-                    	<div class="panel panel-info">
+				<div class="panel panel-info">
+                  	<div class="panel-heading">
+                  		<h4>Lab Procedures</h4>
+                  	</div>
+                  	<div class="panel-body">
+                  	<div class="row">
+                  	<div class="form-group col-md-4">
+                    	<div class="panel panel-warning">
                       		<div class="panel-heading">
                        			<h4>Select Lab Procedure Code</h4>
                       		</div>
                       		<div class="panel-body">
 	                      		<div class="form-group row">
-                          			<div class="col-xs-6">
-                            			<label>Codes:</label>
+                          			<div class="col-xs-3">
+                            			<label>Code:</label>
                           			</div>
-                          			<div class="col-xs-6 radio-box">
+                          			<div class="col-xs-9 radio-box">
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="lc in labcodes">
 					                              <label>
-					                                <input type="radio" ng-model="$parent.labCodeEntry" name="labcode" value="{{lc.code}}" required="false" /> {{lc.code}}
+					                                <input type="radio" ng-model="$parent.procCodeEntry" name="labcode" value="{{lc.code}}" required="false" /> 
+					                                {{lc.code}}
 					                              </label>
 					                            </li>
+                              				</ul>
+                            			</div>
+                          			</div>
+                        		</div>
+                        		<div class="form-group row">
+                          			<div class="col-xs-6">
+                            			<label>Priority:</label>
+                          			</div>
+                          			<div class="col-xs-6 radio-box">
+                            			<div class="form-check">
+                              				<ul style="list-style: none;">
+                                				<li ng-repeat="p in priority">
+                                  					<label>
+                                    					<input type="radio" ng-model="$parent.procPriorityEntry" name="priority" value="{{p}}" required="true"/> 
+                                    					{{p}}
+                                 					</label>
+                                				</li>
+                              				</ul>
+                            			</div>
+                          			</div>
+                        		</div>
+                      		</div>
+                    	</div>
+                  	</div>
+                  	<div class="form-group col-md-4">
+                  		<div class="panel panel-warning">
+                      		<div class="panel-heading">
+                       			<h4>Assign to Lab Tech</h4>
+                      		</div>
+                      		<div class="panel-body">
+                      			<div class="form-group row">
+                          			<div class="col-xs-3">
+                            			<label>Assign to:</label>
+                          			</div>
+                          			<div class="col-xs-9 radio-box">
+                            			<div class="form-check">
+                              				<ul style="list-style: none;">
+                                				<li ng-repeat="l in labtechs">
+                                  					<label>
+                                    					<input type="radio" ng-model="$parent.labTechEntry" name="assignedLabtech" value="" required="true"/> 
+                                    					<span class="glyphicon glyphicon-user"></span>{{l.firstName}} {{l.lastName}} - ID[{{l.id}}]
+                                 					</label>
+                                				</li>
                               				</ul>
                             			</div>
                           			</div>
@@ -761,68 +844,76 @@
                       		</div>
                       	</div>
                   	</div>
-                  	<div class="col-md-4">
-                  		<div class="panel panel-info">
-                      		<div class="panel-heading">
-                       			<h4>Assign to Lab Tech</h4>
-                      		</div>
-                      	</div>
-                  	</div>
-                  	<div class="col-md-4">
-                  		<div class="panel panel-info">
+                  	<div class="form-group col-md-4">
+                  		<div class="panel panel-warning">
                       		<div class="panel-heading">
                        			<h4>Procedure Notes</h4>
                       		</div>
-                      	</div>
-                  	</div>
-                  </div>
+                      		<div class="panel-body">
+                      			<div class="col-md-12">
+                    				<label>Notes:</label>
+                    				<textarea name="notes" ng-model="procNoteEntry" class="form-control" rows="3"></textarea>
+                  				</div>
+                      		</div>
+                    	</div>
+					</div>
+				</div>
                   
-                </div>
-                
-                <div class="form-group row">
+				<div class="form-group row">
+                	<div class="form-group row text-center">
+                    	<button class="btn btn-success" ng-click="fillProcedure()" name="fillProcedure">Add Procedure</button>
+                    </div>
+				</div>
+                  
+                  <div class="form-group row">
                		<div class="col-md-12">
                     	<div class="panel panel-default">
                             <div class="panel-heading">
                                 Added Lab Procedures
-                              </div>
-                              <div class="panel-body">
-                                <div class="row" ng-repeat="p in procedures">
-                                  <div class="col-md-4">
-                                    {{p.code.code}}
-                                  </div>
-                                  <div class="col-md-4">
-                                    {{p.note}}
-                                  </div>
-                                  <div class="col-md-4">
+                            </div>
+                            <div class="panel-body">
+                            	<div class="row" ng-repeat="p in procedures">
+                                	<div class="col-md-3">
+                                    Code: {{p.code.code}}
+                                  	</div>
+                                  	<div class="col-md-3">
+                                    Assigned Lab Tech ID: {{p.tech.id}}
+                                  	</div>
+                                  	<div class="col-md-3">
+                                    Priority: {{p.priority.code}}
+                                  	</div>
+                                  	<div class="col-md-3">
                                     <button class="btn btn-danger btn-xs" ng-click="removeProcedure($index)" name="removeProcedure">
                                       <b>x</b>
                                     </button>
-                                  </div>
+                                  	</div>
                                 </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                <!-- Notes and Error Messages -->
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label>Notes:</label>
-                    <textarea name="notes" ng-model="visit.notes" class="form-control" rows="3"></textarea>
-                  </div>
-                  <div class="col-md-12 text-right">
-                    <div>
-                      <div name="success" class="text-success">
-                        {{message}}
-                      </div>
-                      <div name="errorMsg" class="text-danger">
-                        {{errorMsg}}
-                      </div>
-                    </div>
-                  </div>
+                        	</div>
+                    	</div>
+                	</div>
                 </div>
-              </div>
-              <!-- was form -->
+			</div>
+		</div>
+				
+        <!-- Notes and Error Messages -->
+        <div class="form-group row">
+     		<div class="col-md-6">
+            	<label>Notes:</label>
+               	<textarea name="notes" ng-model="visit.notes" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-12 text-right">
+            	<div>
+                	<div name="success" class="text-success">
+                    {{message}}
+                    </div>
+                   	<div name="errorMsg" class="text-danger">
+                    {{errorMsg}}
+                    </div>
+              	</div>
+           	</div>
+      	</div>
+ 	</div>
+    <!-- was form -->
               <div class="panel-footer text-right">
                 <!-- button may have to be inside form tag, or just a submit function for the form? -->
                 <button class="btn btn-primary btn-lg" ng-click="submit()" name="submit">Submit Office Visit</button>
@@ -832,6 +923,7 @@
         </div>
       </div>
     </div>
+  </div>
 </body>
 
 </html>
