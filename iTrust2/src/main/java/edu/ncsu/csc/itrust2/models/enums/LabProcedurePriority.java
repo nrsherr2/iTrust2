@@ -40,7 +40,7 @@ public enum LabProcedurePriority {
      * Create a Priority from the numerical code.
      *
      * @param code
-     *            Code of the Status
+     *            Code of the Priority
      */
     private LabProcedurePriority ( final int code ) {
         this.code = code;
@@ -56,11 +56,11 @@ public enum LabProcedurePriority {
     }
 
     /**
-     * Returns the HouseholdSmokingStatus enum that matches the given code.
+     * Returns the LabProcedurePriority enum that matches the given code.
      *
      * @param code
      *            The code to match
-     * @return Corresponding HouseholdSmokingStatus object.
+     * @return Corresponding LabProcedurePriority object.
      */
     public static LabProcedurePriority parseValue ( final int code ) {
         for ( final LabProcedurePriority status : values() ) {
