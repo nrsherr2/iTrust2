@@ -375,6 +375,8 @@
               }
             }
             
+            
+            
             //remove local diagnosis from list
             $scope.removeDiagnosis = function ($index) {
               $scope.diagnoses.splice($index, 1);
@@ -384,11 +386,17 @@
             $scope.removePrescription = function ($index) {
               $scope.prescriptions.splice($index, 1);
             }
+            
+          	//remove local procedure from list if not started by labtech
+            $scope.removeProcedure = function ($index) {
+          	  //if (not started by labtech)
+              $scope.procedures.splice($index, 1);
+            }
 
             //call initally 
             resetPrescriptionForm();
             resetDiagnosisForm();
-
+            resetProceduresForm();
 
           });
 
@@ -822,6 +830,34 @@
                       </div>
                     </div>
                   </div>
+                  
+                  <div class="form-group row">
+               		<div class="col-md-12">
+                    	<div class="panel panel-default">
+                            <div class="panel-heading">
+                                Added Lab Procedures
+                            </div>
+                            <div class="panel-body">
+                            	<div class="row" ng-repeat="p in procedures">
+                                	<div class="col-md-3">
+                                    Code: {{p.code.code}}
+                                  	</div>
+                                  	<div class="col-md-3">
+                                    Assigned Lab Tech ID: {{p.tech.id}}
+                                  	</div>
+                                  	<div class="col-md-3">
+                                    Priority: {{p.priority.code}}
+                                  	</div>
+                                  	<div class="col-md-3">
+                                    <button class="btn btn-danger btn-xs" ng-click="removeProcedure($index)" name="removeProcedure">
+                                      <b>x</b>
+                                    </button>
+                                  	</div>
+                                </div>
+                        	</div>
+                    	</div>
+                	</div>
+                </div>
 
                   <!-- Notes and Error Messages -->
                   <div class="row">
