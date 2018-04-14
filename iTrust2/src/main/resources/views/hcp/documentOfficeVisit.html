@@ -127,7 +127,6 @@
               function (response) {
                 $scope.patients = response.data;
               });
-
             $http.get("/iTrust2/api/v1/appointmenttype")
               .then(function (response) {
                 $scope.types = response.data;
@@ -140,7 +139,6 @@
               .then(function (response) {
                 $scope.patientsmoking = response.data;
               });
-
             $http.get("/iTrust2/api/v1/hospitals").then(
               function (response) {
                 $scope.hospitals = response.data;
@@ -152,6 +150,10 @@
             $http.get("/iTrust2/api/v1/icdcodes").then(
               function (response) {
                 $scope.icdcodes = response.data;
+              });
+            $http.get("/iTrust2/api/v1/labcodes").then(
+              function (response) {
+            	$scope.labcodes = response.data;
               });
 
             $scope.submit = function () {
@@ -309,6 +311,11 @@
             //remove local prescription from list
             $scope.removePrescription = function ($index) {
               $scope.prescriptions.splice($index, 1);
+            }
+            
+          	//remove local procedure from list
+            $scope.removeProcedure = function ($index) {
+              $scope.procedures.splice($index, 1);
             }
 
             //call initally
@@ -726,7 +733,76 @@
                       </div>
                     </div>
                   </div>
+                  
+                  <!-- Lab Procedures Panel -->
+                  <div class="row">
+                  	<div class="col-md-4">
+                    	<div class="panel panel-info">
+                      		<div class="panel-heading">
+                       			<h4>Select Lab Procedure Code</h4>
+                      		</div>
+                      		<div class="panel-body">
+	                      		<div class="form-group row">
+                          			<div class="col-xs-6">
+                            			<label>Codes:</label>
+                          			</div>
+                          			<div class="col-xs-6 radio-box">
+                            			<div class="form-check">
+                              				<ul style="list-style: none;">
+                                				<li ng-repeat="lc in labcodes">
+					                              <label>
+					                                <input type="radio" ng-model="$parent.labCodeEntry" name="labcode" value="{{lc.code}}" required="false" /> {{lc.code}}
+					                              </label>
+					                            </li>
+                              				</ul>
+                            			</div>
+                          			</div>
+                        		</div>
+                      		</div>
+                      	</div>
+                  	</div>
+                  	<div class="col-md-4">
+                  		<div class="panel panel-info">
+                      		<div class="panel-heading">
+                       			<h4>Assign to Lab Tech</h4>
+                      		</div>
+                      	</div>
+                  	</div>
+                  	<div class="col-md-4">
+                  		<div class="panel panel-info">
+                      		<div class="panel-heading">
+                       			<h4>Procedure Notes</h4>
+                      		</div>
+                      	</div>
+                  	</div>
+                  </div>
+                  
                 </div>
+                
+                <div class="form-group row">
+               		<div class="col-md-12">
+                    	<div class="panel panel-default">
+                            <div class="panel-heading">
+                                Added Lab Procedures
+                              </div>
+                              <div class="panel-body">
+                                <div class="row" ng-repeat="p in procedures">
+                                  <div class="col-md-4">
+                                    {{p.code.code}}
+                                  </div>
+                                  <div class="col-md-4">
+                                    {{p.note}}
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-danger btn-xs" ng-click="removeProcedure($index)" name="removeProcedure">
+                                      <b>x</b>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
                 <!-- Notes and Error Messages -->
                 <div class="row">

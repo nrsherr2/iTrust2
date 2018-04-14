@@ -5,16 +5,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -194,7 +200,21 @@ public class Patient extends DomainObject<Patient> implements Serializable {
     @OneToOne
     @JoinColumn ( name = "self_id", columnDefinition = "varchar(100)" )
     @Id
-    private User      self;
+    private User         self;
+
+    /**
+     * A set that references which patients represent this one
+     */
+    @ManyToMany ( cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER )
+    @JoinTable ( name = "PERSONAL_REPRESENTATIVES", joinColumns = { @JoinColumn ( name = "REPRESENTING" ) },
+            inverseJoinColumns = { @JoinColumn ( name = "REPRESENTED_BY" ) } )
+    private Set<Patient> representatives = new HashSet<Patient>();
+
+    /**
+     * A set that references which patients this patient represents
+     */
+    @ManyToMany ( mappedBy = "representatives", fetch = FetchType.EAGER )
+    private Set<Patient> representing    = new HashSet<Patient>();
 
     /**
      * For keeping track of the User who is the mother of this patient.
@@ -202,7 +222,7 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      */
     @ManyToOne
     @JoinColumn ( name = "mother_id", columnDefinition = "varchar(100)" )
-    private User      mother;
+    private User         mother;
 
     /**
      * For keeping track of the User who is the father of this patient.
@@ -210,106 +230,106 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      */
     @ManyToOne
     @JoinColumn ( name = "father_id", columnDefinition = "varchar(100)" )
-    private User      father;
+    private User         father;
 
     /**
      * The first name of this patient
      */
     @Length ( max = 20 )
-    private String    firstName;
+    private String       firstName;
 
     /**
      * The preferred name of this patient
      */
     @Length ( max = 20 )
-    private String    preferredName;
+    private String       preferredName;
 
     /**
      * The last name of this patient
      */
     @Length ( max = 30 )
-    private String    lastName;
+    private String       lastName;
 
     /**
      * The email address of this patient
      */
     @Length ( max = 30 )
-    private String    email;
+    private String       email;
 
     /**
      * The address line 1 of this patient
      */
     @Length ( max = 50 )
-    private String    address1;
+    private String       address1;
 
     /**
      * The address line 2 of this patient
      */
     @Length ( max = 50 )
-    private String    address2;
+    private String       address2;
 
     /**
      * The city of residence of this patient
      */
     @Length ( max = 15 )
-    private String    city;
+    private String       city;
 
     /**
      * The state of residence of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private State     state;
+    private State        state;
 
     /**
      * The zip code of this patient
      */
     @Length ( min = 5, max = 10 )
-    private String    zip;
+    private String       zip;
 
     /**
      * The phone number of this patient
      */
     @Length ( min = 12, max = 12 )
-    private String    phone;
+    private String       phone;
 
     /**
      * The birthday of this patient
      */
-    private Calendar  dateOfBirth;
+    private Calendar     dateOfBirth;
 
     /**
      * The date of death of this patient
      */
-    private Calendar  dateOfDeath;
+    private Calendar     dateOfDeath;
 
     /**
      * The cause of death of this patient
      */
-    private String    causeOfDeath;
+    private String       causeOfDeath;
 
     /**
      * The blood type of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private BloodType bloodType;
+    private BloodType    bloodType;
 
     /**
      * The ethnicity of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private Ethnicity ethnicity;
+    private Ethnicity    ethnicity;
 
     /**
      * The gender of this patient
      */
     @Enumerated ( EnumType.STRING )
-    private Gender    gender;
+    private Gender       gender;
 
     /**
      * The id of this patient
      */
     @GeneratedValue ( strategy = GenerationType.AUTO )
-    private Long      id;
+    private Long         id;
 
     /**
      * Set the id of this patient
@@ -338,6 +358,44 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      */
     public User getSelf () {
         return self;
+    }
+
+    /**
+     * gives the user a list of every patient that represents this one
+     *
+     * @return the list of representatives
+     */
+    public Set<Patient> getRepresentatives () {
+        return representatives;
+    }
+
+    /**
+     * sets the list of representatives if it's been changed.
+     * 
+     * @param other
+     *            the edited list to be set
+     */
+    public void setRepresenatives ( Set<Patient> other ) {
+        this.representatives = other;
+    }
+
+    /**
+     * gives the user a list of this patient's representees
+     *
+     * @return the list of representees
+     */
+    public Set<Patient> getRepresentees () {
+        return representing;
+    }
+
+    /**
+     * sets the representees list to contain everything in this new list
+     * 
+     * @param other
+     *            the list that will become the new representee list
+     */
+    public void setRepresentees ( Set<Patient> other ) {
+        this.representing = other;
     }
 
     /**
@@ -724,6 +782,65 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      */
     public void setGender ( final Gender gender ) {
         this.gender = gender;
+    }
+
+    /**
+     * Tells the user if a specific patient is in this patient's list of
+     * representatives, based off the id long or user id. I'm going to program
+     * in a limitation that a patient must have a long id or a user id
+     * 
+     * @param comp
+     *            the patient that may or may not be in the list
+     * @return whether this patient has that patient as a representative
+     */
+    public boolean inRepresentatives ( Patient comp ) {
+        for ( Patient p : this.representatives ) {
+            if ( samePatient( comp, p ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Tells the user if a specific patient is in this patient's list of
+     * representees, based off the user id
+     * 
+     * @param comp
+     *            the patient that may or may not be in the list
+     * @return whether this patient has that patient as a representative
+     */
+    public boolean inRepresentees ( Patient comp ) {
+        for ( Patient p : this.representing ) {
+            if ( samePatient( comp, p ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * checks between two patients' user ids to see if they are the same
+     * patient, since their user ids are unique.
+     * 
+     * @param pat1
+     *            the basis patient
+     * @param pat2
+     *            the patient you are comparing to
+     * @return false if they either can't be compared or they are not the same
+     *         patient
+     */
+    public static boolean samePatient ( Patient pat1, Patient pat2 ) {
+        if ( pat1.getSelf() == null || pat2.getSelf() == null || pat1.getSelf().getId() == null
+                || pat2.getSelf().getId() == null ) {
+            return false;
+        }
+        else if ( !pat1.getSelf().getId().equals( pat2.getSelf().getId() ) ) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
 }

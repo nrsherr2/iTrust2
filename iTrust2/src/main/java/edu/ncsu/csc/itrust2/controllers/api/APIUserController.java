@@ -40,9 +40,9 @@ public class APIUserController extends APIController {
     /** constant for hcp role */
     private static final String ROLE_HCP     = "ROLE_HCP";
     /** constant for hcp role */
-    private static final String ROLE_LABTECH     = "ROLE_LABTECH";
+    private static final String ROLE_LABTECH = "ROLE_LABTECH";
     /** constant for hcp role */
-    private static final String ROLE_ER     = "ROLE_ER";
+    private static final String ROLE_ER      = "ROLE_ER";
 
     /**
      * Retrieves and returns a list of all Users in the system, regardless of
