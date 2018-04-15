@@ -47,7 +47,7 @@ public class PersonalRepresentativesStepDefs {
         options.addArguments( "window-size=1200x600" );
         options.addArguments( "blink-settings=imagesEnabled=false" );
         driver = new ChromeDriver( options );
-        wait = new WebDriverWait( driver, 15 );
+        wait = new WebDriverWait( driver, 30 );
     }
 
     /**
@@ -55,8 +55,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @After
     public void tearDown () {
-        driver.quit();
-        // driver.close();
+        // driver.quit();
+        driver.close();
     }
 
     private void setTextField ( final By byval, final String value ) {
@@ -98,12 +98,12 @@ public class PersonalRepresentativesStepDefs {
                 .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
         Thread.sleep( 500 );
 
-        wait.until(
-                ExpectedConditions.visibilityOfElementLocated( By.xpath( "//label/input[@value='AliceThirteen']" ) ) );
-        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='AliceThirteen']" ) );
-        radioBtn.click();
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ).click();
         setTextField( By.name( "representative" ), "BobTheFourYearOld" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
+
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -126,10 +126,9 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see the patient's personal representatives" )
     public void canSeePatientReps () throws InterruptedException {
-        wait.until(
-                ExpectedConditions.visibilityOfElementLocated( By.xpath( "//label/input[@value='AliceThirteen']" ) ) );
-        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='AliceThirteen']" ) );
-        radioBtn.click();
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ).click();
         Thread.sleep( 5000 );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
@@ -139,6 +138,7 @@ public class PersonalRepresentativesStepDefs {
             }
         }
         assertTrue( found );
+
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -165,9 +165,8 @@ public class PersonalRepresentativesStepDefs {
     @When ( "I assign a new personal representative for the patient" )
     public void assignPersonalRep () {
         wait.until( ExpectedConditions
-                .visibilityOfElementLocated( By.xpath( "//label/input[@value='BobTheFourYearOld']" ) ) );
-        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='BobTheFourYearOld']" ) );
-        radioBtn.click();
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=BobTheFourYearOld]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=BobTheFourYearOld]" ) ).click();
         setTextField( By.name( "representative" ), "TimTheOneYearOld" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
     }
@@ -179,7 +178,7 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "the patient's personal representatives should be updated" )
     public void patientRepsUpdated () throws InterruptedException {
-        Thread.sleep( 5000 );
+        Thread.sleep( 8000 );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -221,12 +220,10 @@ public class PersonalRepresentativesStepDefs {
 
         ( (JavascriptExecutor) driver )
                 .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
-        Thread.sleep( 500 );
 
-        wait.until(
-                ExpectedConditions.visibilityOfElementLocated( By.xpath( "//label/input[@value='AliceThirteen']" ) ) );
-        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='AliceThirteen']" ) );
-        radioBtn.click();
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ).click();
         setTextField( By.name( "representative" ), "TimTheOneYearOld" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
         driver.findElement( By.id( "logout" ) ).click();
@@ -251,7 +248,7 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see my personal representatives" )
     public void viewReps () throws InterruptedException {
-        Thread.sleep( 5000 );
+        Thread.sleep( 8000 );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -287,9 +284,8 @@ public class PersonalRepresentativesStepDefs {
         Thread.sleep( 500 );
 
         wait.until( ExpectedConditions
-                .visibilityOfElementLocated( By.xpath( "//label/input[@value='" + patient + "']" ) ) );
-        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='" + patient + "']" ) );
-        radioBtn.click();
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=" + patient + "]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=" + patient + "]" ) ).click();
         setTextField( By.name( "representative" ), "AliceThirteen" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
         driver.findElement( By.id( "logout" ) ).click();
@@ -306,7 +302,7 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see that I am a personal representative for (.+)" )
     public void viewAmRepFor ( final String patient ) throws InterruptedException {
-        Thread.sleep( 5000 );
+        Thread.sleep( 8000 );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -347,7 +343,7 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see (.+) as one of my personal representatives" )
     public void seeRep ( final String rep ) throws InterruptedException {
-        Thread.sleep( 5000 );
+        Thread.sleep( 8000 );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {

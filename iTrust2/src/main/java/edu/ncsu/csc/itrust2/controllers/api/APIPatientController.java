@@ -452,6 +452,14 @@ public class APIPatientController extends APIController {
         }
     }
 
+    /**
+     * Deletes a representative from the logged-in patient's list of
+     * representatives
+     *
+     * @param rep
+     *            The MID of the patient to remove
+     * @return the new list of representatives for the logged-in patient
+     */
     @DeleteMapping ( BASE_PATH + "/patients/representatives" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
     public ResponseEntity deleteRepresentativePatient ( @RequestBody String rep ) {
