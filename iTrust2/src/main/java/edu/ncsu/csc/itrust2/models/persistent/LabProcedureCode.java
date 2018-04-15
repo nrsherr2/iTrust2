@@ -21,7 +21,7 @@ import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
  */
 @Entity
 @Table ( name = "LabProcedureCodes" )
-public class LabProcedureCode extends DomainObject<LabProcedureCode> {
+public class LabProcedureCode extends DomainObject<LabProcedure> {
 
     @Id
     @GeneratedValue ( strategy = GenerationType.AUTO )

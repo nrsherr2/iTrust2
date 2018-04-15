@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
+import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.ICDCode;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
+import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
@@ -132,6 +135,39 @@ public class APILabProcedureController extends APIController {
                     errorResponse( "Could not delete Lab Procedure Code " + id + " because of " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
         }
+    }
+
+    /**
+     * Returns a list of lab procedure codes in the system
+     *
+     * @return All the codes in the system
+     */
+    @GetMapping ( BASE_PATH + "/labprocedures/{visitId}" )
+    public List<LabProcedure> getLabProcedures ( @PathVariable ( "visitID" ) final Long id ) {
+        // LoggerUtil.log( TransactionType.ICD_VIEW_ALL,
+        // LoggerUtil.currentUser(), "Fetched icd codes" );
+        return OfficeVisit.getById( id ).getProcedures();
+    }
+
+    /**
+     * Returns a specific lab procedure, based on id
+     *
+     * @return the lab procedure with the id in the system
+     */
+    @GetMapping ( BASE_PATH + "/labprocedures/{id}" )
+    public LabProcedure getSpecificProcedure ( @PathVariable ( "id" ) final Long id ) {
+        return LabProcedure.getById( id );
+    }
+
+    /**
+     * Returns a list of all lab techs TODO: Needs to return a hash map with the
+     * lab techs id and the number of procedures they have assigned
+     *
+     * @return list of all lab techs
+     */
+    @GetMapping ( BASE_PATH + "/labtechs" )
+    public List<User> getLabTechs () {
+        return User.getByRole( Role.ROLE_LABTECH );
     }
 
 }
