@@ -144,14 +144,14 @@ public class APILabProcedureController extends APIController {
      *
      * @return All the codes in the system
      */
-    @GetMapping ( BASE_PATH + "/labprocedures/{visitId}" )
+    @GetMapping ( BASE_PATH + "/visit/labprocedures/{visitID}" )
     public List<LabProcedure> getLabProcedures ( @PathVariable ( "visitID" ) final Long id ) {
         // LoggerUtil.log( TransactionType.ICD_VIEW_ALL,
         // LoggerUtil.currentUser(), "Fetched icd codes" );
         return OfficeVisit.getById( id ).getProcedures();
     }
 
-    @DeleteMapping ( BASE_PATH + "/labprocedures/{visitId]/{id}" )
+    @DeleteMapping ( BASE_PATH + "/delete/labprocedures/{visitId]/{id}" )
     public ResponseEntity deleteProcedure ( @PathVariable ( "visitID" ) final Long vistId,
             @PathVariable ( "id" ) final Long id ) {
         try {

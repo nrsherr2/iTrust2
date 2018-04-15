@@ -205,7 +205,7 @@
                   }
 
 		  // procedures
-		  $http.get("/iTrust2/api/v1/labprocedures/" + $scope.selectedVisitID).then(
+		  $http.get("/iTrust2/api/v1/visit/labprocedures/" + $scope.selectedVisitID).then(
               	    function (response) {
           	      $scope.selectedVisit.procedures = response.data;
 		  });

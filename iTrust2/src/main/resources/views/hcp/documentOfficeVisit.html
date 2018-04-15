@@ -792,7 +792,7 @@
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="lc in labcodes">
 					                              <label>
-					                                <input type="radio" ng-model="$parent.procCodeEntry" name="labcode" value="{{lc.code}}" required="false" /> 
+					                                <input type="radio" ng-model="$parent.procCodeEntry" ng-click="$parent.procCodeEntry = lc" name="labcode" value="{{lc}}" required="false" /> 
 					                                {{lc.code}}
 					                              </label>
 					                            </li>
@@ -835,8 +835,8 @@
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="l in labtechs">
                                   					<label>
-                                    					<input type="radio" ng-model="$parent.labTechEntry" name="assignedLabtech" value="" required="true"/> 
-                                    					<span class="glyphicon glyphicon-user"></span>{{l.firstName}} {{l.lastName}} - ID[{{l.id}}]
+                                    					<input type="radio" ng-model="$parent.procTechEntry" ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
+                                    					<span class="glyphicon glyphicon-user"></span>{{l.username}} - ID[{{l.id}}]
                                  					</label>
                                 				</li>
                               				</ul>
@@ -879,10 +879,10 @@
                                     Code: {{p.code.code}}
                                   	</div>
                                   	<div class="col-md-3">
-                                    Assigned Lab Tech ID: {{p.tech.id}}
+                                    Assigned Lab Tech ID: {{p.tech.username}}
                                   	</div>
                                   	<div class="col-md-3">
-                                    Priority: {{p.priority.code}}
+                                    Priority: {{p.priority}}
                                   	</div>
                                   	<div class="col-md-3">
                                     <button class="btn btn-danger btn-xs" ng-click="removeProcedure($index)" name="removeProcedure">
