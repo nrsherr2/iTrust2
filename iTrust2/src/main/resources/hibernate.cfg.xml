@@ -32,6 +32,7 @@
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.BasicHealthMetrics" />
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.Diagnosis" />
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.ICDCode"/>
+		<mapping class="edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode"/>
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.Drug" />
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.Prescription"/>
 		<mapping class="edu.ncsu.csc.itrust2.models.persistent.PasswordResetToken"/>
