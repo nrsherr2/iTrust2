@@ -25,7 +25,7 @@ import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
  *
  */
 @Entity
-@Table ( name = "Lab Procedures" )
+@Table ( name = "LabProcedure" )
 public class LabProcedure extends DomainObject<LabProcedure> {
 
     @NotNull

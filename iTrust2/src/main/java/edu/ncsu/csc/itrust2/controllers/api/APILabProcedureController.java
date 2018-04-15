@@ -15,13 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.ICDCode;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.User;
-import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * REST endpoints required to create, delete, and manipulate lab procedure codes
@@ -60,7 +58,9 @@ public class APILabProcedureController extends APIController {
             if ( code == null ) {
                 return new ResponseEntity( errorResponse( "No code with id " + id ), HttpStatus.NOT_FOUND );
             }
-            LoggerUtil.log( TransactionType.ICD_VIEW, LoggerUtil.currentUser(), "Fetched icd code with id " + id );
+            // TODO: ADD LOGGING
+            // LoggerUtil.log( TransactionType.ICD_VIEW,
+            // LoggerUtil.currentUser(), "Fetched icd code with id " + id );
             return new ResponseEntity( code, HttpStatus.OK );
         }
         catch ( final Exception e ) {
@@ -124,8 +124,10 @@ public class APILabProcedureController extends APIController {
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            LoggerUtil.log( TransactionType.ICD_DELETE, LoggerUtil.currentUser(),
-                    user.getUsername() + " deleted an Lab Procedure code Code" );
+            // TODO: Add Logging
+            // LoggerUtil.log( TransactionType.ICD_DELETE,
+            // LoggerUtil.currentUser(),
+            // user.getUsername() + " deleted an Lab Procedure code Code" );
 
             return new ResponseEntity( HttpStatus.OK );
         }
@@ -147,6 +149,34 @@ public class APILabProcedureController extends APIController {
         // LoggerUtil.log( TransactionType.ICD_VIEW_ALL,
         // LoggerUtil.currentUser(), "Fetched icd codes" );
         return OfficeVisit.getById( id ).getProcedures();
+    }
+
+    @DeleteMapping ( BASE_PATH + "/labprocedures/{visitId]/{id}" )
+    public ResponseEntity deleteProcedure ( @PathVariable ( "visitID" ) final Long vistId,
+            @PathVariable ( "id" ) final Long id ) {
+        try {
+            final LabProcedure procedure = LabProcedure.getById( id );
+            procedure.delete();
+            User user = null;
+            try {
+                user = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
+            }
+            catch ( final Exception e ) {
+                // ignore, its was a test that wasn't authenticated properly.
+            }
+            // TODO: Add Logging
+            // LoggerUtil.log( TransactionType.ICD_DELETE,
+            // LoggerUtil.currentUser(),
+            // user.getUsername() + " deleted an Lab Procedure code Code" );
+
+            return new ResponseEntity( HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            e.printStackTrace();
+            return new ResponseEntity(
+                    errorResponse( "Could not delete Lab Procedure Code " + id + " because of " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
     }
 
     /**
