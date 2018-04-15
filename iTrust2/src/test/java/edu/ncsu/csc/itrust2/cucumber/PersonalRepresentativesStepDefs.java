@@ -98,9 +98,9 @@ public class PersonalRepresentativesStepDefs {
                 .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
         Thread.sleep( 500 );
 
-        setTextField( By.name( "search" ), "Alice" );
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "patient" ) ) );
-        final WebElement radioBtn = driver.findElement( By.name( "patient" ) );
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated( By.xpath( "//label/input[@value='AliceThirteen']" ) ) );
+        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='AliceThirteen']" ) );
         radioBtn.click();
         setTextField( By.name( "representative" ), "BobTheFourYearOld" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
@@ -126,9 +126,9 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see the patient's personal representatives" )
     public void canSeePatientReps () throws InterruptedException {
-        setTextField( By.name( "search" ), "Alice" );
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "patient" ) ) );
-        final WebElement radioBtn = driver.findElement( By.name( "patient" ) );
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated( By.xpath( "//label/input[@value='AliceThirteen']" ) ) );
+        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='AliceThirteen']" ) );
         radioBtn.click();
         Thread.sleep( 5000 );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
@@ -164,9 +164,9 @@ public class PersonalRepresentativesStepDefs {
      */
     @When ( "I assign a new personal representative for the patient" )
     public void assignPersonalRep () {
-        setTextField( By.name( "search" ), "Bob" );
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "patient" ) ) );
-        final WebElement radioBtn = driver.findElement( By.name( "patient" ) );
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.xpath( "//label/input[@value='BobTheFourYearOld']" ) ) );
+        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='BobTheFourYearOld']" ) );
         radioBtn.click();
         setTextField( By.name( "representative" ), "TimTheOneYearOld" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
@@ -223,9 +223,9 @@ public class PersonalRepresentativesStepDefs {
                 .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
         Thread.sleep( 500 );
 
-        setTextField( By.name( "search" ), "Alice" );
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "patient" ) ) );
-        final WebElement radioBtn = driver.findElement( By.name( "patient" ) );
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated( By.xpath( "//label/input[@value='AliceThirteen']" ) ) );
+        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='AliceThirteen']" ) );
         radioBtn.click();
         setTextField( By.name( "representative" ), "TimTheOneYearOld" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
@@ -286,9 +286,9 @@ public class PersonalRepresentativesStepDefs {
                 .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
         Thread.sleep( 500 );
 
-        setTextField( By.name( "search" ), patient );
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "patient" ) ) );
-        final WebElement radioBtn = driver.findElement( By.name( "patient" ) );
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.xpath( "//label/input[@value='" + patient + "']" ) ) );
+        final WebElement radioBtn = driver.findElement( By.xpath( "//label/input[@value='" + patient + "']" ) );
         radioBtn.click();
         setTextField( By.name( "representative" ), "AliceThirteen" );
         driver.findElement( By.name( "representativeSubmit" ) ).click();
