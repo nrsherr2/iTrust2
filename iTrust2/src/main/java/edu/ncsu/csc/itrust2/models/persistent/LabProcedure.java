@@ -1,7 +1,7 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
 import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.persistence.Entity;
@@ -33,7 +33,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     @JoinColumn ( name = "visit_id", nullable = false )
     private OfficeVisit          visit;
 
-    private Set<String>          comments;
+    private ArrayList<String>          comments;
 
     @NotNull
     private LabProcedurePriority priority;
@@ -90,7 +90,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      * @param n
      *            The new note
      */
-    public void setComments ( final Set<String> n ) {
+    public void setComments ( final ArrayList<String> n ) {
         this.comments = n;
     }
 
@@ -99,7 +99,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      *
      * @return The note
      */
-    public Set<String> getComments () {
+    public ArrayList<String> getComments () {
         return comments;
     }
 
