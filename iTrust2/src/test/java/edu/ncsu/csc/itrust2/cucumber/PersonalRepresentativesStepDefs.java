@@ -380,17 +380,7 @@ public class PersonalRepresentativesStepDefs {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( GLOBAL_WAIT );
 
-        String src = driver.getPageSource();
-        int idx = 0;
-        int count = 0;
-        while ( idx != -1 ) {
-            idx = src.indexOf( rep, idx );
-            if ( idx != -1 ) {
-                count++;
-                idx += rep.length();
-            }
-        }
-        assertTrue( count == 0 );
+        assertFalse(driver.getPageSource().contains( rep ));
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -423,19 +413,7 @@ public class PersonalRepresentativesStepDefs {
     public void notSeeRepresentee ( final String representee ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( GLOBAL_WAIT );
-        // I'm just going to count how many time the name appears on the page
-        // this is a really dumb solution, but shouldn't lead to any errors.
-        String src = driver.getPageSource();
-        int idx = 0;
-        int count = 0;
-        while ( idx != -1 ) {
-            idx = src.indexOf( representee, idx );
-            if ( idx != -1 ) {
-                count++;
-                idx += representee.length();
-            }
-        }
-        assertTrue( count == 0 );
+        assertFalse(driver.getPageSource().contains( representee ));
         driver.findElement( By.id( "logout" ) ).click();
     }
 }
