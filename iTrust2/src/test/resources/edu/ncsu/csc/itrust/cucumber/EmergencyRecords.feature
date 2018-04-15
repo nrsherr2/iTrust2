@@ -5,8 +5,8 @@ Feature: As a developer, I want to automate
 		 so that necessary functionality can easily
 		 be confirmed through the UI 
 		 
-Scenario: HCP views emergency health records
-Given A patient exists with the name <MID>
+Scenario Outline: HCP views emergency health records
+Given There is a patient with the name <MID>
 And I log into iTrust2 as an HCP
 And I navigate to the Emergency Health Records Page
 When I fill in the username of the patient
@@ -15,9 +15,8 @@ Examples:
 	|MID    |
 	|AliceThirteen|
 
-Scenario: ER views emergency health records
-
-Given A patient exists with the name <MID>
+Scenario Outline: ER views emergency health records
+Given There is a patient with the name <MID>
 And I log into iTrust2 as an ER
 And I navigate to the Emergency Health Records Page
 When I fill in the username of the patient
