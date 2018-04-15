@@ -182,7 +182,10 @@
 			
 		$scope.searchByName = function() {
 				$http.get("/iTrust2/api/v1/patients/" + $scope.searchname).then(function(response) {
-					$scope.data = response.data;
+		                        $scope.data = response.data;
+		                        var date = $scope.data.dateOfBirth;
+		                        $scope.data.dateOfBirth = date.month + "/" + date.dayOfMonth + "/" + date.year;
+
 		                        $scope.message = "";
 				},
 				function(rejection) {
@@ -205,8 +208,8 @@
 				function(rejection) {
 					$scope.data.diagnoses = "";
 					$scope.errorGetting = "Could not find patient";
-				});
-		    }		    
+        	                });
+		}		
 
 		});
 	</script>
