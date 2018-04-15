@@ -211,7 +211,7 @@ public class APIPatientController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
-    public static ResponseEntity getRepresentatives ( @PathVariable final String patientId ) {
+    public ResponseEntity getRepresentatives ( @PathVariable final String patientId ) {
         final Patient p = Patient.getByName( patientId );
         if ( p == null ) {
             return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
@@ -235,7 +235,7 @@ public class APIPatientController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/patients/representatives" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
-    public static ResponseEntity getRepresentativesPatient () {
+    public ResponseEntity getRepresentativesPatient () {
         final Patient currentPatient = Patient.getByName( LoggerUtil.currentUser() );
         if ( currentPatient == null ) {
             return new ResponseEntity( "Current patient cannot be found", HttpStatus.NOT_FOUND );
@@ -282,7 +282,7 @@ public class APIPatientController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/patients/representees" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
-    public static ResponseEntity getRepresenteesPatient () {
+    public ResponseEntity getRepresenteesPatient () {
         final Patient currentPatient = Patient.getByName( LoggerUtil.currentUser() );
         if ( currentPatient == null ) {
             return new ResponseEntity( "Current patient cannot be found", HttpStatus.NOT_FOUND );
@@ -306,7 +306,7 @@ public class APIPatientController extends APIController {
      */
     @PostMapping ( BASE_PATH + "/patients/representatives" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
-    public static ResponseEntity addRepresentativePatient ( @RequestBody String rep ) {
+    public ResponseEntity addRepresentativePatient ( @RequestBody String rep ) {
         // trim the string because I'm not about that long line life
         rep = rep.substring( 1, rep.length() - 1 );
         final String curr = LoggerUtil.currentUser();
@@ -361,7 +361,7 @@ public class APIPatientController extends APIController {
      */
     @PostMapping ( BASE_PATH + "/patients/representatives/{representee}" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
-    public static ResponseEntity addRepresentative ( @PathVariable final String representee,
+    public ResponseEntity addRepresentative ( @PathVariable final String representee,
             @RequestBody final String representative ) {
         if ( representee.equals( representative.substring( 1, representative.length() - 1 ) ) ) {
             return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
@@ -462,7 +462,7 @@ public class APIPatientController extends APIController {
      */
     @DeleteMapping ( BASE_PATH + "/patients/representatives" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
-    public static ResponseEntity deleteRepresentativePatient ( @RequestBody String rep ) {
+    public ResponseEntity deleteRepresentativePatient ( @RequestBody String rep ) {
         // trim the string because I'm not about that long line life
         rep = rep.substring( 1, rep.length() - 1 );
         // check they exist
@@ -511,7 +511,7 @@ public class APIPatientController extends APIController {
      */
     @DeleteMapping ( BASE_PATH + "/patients/representees" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
-    public static ResponseEntity deleteRepresenteePatient ( @RequestBody String rep ) {
+    public ResponseEntity deleteRepresenteePatient ( @RequestBody String rep ) {
         // trim the string because I'm not about that long line life
         rep = rep.substring( 1, rep.length() - 1 );
         // check that they exist
