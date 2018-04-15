@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -29,25 +30,19 @@ import io.github.bonigarcia.wdm.ChromeDriverManager;
  */
 public class PersonalRepresentativesStepDefs {
 
-    private WebDriver    driver;
-    private final String baseUrl = "http://localhost:8080/iTrust2";
+    private static final int PAGE_LOAD   = 500;
+    private static final int GLOBAL_WAIT = 3000;
+    private WebDriver        driver      = new HtmlUnitDriver( true );
+    private final String     baseUrl     = "http://localhost:8080/iTrust2";
 
-    WebDriverWait        wait;
+    WebDriverWait            wait;
 
     /**
      * set up the web driver and default wait time
      */
     @Before
     public void setup () {
-
-        // driver = new HtmlUnitDriver( true );
-        ChromeDriverManager.getInstance().setup();
-        final ChromeOptions options = new ChromeOptions();
-        options.addArguments( "headless" );
-        options.addArguments( "window-size=1200x600" );
-        options.addArguments( "blink-settings=imagesEnabled=false" );
-        driver = new ChromeDriver( options );
-        wait = new WebDriverWait( driver, 30 );
+        wait = new WebDriverWait( driver, 20 );
     }
 
     /**
@@ -57,6 +52,7 @@ public class PersonalRepresentativesStepDefs {
     public void tearDown () {
         // driver.quit();
         driver.close();
+        driver.quit();
     }
 
     private void setTextField ( final By byval, final String value ) {
@@ -94,9 +90,8 @@ public class PersonalRepresentativesStepDefs {
         setTextField( By.name( "password" ), "123456" );
         driver.findElement( By.className( "btn" ) ).click();
 
-        ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
-        Thread.sleep( 500 );
+        driver.get( baseUrl + "/hcp/viewPersonalRepresentatives" );
+        Thread.sleep( PAGE_LOAD );
 
         wait.until( ExpectedConditions
                 .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
@@ -114,9 +109,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @When ( "I navigate to the patient's personal representatives" )
     public void goToPatientReps () throws InterruptedException {
-        ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
-        Thread.sleep( 500 );
+        driver.get( baseUrl + "/hcp/viewPersonalRepresentatives" );
+        Thread.sleep( PAGE_LOAD );
     }
 
     /**
@@ -129,7 +123,7 @@ public class PersonalRepresentativesStepDefs {
         wait.until( ExpectedConditions
                 .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
         driver.findElement( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ).click();
-        Thread.sleep( 5000 );
+        Thread.sleep( GLOBAL_WAIT );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -154,9 +148,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @Given ( "I navigate to the personal representatives page" )
     public void goToPersonalRepsPage () throws InterruptedException {
-        ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
-        Thread.sleep( 500 );
+        driver.get( baseUrl + "/hcp/viewPersonalRepresentatives" );
+        Thread.sleep( PAGE_LOAD );
     }
 
     /**
@@ -178,7 +171,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "the patient's personal representatives should be updated" )
     public void patientRepsUpdated () throws InterruptedException {
-        Thread.sleep( 8000 );
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( GLOBAL_WAIT );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -218,8 +212,7 @@ public class PersonalRepresentativesStepDefs {
         setTextField( By.name( "password" ), "123456" );
         driver.findElement( By.className( "btn" ) ).click();
 
-        ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
+        driver.get( baseUrl + "/hcp/viewPersonalRepresentatives" );
 
         wait.until( ExpectedConditions
                 .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=AliceThirteen]" ) ) );
@@ -236,9 +229,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @When ( "I navigate to my personal representatives page" )
     public void goToRepsPage () throws InterruptedException {
-        ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentativesPatient').click();" );
-        Thread.sleep( 500 );
+        driver.get( baseUrl + "/patient/viewPersonalRepresentatives" );
+        Thread.sleep( PAGE_LOAD );
     }
 
     /**
@@ -248,7 +240,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see my personal representatives" )
     public void viewReps () throws InterruptedException {
-        Thread.sleep( 8000 );
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( GLOBAL_WAIT );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -279,9 +272,8 @@ public class PersonalRepresentativesStepDefs {
         setTextField( By.name( "password" ), "123456" );
         driver.findElement( By.className( "btn" ) ).click();
 
-        ( (JavascriptExecutor) driver )
-                .executeScript( "document.getElementById('viewPersonalRepresentatives').click();" );
-        Thread.sleep( 500 );
+        driver.get( baseUrl + "/hcp/viewPersonalRepresentatives/" );
+        Thread.sleep( PAGE_LOAD );
 
         wait.until( ExpectedConditions
                 .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=" + patient + "]" ) ) );
@@ -302,7 +294,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see that I am a personal representative for (.+)" )
     public void viewAmRepFor ( final String patient ) throws InterruptedException {
-        Thread.sleep( 8000 );
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( GLOBAL_WAIT );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -343,7 +336,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should see (.+) as one of my personal representatives" )
     public void seeRep ( final String rep ) throws InterruptedException {
-        Thread.sleep( 8000 );
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( GLOBAL_WAIT );
         final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
         boolean found = false;
         for ( final WebElement w : allMIDCells ) {
@@ -383,17 +377,10 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should not see (.+) as one of my personal representatives" )
     public void notSeeRep ( final String rep ) throws InterruptedException {
-        Thread.sleep( 8000 );
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( GLOBAL_WAIT );
 
-        try {
-            // if there exists a representative that's not the one we're
-            // confirming isn't there, this will pass
-            assertFalse( rep.equals( driver.findElement( By.name( "representativeMidCell" ) ).getText() ) );
-        }
-        catch ( final Exception e ) {
-            // the element wasn't found at all, which means there were no
-            // representatives at all in the table
-        }
+        assertFalse(driver.getPageSource().contains( rep ));
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -424,16 +411,9 @@ public class PersonalRepresentativesStepDefs {
      */
     @Then ( "I should not see myself as a personal representative for (.+)" )
     public void notSeeRepresentee ( final String representee ) throws InterruptedException {
-        Thread.sleep( 8000 );
-        try {
-            // if there exists a representee that's not the one we're
-            // confirming isn't there, this will pass
-            assertFalse( representee.equals( driver.findElement( By.name( "representeeMidCell" ) ).getText() ) );
-        }
-        catch ( final Exception e ) {
-            // the element wasn't found at all, which means there were no
-            // representees at all in the table
-        }
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( GLOBAL_WAIT );
+        assertFalse(driver.getPageSource().contains( representee ));
         driver.findElement( By.id( "logout" ) ).click();
     }
 }
