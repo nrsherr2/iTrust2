@@ -18,40 +18,6 @@
 		  <h3>Emergency Health Records</h3>
 		</div>
 		<div class="panel-body">
-		  <table class="table table-bordered">
-		    <!-- table column headers -->
-		    <thead>
-		      <tr>
-			<th>Patient Name</th>
-			<th>Patient Last Name</th>
-			<th>Gender</th>
-			<th>Blood Type</th>
-			<th>Date of Birth</th>
-			<th>ID</th>
-			<th>City</th>
-			<th>Ethnicity</th>
-			<th>Phone</th>
-			<th>Preferred Name</th>
-		      </tr>
-		    </thead>
-
-		    <!-- log entry for every row, ordered by date -->
-		    <tbody>
-		      <tr name="logTableRow" ng-repeat="d in ctrl.data">
-			<td name="nameCell">{{d.firstName}}</td>
-			<td name="nameCell">{{d.lastName}}</td>
-			<td name="nameCell">{{d.gender}}</td>
-			<td name="nameCell">{{d.bloodType}}</td>
-			<td name="nameCell">{{d.dateOfBirth}}</td>
-			<td name="nameCell">{{d.id}}</td>
-			<td name="nameCell">{{d.city}}</td>
-			<td name="nameCell">{{d.ethnicity}}</td>
-			<td name="nameCell">{{d.phone}}</td>
-			<td name="nameCell">{{d.preferredName}}</td>
-		      </tr>
-		    </tbody>
-		  </table>
-		  <br>
 		  <!-- container for searching transactions -->
 		  <div class="row">
 		    <div class="col-md-12">
@@ -59,7 +25,7 @@
 			<div class="panel-heading ">Find patient by name:</div>
 			<div class="panel-body">
 			  <form class="form-horizontal" role="form" name="viewRecForm"
-				ng-submit="ctrl.searchByName()">
+				ng-submit="searchByName()">
 			    <br>
 
 			    <!-- row that contains all interactive fields -->
@@ -72,7 +38,7 @@
 				  <div class="col-md-7">
 				    <input type="text" class="form-control"
 					   placeholder="Enter Name" name="searchName"
-					   ng-model="ctrl.searchname"
+					   ng-model="searchname"
 					   required />
 				  </div>
 				</div>
@@ -97,6 +63,97 @@
 		    </div>
 		  </div>
 		</div>
+
+		<!-- Section to display the health records of the patient searched -->
+		<div class="row">
+		  <div class="col-md-12">
+		    <div class="panel panel-default">
+		      <div class="panel-heading ">Emergency Health Records</div>
+		      <div class="panel-body">
+
+			<div class="col-md-5">
+			  <label>Name: </label>
+			  <p name="patientName">{{data.firstName}} {{data.lastName}}</p>
+			</div>
+
+			<div class="col-md-5">
+			  <label>Age: </label>
+			  <p name="patientAge">{{data.age}}</p>
+			</div>
+
+			<div class="col-md-5">
+			  <label>Date Of Birth: </label>
+			  <p name="patientDOB">{{data.dateOfBirth}}</p>
+			</div>
+
+			<div class="col-md-5">
+			  <label>Gender: </label>
+			  <p name="patientGender">{{data.gender}}</p>
+			</div>
+
+			<div class="col-md-5">
+			  <label>Blood Type: </label>
+			  <p name="patientBlood">{{data.bloodType}}</p>
+			</div>
+
+			<div class="col-md-5">
+			  <table class="table table-bordered">
+			    <!-- table column headers -->
+			    <thead>
+			      <tr>
+				<th>Diagnosis Code</th>
+				<th>Description</th>
+			      </tr>
+			    </thead>
+
+			    <!-- log entry for every row, ordered by date -->
+			    <tbody>
+			      <tr name="diagTableRow" ng-repeat="d in data.diagnoses">
+				<td name="diagCell">{{d.code.code}}</td>
+				<td name="diagCell">{{d.code.description}}</td>
+			      </tr>
+			    </tbody>
+			  </table>
+			  <br>
+			</div>
+
+			<div class="col-md-5">
+			  <table class="table table-bordered">
+			    <!-- table column headers -->
+			    <thead>
+			      <tr>
+				<th>Prescription Name</th>
+				<th>Drug Code</th>
+				<th>Drug Name</th>
+				<th>Drug Description</th>
+				<th>Dosage</th>
+				<th>Renewels</th>
+				<th>Username</th>
+			      </tr>
+			    </thead>
+
+			    <!-- log entry for every row, ordered by date -->
+			    <tbody>
+			      <tr name="preTableRow" ng-repeat="p in data.prescriptions">
+				<td name="preCell">{{p.id}}</td>
+				<td name="preCell">{{p.drug.code}}</td>
+				<td name="preCell">{{p.drug.name}}</td>
+				<td name="preCell">{{p.drug.description}}</td>
+				<td name="preCell">{{p.dosage}}</td>
+				<td name="preCell">{{p.renewals}}</td>
+				<td name="preCell">{{p.patient.username}}</td>
+			      </tr>
+			    </tbody>
+			  </table>
+			  <br>
+			</div>
+			
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- end records -->
+		
 	      </div>
 	    </div>
 	  </div>
@@ -108,31 +165,51 @@
 		
 		angular.module("recApp").controller('recsCtrl', function($scope, $http, $filter) {
 			var self = this;
-		        self.data = "";
-			self.searchname = "";
+		        $scope.data = "";
+		        $scope.searchname = "";
 						
 			$scope.loadTable = function() {
 				$http.get("/iTrust2/api/v1/patients").then(function(response) {
-					self.data = response.data;
+					$scope.data = response.data;
 					$scope.message = "Succ";
 				}, function(rejection) {
-					self.data = "";
+					$scope.data = "";
 					$scope.message = "Could not display Emergency Health Records";
 				});
 		        }
 
 		    $scope.loadTable();
 			
-		self.searchByName = function() {
-				$http.get("/iTrust2/api/v1/patients/" + self.searchname).then(function(response) {
-					self.data = response.data;
-					$scope.message = "";
+		$scope.searchByName = function() {
+				$http.get("/iTrust2/api/v1/patients/" + $scope.searchname).then(function(response) {
+		                        $scope.data = response.data;
+		                        var date = $scope.data.dateOfBirth;
+		                        $scope.data.dateOfBirth = date.month + "/" + date.dayOfMonth + "/" + date.year;
+
+		                        $scope.message = "";
 				},
 				function(rejection) {
-					self.data = "";
+					$scope.data = "";
+					$scope.errorGetting = "Could not find patient";
+		                });
+		                $http.get("/iTrust2/api/v1/prescriptions/patient/" + $scope.searchname).then(function(response) {
+					$scope.data.prescriptions = response.data;
+		                        $scope.message = "";
+				},
+				function(rejection) {
+					$scope.data.prescriptions = "";
 					$scope.errorGetting = "Could not find patient";
 				});
-		    }		    
+
+				$http.get("/iTrust2/api/v1/diagnosis/patient/" + $scope.searchname).then(function(response) {
+					$scope.data.diagnoses = response.data;
+		                        $scope.message = "";
+				},
+				function(rejection) {
+					$scope.data.diagnoses = "";
+					$scope.errorGetting = "Could not find patient";
+        	                });
+		}		
 
 		});
 	</script>
