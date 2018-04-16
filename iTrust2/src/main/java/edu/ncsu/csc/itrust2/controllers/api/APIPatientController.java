@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -515,7 +516,7 @@ public class APIPatientController extends APIController {
         // trim the string because I'm not about that long line life
         rep = rep.substring( 1, rep.length() - 1 );
         // check that they exist
-        final Patient representative = Patient.getByName( LoggerUtil.currentUser() );
+        Patient representative = Patient.getByName( LoggerUtil.currentUser() );
         if ( representative == null ) {
             return new ResponseEntity( "Could not find patient " + rep, HttpStatus.NOT_FOUND );
         }
@@ -529,14 +530,15 @@ public class APIPatientController extends APIController {
         // now delete
         try {
             final HashSet<Patient> reps = new HashSet<Patient>();
-            for ( final Patient p : representative.getRepresentees() ) {
-                if ( !Patient.samePatient( p, representee ) ) {
+            for ( final Patient p : representee.getRepresentatives() ) {
+                if ( !Patient.samePatient( p, representative ) ) {
                     reps.add( p );
                 }
             }
-            representative.setRepresentees( reps );
-            representative.save();
-            for ( final Patient r : representative.getRepresentees() ) {
+            representee.setRepresenatives( reps );
+            representee.save();
+            representative = Patient.getByName( LoggerUtil.currentUser() );
+            for(Patient r : representative.getRepresentees()) {
                 r.setRepresenatives( new HashSet<Patient>() );
                 r.setRepresentees( new HashSet<Patient>() );
             }
