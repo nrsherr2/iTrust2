@@ -12,8 +12,6 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -31,25 +29,7 @@ public class PersonalRepresentativesStepDefs {
     private final WebDriver  driver      = new HtmlUnitDriver( true );
     private final String     baseUrl     = "http://localhost:8080/iTrust2";
 
-    WebDriverWait            wait;
-
-    /**
-     * set up the web driver and default wait time
-     */
-    @Before
-    public void setup () {
-        wait = new WebDriverWait( driver, 20 );
-    }
-
-    /**
-     * close the web driver to free up processing resources
-     */
-    @After
-    public void tearDown () {
-        // driver.quit();
-        driver.close();
-        driver.quit();
-    }
+    WebDriverWait            wait        = new WebDriverWait( driver, 2 );;
 
     private void setTextField ( final By byval, final String value ) {
         final WebElement elem = driver.findElement( byval );
