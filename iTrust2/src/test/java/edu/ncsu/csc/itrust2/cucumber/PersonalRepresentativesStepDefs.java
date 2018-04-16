@@ -29,7 +29,7 @@ public class PersonalRepresentativesStepDefs {
     private final WebDriver  driver      = new HtmlUnitDriver( true );
     private final String     baseUrl     = "http://localhost:8080/iTrust2";
 
-    WebDriverWait            wait        = new WebDriverWait( driver, 2 );;
+    WebDriverWait            wait        = new WebDriverWait( driver, 20 );
 
     private void setTextField ( final By byval, final String value ) {
         final WebElement elem = driver.findElement( byval );
