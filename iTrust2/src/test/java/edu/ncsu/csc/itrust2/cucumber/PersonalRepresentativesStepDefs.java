@@ -8,8 +8,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -18,7 +17,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
 
 /**
  * Step Definitions for the Personal Representatives enhancement [UC 16]
@@ -40,13 +38,13 @@ public class PersonalRepresentativesStepDefs {
     @Before
     public void setup () {
 
-        // driver = new HtmlUnitDriver( true );
-        ChromeDriverManager.getInstance().setup();
-        final ChromeOptions options = new ChromeOptions();
-        // options.addArguments( "headless" );
-        options.addArguments( "window-size=1200x600" );
-        options.addArguments( "blink-settings=imagesEnabled=false" );
-        driver = new ChromeDriver( options );
+        driver = new HtmlUnitDriver( true );
+        // ChromeDriverManager.getInstance().setup();
+        // final ChromeOptions options = new ChromeOptions();
+        // // options.addArguments( "headless" );
+        // options.addArguments( "window-size=1200x600" );
+        // options.addArguments( "blink-settings=imagesEnabled=false" );
+        // driver = new ChromeDriver( options );
         wait = new WebDriverWait( driver, 30 );
     }
 
@@ -55,8 +53,8 @@ public class PersonalRepresentativesStepDefs {
      */
     @After
     public void tearDown () {
-        driver.quit(); // for chromedriver
-        // driver.close();
+        // driver.quit(); // for chromedriver
+        driver.close();
     }
 
     private void setTextField ( final By byval, final String value ) {
