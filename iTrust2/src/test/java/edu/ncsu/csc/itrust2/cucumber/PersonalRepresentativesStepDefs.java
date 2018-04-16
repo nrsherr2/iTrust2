@@ -25,11 +25,35 @@ import cucumber.api.java.en.When;
 public class PersonalRepresentativesStepDefs {
 
     private static final int PAGE_LOAD   = 500;
-    private static final int GLOBAL_WAIT = 3000;
-    private final WebDriver  driver      = new HtmlUnitDriver( true );
+    private static final int GLOBAL_WAIT = 8000;
+    private WebDriver        driver;
     private final String     baseUrl     = "http://localhost:8080/iTrust2";
+    WebDriverWait            wait;
 
-    WebDriverWait            wait        = new WebDriverWait( driver, 20 );
+    /**
+     * set up the web driver and default wait time
+     */
+    @Before
+    public void setup () {
+
+        driver = new HtmlUnitDriver( true );
+        // ChromeDriverManager.getInstance().setup();
+        // final ChromeOptions options = new ChromeOptions();
+        // // options.addArguments( "headless" );
+        // options.addArguments( "window-size=1200x600" );
+        // options.addArguments( "blink-settings=imagesEnabled=false" );
+        // driver = new ChromeDriver( options );
+        wait = new WebDriverWait( driver, 30 );
+    }
+
+    /**
+     * close the web driver to free up processing resources
+     */
+    @After
+    public void tearDown () {
+        // driver.quit(); // for chromedriver
+        driver.close();
+    }
 
     private void setTextField ( final By byval, final String value ) {
         final WebElement elem = driver.findElement( byval );
@@ -355,8 +379,15 @@ public class PersonalRepresentativesStepDefs {
     public void notSeeRep ( final String rep ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( GLOBAL_WAIT );
-
-        assertFalse( driver.getPageSource().contains( rep ) );
+        try {
+            // if there exists a representative that's not the one we're
+            // confirming isn't there, this will pass
+            assertFalse( rep.equals( driver.findElement( By.name( "representativeMidCell" ) ).getText() ) );
+        }
+        catch ( final Exception e ) {
+            // the element wasn't found at all, which means there were no
+            // representatives at all in the table
+        }
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -389,7 +420,15 @@ public class PersonalRepresentativesStepDefs {
     public void notSeeRepresentee ( final String representee ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( GLOBAL_WAIT );
-        assertFalse( driver.getPageSource().contains( representee ) );
+        try {
+            // if there exists a representee that's not the one we're
+            // confirming isn't there, this will pass
+            assertFalse( representee.equals( driver.findElement( By.name( "representeeMidCell" ) ).getText() ) );
+        }
+        catch ( final Exception e ) {
+            // the element wasn't found at all, which means there were no
+            // representees at all in the table
+        }
         driver.findElement( By.id( "logout" ) ).click();
     }
 }
