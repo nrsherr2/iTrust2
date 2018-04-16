@@ -6,21 +6,15 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
 
 /**
  * Step Definitions for the Personal Representatives enhancement [UC 16]
@@ -32,28 +26,10 @@ public class PersonalRepresentativesStepDefs {
 
     private static final int PAGE_LOAD   = 500;
     private static final int GLOBAL_WAIT = 3000;
-    private WebDriver        driver      = new HtmlUnitDriver( true );
+    private final WebDriver  driver      = new HtmlUnitDriver( true );
     private final String     baseUrl     = "http://localhost:8080/iTrust2";
 
-    WebDriverWait            wait;
-
-    /**
-     * set up the web driver and default wait time
-     */
-    @Before
-    public void setup () {
-        wait = new WebDriverWait( driver, 20 );
-    }
-
-    /**
-     * close the web driver to free up processing resources
-     */
-    @After
-    public void tearDown () {
-        // driver.quit();
-        driver.close();
-        driver.quit();
-    }
+    WebDriverWait            wait        = new WebDriverWait( driver, 2 );;
 
     private void setTextField ( final By byval, final String value ) {
         final WebElement elem = driver.findElement( byval );
@@ -380,7 +356,7 @@ public class PersonalRepresentativesStepDefs {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( GLOBAL_WAIT );
 
-        assertFalse(driver.getPageSource().contains( rep ));
+        assertFalse( driver.getPageSource().contains( rep ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -413,7 +389,7 @@ public class PersonalRepresentativesStepDefs {
     public void notSeeRepresentee ( final String representee ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( GLOBAL_WAIT );
-        assertFalse(driver.getPageSource().contains( representee ));
+        assertFalse( driver.getPageSource().contains( representee ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 }
