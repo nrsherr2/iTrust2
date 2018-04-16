@@ -2,7 +2,6 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -403,6 +402,59 @@ public class APIPatientController extends APIController {
     }
 
     /**
+     * adds a representee to a patient's list of personal representees. should
+     * map the other way as well, so the representative's list will be updated
+     * as well. This is the call for the HCP
+     *
+     * @param representee
+     *            the person who's list you will add to
+     * @param representative
+     *            the person you will add to the list
+     * @return the updated list of representatives for the representee parameter
+     */
+    @PostMapping ( BASE_PATH + "/patients/representees/{representee}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity addRepresentee ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        if ( representee.equals( representative.substring( 1, representative.length() - 1 ) ) ) {
+            return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
+        }
+        // make sure the patients exist
+        final Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
+        }
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
+        }
+        // now add the rep
+        try {
+            final HashSet<Patient> newList = new HashSet<Patient>();
+            newList.addAll( tee.getRepresentatives() );
+            final int oldSize = newList.size();
+            newList.add( tive );
+            if ( newList.size() == oldSize ) {
+                return new ResponseEntity( representative + " is already a representative of " + representee,
+                        HttpStatus.BAD_REQUEST );
+            }
+            tee.setRepresenatives( newList );
+            tee.save();
+            for ( final Patient r : tee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_ADD_REPRESENTATIVE, LoggerUtil.currentUser(),
+                    tee.getSelf().getUsername(),
+                    "Added " + representee + " to " + representative + "'s representatives" );
+            return new ResponseEntity( tive.getRepresentees(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "could not add representative", HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
      * deletes a representative from a patient's list of personal
      * representatives. mapping works both ways, so the representative will lose
      * their reference to the representee as well.
@@ -538,7 +590,7 @@ public class APIPatientController extends APIController {
             representee.setRepresenatives( reps );
             representee.save();
             representative = Patient.getByName( LoggerUtil.currentUser() );
-            for(Patient r : representative.getRepresentees()) {
+            for ( final Patient r : representative.getRepresentees() ) {
                 r.setRepresenatives( new HashSet<Patient>() );
                 r.setRepresentees( new HashSet<Patient>() );
             }

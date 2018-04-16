@@ -226,14 +226,17 @@
 	        $scope.addPersonalRepresentee = function () {
              	$http({
              		method: 'POST',
-             		url: "/iTrust2/api/v1/patients/representatives/" +  $scope.representee.name,
+             		url: "/iTrust2/api/v1/patients/representees/" +  $scope.representee.name,
              		data: "{" + self.requestParams.patientId + "}",
              		headers: {
              			'Content-Type': 'application/json'
              		}
            		})
 				.then(function (response) {
-					self.personalRepresentees = response.data;
+					$scope.updateRepresenteeTable();
+					//not sure why this line isn't enough to automatically update the view, but alas
+					//it doesn't. Instead, I updated the representee table via a new GET request
+					//self.personalRepresentees = response.data;
                 	$scope.representee.name = "";
                   	$scope.errorAddingTee = "";
                 }, function (rejection) {

@@ -9,10 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -36,12 +32,9 @@ import edu.ncsu.csc.itrust2.models.enums.Ethnicity;
 import edu.ncsu.csc.itrust2.models.enums.Gender;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.State;
-import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
-import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.mvc.config.WebMvcConfiguration;
 import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
-import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * Test for API functionality for interacting with Patients
@@ -88,7 +81,7 @@ public class APIPatientTest {
     @WithMockUser ( username = "hcp", roles = { "HCP" } )
     public void testPatientAPI () throws Exception {
         // Clear out all patients before running these tests.
-        //DomainObject.deleteAll( Patient.class );
+        // DomainObject.deleteAll( Patient.class );
 
         final UserForm p = new UserForm( "antti", "123456", Role.ROLE_PATIENT, 1 );
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
@@ -166,13 +159,13 @@ public class APIPatientTest {
         mvc.perform( put( "/api/v1/patients/antti" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) ).andExpect( status().isUnauthorized() );
     }
-    
+
     @Test
     @WithMockUser ( username = "antti", roles = { "PATIENT" } )
-    public void testRepsPatient() throws Exception {
+    public void testRepsPatient () throws Exception {
         Patient antti = Patient.getByName( "antti" );
-        
-     // let's do some pr stuff here
+
+        // let's do some pr stuff here
 
         // first try to add Alice as a representative
         mvc.perform( post( "/api/v1/patients/representatives" ).contentType( MediaType.APPLICATION_JSON )
@@ -215,8 +208,8 @@ public class APIPatientTest {
                 .content( TestUtils.asJsonString( "BobTheFourYearOld" ) ) ).andExpect( status().isOk() );
         antti = Patient.getByName( "antti" );
         assertTrue( antti.getRepresentatives().size() == 2 );
-        
-        //and now do our delete
+
+        // and now do our delete
         mvc.perform( delete( "/api/v1/patients/representatives" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( "BobTheFourYearOld" ) ) ).andExpect( status().isOk() );
         antti = Patient.getByName( "antti" );
@@ -247,7 +240,7 @@ public class APIPatientTest {
         patient.setState( State.NC.toString() );
         patient.setZip( "27514" );
 
-        Patient antti = new Patient( patient );
+        final Patient antti = new Patient( patient );
         antti.save(); // create the patient if they don't exist already
 
         // a patient can edit their own info
@@ -259,7 +252,6 @@ public class APIPatientTest {
         mvc.perform( put( "/api/v1/patients/patient" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( patient ) ) ).andExpect( status().isUnauthorized() );
 
-        
     }
 
     /**
@@ -280,9 +272,17 @@ public class APIPatientTest {
         bob.save();
 
         // alice represents tim
-        mvc.perform( post( "/api/v1/patients/representatives/TimTheOneYearOld" )
+        mvc.perform( post( "/api/v1/patients/representees/TimTheOneYearOld" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( "AliceThirteen" ) ) ).andExpect( status().isOk() );
+        mvc.perform( post( "/api/v1/patients/representees/TimTheOneYearOld" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( "AliceThirteen" ) ) ).andExpect( status().isBadRequest() );
+        mvc.perform( post( "/api/v1/patients/representees/BuffyTheVampireSlayer" )
                 .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( "AliceThirteen" ) ) )
-                .andExpect( status().isOk() );
+                .andExpect( status().isNotFound() );
+        mvc.perform( post( "/api/v1/patients/representees/TimTheOneYearOld" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( "HiroProtagonist" ) ) ).andExpect( status().isNotFound() );
+        mvc.perform( post( "/api/v1/patients/representees/TimTheOneYearOld" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( "TimTheOneYearOld" ) ) ).andExpect( status().isBadRequest() );
         alice = Patient.getByName( "AliceThirteen" );
         tim = Patient.getByName( "TimTheOneYearOld" );
         // make sure the relationship goes both ways
