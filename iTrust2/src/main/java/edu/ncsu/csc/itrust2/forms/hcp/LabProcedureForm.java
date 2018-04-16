@@ -35,11 +35,7 @@ public class LabProcedureForm implements Serializable {
      */
     private String               id;
 
-    /**
-     * the code that describes the lab procedure code
-     */
-    @NotEmpty
-    private LabProcedureCode     lpc;
+    private String               labProcedureCode;
 
     /**
      * the priority assigned to the procedure
@@ -47,7 +43,16 @@ public class LabProcedureForm implements Serializable {
     @NotEmpty
     private LabProcedurePriority lpp;
 
-    private Calendar             date;
+    /**
+     * the id of the assigned lab tech
+     */
+    @NotEmpty
+    private String               assignedTech;
+
+    /**
+     * the date that the lab procedure was assigned
+     */
+    private String               date;
 
     private List<String>         comments;
 
@@ -65,7 +70,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
-     * @param ov the ov to set
+     * @param ov
+     *            the ov to set
      */
     public void setOv ( OfficeVisit ov ) {
         this.ov = ov;
@@ -79,24 +85,11 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
     public void setId ( String id ) {
         this.id = id;
-    }
-
-    /**
-     * @return the lpc
-     */
-    public LabProcedureCode getLpc () {
-        return lpc;
-    }
-
-    /**
-     * @param lpc the lpc to set
-     */
-    public void setLpc ( LabProcedureCode lpc ) {
-        this.lpc = lpc;
     }
 
     /**
@@ -107,7 +100,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
-     * @param lpp the lpp to set
+     * @param lpp
+     *            the lpp to set
      */
     public void setLpp ( LabProcedurePriority lpp ) {
         this.lpp = lpp;
@@ -116,14 +110,15 @@ public class LabProcedureForm implements Serializable {
     /**
      * @return the date
      */
-    public Calendar getDate () {
+    public String getDate () {
         return date;
     }
 
     /**
-     * @param date the date to set
+     * @param date
+     *            the date to set
      */
-    public void setDate ( Calendar date ) {
+    public void setDate ( String date ) {
         this.date = date;
     }
 
@@ -135,10 +130,26 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
-     * @param comments the comments to set
+     * @param comments
+     *            the comments to set
      */
     public void setComments ( List<String> comments ) {
         this.comments = comments;
+    }
+
+    /**
+     * @return the assignedTech
+     */
+    public String getAssignedTech () {
+        return assignedTech;
+    }
+
+    /**
+     * @param assignedTech
+     *            the assignedTech to set
+     */
+    public void setAssignedTech ( String assignedTech ) {
+        this.assignedTech = assignedTech;
     }
 
 }
