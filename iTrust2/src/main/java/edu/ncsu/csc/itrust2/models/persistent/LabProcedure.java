@@ -209,19 +209,4 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     public static List<LabProcedure> getByVisit ( final Long id ) {
         return getWhere( createCriterionAsList( "visit", OfficeVisit.getById( id ) ) );
     }
-
-    /**
-     * Returns a list of diagnoses for the specified Patient
-     *
-     * @param user
-     *            The patient to get diagnoses for
-     * @return The list of diagnoses
-     */
-    public static List<LabProcedure> getForPatient ( final User user ) {
-        final List<LabProcedure> diagnoses = new Vector<LabProcedure>();
-        OfficeVisit.getForPatient( user.getId() ).stream().map( OfficeVisit::getId )
-                .forEach( e -> diagnoses.addAll( getByVisit( e ) ) );
-        return diagnoses;
-
-    }
 }

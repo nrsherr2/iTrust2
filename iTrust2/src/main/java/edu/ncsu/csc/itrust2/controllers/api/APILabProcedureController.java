@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.models.persistent.ICDCode;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
@@ -38,10 +37,10 @@ public class APILabProcedureController extends APIController {
      * @return All the codes in the system
      */
     @GetMapping ( BASE_PATH + "/labcodes" )
-    public List<ICDCode> getCodes () {
-        // LoggerUtil.log( TransactionType.ICD_VIEW_ALL,
+    public List<LabProcedureCode> getCodes () {
+        // LoggerUtil.log( TransactionType.Lab_VIEW_ALL,
         // LoggerUtil.currentUser(), "Fetched icd codes" );
-        return ICDCode.getAll();
+        return LabProcedureCode.getAll();
     }
 
     /**
@@ -54,18 +53,18 @@ public class APILabProcedureController extends APIController {
     @GetMapping ( BASE_PATH + "/labcodes/{id}" )
     public ResponseEntity getCode ( @PathVariable ( "id" ) final Long id ) {
         try {
-            final ICDCode code = ICDCode.getById( id );
+            final LabProcedureCode code = LabProcedureCode.getById( id );
             if ( code == null ) {
                 return new ResponseEntity( errorResponse( "No code with id " + id ), HttpStatus.NOT_FOUND );
             }
             // TODO: ADD LOGGING
-            // LoggerUtil.log( TransactionType.ICD_VIEW,
+            // LoggerUtil.log( TransactionType.Lab_VIEW,
             // LoggerUtil.currentUser(), "Fetched icd code with id " + id );
             return new ResponseEntity( code, HttpStatus.OK );
         }
         catch ( final Exception e ) {
             return new ResponseEntity(
-                    errorResponse( "Could not retrieve ICD Code " + id + " because of " + e.getMessage() ),
+                    errorResponse( "Could not retrieve Lab Code " + id + " because of " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
         }
     }
@@ -90,7 +89,7 @@ public class APILabProcedureController extends APIController {
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            // LoggerUtil.log( TransactionType.ICD_CREATE, user.getUsername(),
+            // LoggerUtil.log( TransactionType.Lab_CREATE, user.getUsername(),
             // user.getUsername() + " created an Lab Procedure Code" );
 
             return new ResponseEntity( code, HttpStatus.OK );
@@ -125,7 +124,7 @@ public class APILabProcedureController extends APIController {
                 // ignore, its was a test that wasn't authenticated properly.
             }
             // TODO: Add Logging
-            // LoggerUtil.log( TransactionType.ICD_DELETE,
+            // LoggerUtil.log( TransactionType.Lab_DELETE,
             // LoggerUtil.currentUser(),
             // user.getUsername() + " deleted an Lab Procedure code Code" );
 
@@ -146,9 +145,8 @@ public class APILabProcedureController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/visit/labprocedures/{visitID}" )
     public List<LabProcedure> getLabProcedures ( @PathVariable ( "visitID" ) final Long id ) {
-        // LoggerUtil.log( TransactionType.ICD_VIEW_ALL,
-        // LoggerUtil.currentUser(), "Fetched icd codes" );
-        return OfficeVisit.getById( id ).getProcedures();
+        // LoggerUtil.log( TransactionType.Lab_VIEW_ALL,
+        return LabProcedure.getByVisit(id);
     }
 
     @DeleteMapping ( BASE_PATH + "/delete/labprocedures/{visitId]/{id}" )
@@ -165,7 +163,7 @@ public class APILabProcedureController extends APIController {
                 // ignore, its was a test that wasn't authenticated properly.
             }
             // TODO: Add Logging
-            // LoggerUtil.log( TransactionType.ICD_DELETE,
+            // LoggerUtil.log( TransactionType.Lab_DELETE,
             // LoggerUtil.currentUser(),
             // user.getUsername() + " deleted an Lab Procedure code Code" );
 

@@ -745,6 +745,20 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
             throw ex;
         }
 
+	//// SAVE PROCEDURES ////
+
+        // Save each of the procedures
+	System.out.println(this.getProcedures().toString());
+	
+        this.getProcedures().forEach( p -> {
+	    System.out.println(p.getId() + " " + p.getVisit() + " " + p.getAssignedLabTech());
+	    
+            p.save();
+        } );
+
+        //// END PROCEDURES ////
+
+
     }
 
     /**

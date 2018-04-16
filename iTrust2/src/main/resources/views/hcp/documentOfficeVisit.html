@@ -329,7 +329,7 @@
             $scope.procedures = [];
             $scope.fillProcedure = function () {
               $scope.procedures.push({
-                tech: $scope.procTechEntry,
+                assignedLabTech: $scope.procTechEntry.username,
                 code: $scope.procCodeEntry,
                 note: $scope.procNoteEntry,
                 priority: $scope.procPriorityEntry
@@ -879,7 +879,7 @@
                                     Code: {{p.code.code}}
                                   	</div>
                                   	<div class="col-md-3">
-                                    Assigned Lab Tech ID: {{p.tech.username}}
+                                    Assigned Lab Tech ID: {{p.assignedLabTech.username}}
                                   	</div>
                                   	<div class="col-md-3">
                                     Priority: {{p.priority}}

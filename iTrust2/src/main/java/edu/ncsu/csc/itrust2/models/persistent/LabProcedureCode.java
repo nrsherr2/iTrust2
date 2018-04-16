@@ -147,7 +147,7 @@ public class LabProcedureCode extends DomainObject<LabProcedure> {
      */
     @SuppressWarnings ( "unchecked" )
     private static List<LabProcedureCode> getWhere ( final List<Criterion> where ) {
-        return (List<LabProcedureCode>) getWhere( ICDCode.class, where );
+        return (List<LabProcedureCode>) getWhere( LabProcedureCode.class, where );
     }
 
     /**
@@ -174,7 +174,7 @@ public class LabProcedureCode extends DomainObject<LabProcedure> {
      */
     @SuppressWarnings ( "unchecked" )
     public static List<LabProcedureCode> getAll () {
-        return (List<LabProcedureCode>) DomainObject.getAll( ICDCode.class );
+        return (List<LabProcedureCode>) DomainObject.getAll( LabProcedureCode.class );
     }
 
 }
