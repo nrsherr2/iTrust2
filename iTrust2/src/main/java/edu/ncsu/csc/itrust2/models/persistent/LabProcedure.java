@@ -30,11 +30,10 @@ import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
 @Entity
 @Table ( name = "LabProcedure" )
 public class LabProcedure extends DomainObject<LabProcedure> {
-    
-    
+
     /** Hibernate/Thymeleaf need empty constructors */
-    public LabProcedure() {
-        
+    public LabProcedure () {
+
     }
 
     @NotNull
@@ -42,7 +41,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     @JoinColumn ( name = "visit_id", nullable = false )
     private OfficeVisit          visit;
 
-    private ArrayList<String>          comments;
+    private ArrayList<String>    comments;
 
     @NotNull
     private LabProcedurePriority priority;
@@ -58,6 +57,9 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     @ManyToOne
     @JoinColumn ( name = "code_id" )
     private LabProcedureCode     code;
+
+    @NotNull
+    private boolean              completed;
 
     @Override
     public Long getId () {
