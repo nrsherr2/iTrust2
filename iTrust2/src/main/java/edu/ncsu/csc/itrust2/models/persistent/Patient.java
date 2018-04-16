@@ -831,8 +831,19 @@ public class Patient extends DomainObject<Patient> implements Serializable {
      *         patient
      */
     public static boolean samePatient ( Patient pat1, Patient pat2 ) {
-        return pat1.getSelf() == null || pat2.getSelf() == null || pat1.getSelf().getId() == null
-                || pat2.getSelf().getId() == null || !pat1.getSelf().getId().equals( pat2.getSelf().getId() );
+        if ( pat1.getSelf() != null && pat2.getSelf() != null ) {
+            return pat1.getSelf().getId().equals( pat2.getSelf().getId() );
+        }
+        else if ( pat1.getId() != null && pat2.getId() != null ) {
+            return pat1.getId() == pat2.getId();
+        }
+        else if ( pat1.getFirstName() != null && pat1.getLastName() != null && pat2.getFirstName() != null
+                && pat2.getLastName() != null ) {
+            return pat1.getFirstName().equals( pat2.getFirstName() ) && pat1.getLastName().equals( pat2.getLastName() );
+        }
+        else {
+            return false;
+        }
     }
 
 }
