@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.criterion.Criterion;
 
+import edu.ncsu.csc.itrust2.forms.hcp.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
 
 /**
@@ -22,11 +24,18 @@ import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
  * and a lab tech.
  *
  * @author Nicholas Wrenn
+ * @author Nicholas Sherrill
  *
  */
 @Entity
 @Table ( name = "LabProcedure" )
 public class LabProcedure extends DomainObject<LabProcedure> {
+    
+    
+    /** Hibernate/Thymeleaf need empty constructors */
+    public LabProcedure() {
+        
+    }
 
     @NotNull
     @ManyToOne

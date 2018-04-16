@@ -10,8 +10,33 @@
 		/*<![CDATA[*/
 			var app = angular.module("proceduresApp", []);
 			app.controller('proceduresCtrl', function($scope, $http) {
-			
-			
+				$scope.displayName = function(l){
+					return l.assignedLabTech + " " + l.id.toString();
+				}
+				
+				// documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+				
+				$scope.searchFilter = "";
+				$scope.filterProcs = function(labProc){
+					return($scope.displayName(l)).toLowerCase().match($scope.searchFilter.toLowerCase());
+				}
+				
+				function formDifferent(current, original){
+					for(var field in original){
+						if(current[field] != original[field]) return true;
+					}
+					return false;
+				}
+				
+				funciton zeroPad(number, characters){
+					var s = String(number);
+					while(s.length < characters) s = "0" + s;
+					return s;
+				}
+				
+				$scope.originalForm = {};
+				$scope.labForm = {};
+				
 			});
 			/*]]>*/
 		</script>
