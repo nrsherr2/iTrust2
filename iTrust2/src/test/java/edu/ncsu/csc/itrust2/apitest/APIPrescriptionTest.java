@@ -133,24 +133,13 @@ public class APIPrescriptionTest {
         assertEquals( form1.getEndDate(), p2Form.getEndDate() );
 
         // Verify prescriptions have been added
-        String allPrescriptionContent = mvc.perform( get( "/api/v1/prescriptions" ) ).andExpect( status().isOk() )
+        final String allPrescriptionContent = mvc.perform( get( "/api/v1/prescriptions" ) ).andExpect( status().isOk() )
                 .andReturn().getResponse().getContentAsString();
-        List<Prescription> allPrescriptions = gson.fromJson( allPrescriptionContent,
+        final List<Prescription> allPrescriptions = gson.fromJson( allPrescriptionContent,
                 new TypeToken<List<Prescription>>() {
                 }.getType() );
         assertTrue( allPrescriptions.size() >= 2 );
 
-
-	// Verify prescriptions have been added
-	// CUSTOM
-        allPrescriptionContent = mvc.perform( get( "/api/v1/prescriptions/patient/" + "api_test_patient" ) ).andExpect( status().isOk() )
-                .andReturn().getResponse().getContentAsString();
-        allPrescriptions = gson.fromJson( allPrescriptionContent,
-                new TypeToken<List<Prescription>>() {
-                }.getType() );
-        assertTrue( allPrescriptions.size() >= 2 );
-
-	
         // Edit first prescription
         p1.setDosage( 500 );
         final String editContent = mvc

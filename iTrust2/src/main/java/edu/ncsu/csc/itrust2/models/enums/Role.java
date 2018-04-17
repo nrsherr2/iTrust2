@@ -14,13 +14,13 @@ public enum Role {
      */
     ROLE_PATIENT ( 1, "patient/index" ),
     /**
-     * Emergency Responder
+     * Patient
      */
-    ROLE_ER ( 4, "ER/index" ),
+    ROLE_ER ( 1, "ER/index" ),
     /**
-     * Lab Tech
+     * Patient
      */
-    ROLE_LABTECH ( 5, "labtech/index" ),
+    ROLE_LABTECH ( 1, "labtech/index" ),
     /**
      * HCP (general)
      */
