@@ -63,4 +63,17 @@ public class HCPController {
     public String viewEmergencyRecords ( final Model model ) {
         return "hcp/viewEmergencyHealthRecords";
     }
+    
+     * Returns the form page for an HCP to view patients' personal
+     * representatives
+     *
+     * @param model
+     *            The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping ( "/hcp/viewPersonalRepresentatives" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public String viewPersonalRepresentatives ( final Model model ) {
+        return "/hcp/viewPersonalRepresentatives";
+    }
 }
