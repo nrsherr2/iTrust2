@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.hibernate.Session;
@@ -198,15 +199,17 @@ public class APILabProcedureController extends APIController {
      * @return map of lab techs and numProcedures for each
      */
     @GetMapping ( BASE_PATH + "/labtechs" )
-    public Map<User, Integer> getLabTechs () {
+    public List<List> getLabTechs () {
         final Session session = HibernateUtil.openSession();
-        final Map<User, Integer> numProcedures = new HashMap<>();
+	final List<User> techs = User.getByRole( Role.ROLE_LABTECH );
+	final List<Integer> numbers = new ArrayList<Integer>();
+	
         for ( final User user : User.getByRole( Role.ROLE_LABTECH ) ) {
             try {
                 session.beginTransaction();
-                final List procedureNum = session.createCriteria( LabProcedure.class )
+                final List procedureNums = session.createCriteria( LabProcedure.class )
                         .add( Restrictions.like( "assignedLabTech", user.getUsername() ) ).list();
-                numProcedures.put( user, procedureNum.size() );
+		numbers.add( procedureNums.size() );
             }
             finally {
                 try {
@@ -221,7 +224,11 @@ public class APILabProcedureController extends APIController {
 
         session.close();
 
-        return numProcedures;
+	List<List> ret = new ArrayList<List>();
+	ret.add(techs);
+	ret.add(numbers);
+
+        return ret;
     }
 
 }
