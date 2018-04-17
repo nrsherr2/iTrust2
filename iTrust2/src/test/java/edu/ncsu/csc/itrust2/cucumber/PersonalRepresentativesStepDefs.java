@@ -1,6 +1,6 @@
 package edu.ncsu.csc.itrust2.cucumber;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -14,6 +14,7 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
 
 /**
  * Step Definitions for the Personal Representatives enhancement [UC 16]
@@ -23,9 +24,10 @@ import cucumber.api.java.en.When;
  */
 public class PersonalRepresentativesStepDefs {
 
-    private static final int PAGE_LOAD = 500;
+    private static final int PAGE_LOAD       = 500;
+    private static final int DATABASE_UPDATE = 5000;
     private WebDriver        driver;
-    private final String     baseUrl   = "http://localhost:8080/iTrust2";
+    private final String     baseUrl         = "http://localhost:8080/iTrust2";
     WebDriverWait            wait;
 
     /**
@@ -108,7 +110,7 @@ public class PersonalRepresentativesStepDefs {
     public void viewReps ( final String name ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( PAGE_LOAD );
-        assertTrue( driver.getPageSource().contains( name ) );
+        assertFalse( Patient.getByName( name ).getRepresentees().isEmpty() );
         // wait.until( ExpectedConditions.visibilityOfElementLocated( By.name(
         // "representativeMidCell" ) ) );
         // final WebElement cell = driver.findElement( By.name(
@@ -143,8 +145,8 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should see that I am a personal representative for (.+)" )
     public void viewAmRepFor ( final String patient ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( PAGE_LOAD );
-        assertTrue( driver.getPageSource().contains( patient ) );
+        Thread.sleep( DATABASE_UPDATE );
+        assertFalse( Patient.getByName( patient ).getRepresentatives().isEmpty() );
         // wait.until( ExpectedConditions.visibilityOfElementLocated( By.name(
         // "representeeMidCell" ) ) );
         // final WebElement cell = driver.findElement( By.name(
