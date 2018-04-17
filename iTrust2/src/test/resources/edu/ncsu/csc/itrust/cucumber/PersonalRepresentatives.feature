@@ -1,10 +1,10 @@
 #Author nlwrenn
 #Author jgschwab
 Feature: As a developer, I want to automate
-		 #our System Test plan for the personal
-		 #representatives feature so that necessary
-		 #functionality can easily be confirmed
-		 #through the UI
+		 our System Test plan for the personal
+		 representatives feature so that necessary
+		 functionality can easily be confirmed
+		 through the UI
 
 Scenario Outline: A patient should be able to view and add their own personal representatives
 Given I log in to iTrust2 with my username <name>
