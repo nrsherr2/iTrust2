@@ -32,7 +32,7 @@ public class PersonalRepresentativesStepDefs {
     @Before
     public void setup () {
         driver = new HtmlUnitDriver( true );
-        wait = new WebDriverWait( driver, 25 );
+        wait = new WebDriverWait( driver, 35 );
     }
 
     /**
@@ -106,7 +106,9 @@ public class PersonalRepresentativesStepDefs {
     public void viewReps ( final String name ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( PAGE_LOAD );
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representativeMidCell" ), name ) );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "representativeMidCell" ) ) );
+        final WebElement cell = driver.findElement( By.name( "representativeMidCell" ) );
+        wait.until( ExpectedConditions.textToBePresentInElement( cell, name ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -136,7 +138,9 @@ public class PersonalRepresentativesStepDefs {
     public void viewAmRepFor ( final String patient ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( PAGE_LOAD );
-        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representeeMidCell" ), patient ) );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "representeeMidCell" ) ) );
+        final WebElement cell = driver.findElement( By.name( "representeeMidCell" ) );
+        wait.until( ExpectedConditions.textToBePresentInElement( cell, patient ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
