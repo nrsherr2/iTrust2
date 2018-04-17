@@ -32,10 +32,9 @@ import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
  */
 public class PersonalRepresentativesStepDefs {
 
-    private static final int PAGE_LOAD       = 500;
-    private static final int DATABASE_UPDATE = 10000;
+    private static final int PAGE_LOAD = 500;
     private WebDriver        driver;
-    private final String     baseUrl         = "http://localhost:8080/iTrust2";
+    private final String     baseUrl   = "http://localhost:8080/iTrust2";
     WebDriverWait            wait;
 
     /**
