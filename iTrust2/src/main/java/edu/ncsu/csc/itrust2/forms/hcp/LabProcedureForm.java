@@ -152,4 +152,12 @@ public class LabProcedureForm implements Serializable {
         this.assignedTech = assignedTech;
     }
 
+    public String getLabProcedureCode () {
+        return labProcedureCode;
+    }
+
+    public void setLabProcedureCode ( String labProcedureCode ) {
+        this.labProcedureCode = labProcedureCode;
+    }
+
 }
