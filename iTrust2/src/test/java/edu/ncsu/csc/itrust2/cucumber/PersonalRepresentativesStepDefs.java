@@ -38,7 +38,7 @@ public class PersonalRepresentativesStepDefs {
     public void setup () {
         driver = new HtmlUnitDriver( true );
         wait = new WebDriverWait( driver, 35 );
-        HibernateDataGenerator.refreshDB();
+        HibernateDataGenerator.generateTestFaculties();
     }
 
     /**
