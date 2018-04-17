@@ -200,7 +200,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     }
 
     /**
-     * Return a list of Diagnosis for the specified visit
+     * Return a list of Lab Procedures for the specified visit
      *
      * @param id
      *            The ID of the Office Visit to search for
@@ -208,5 +208,16 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      */
     public static List<LabProcedure> getByVisit ( final Long id ) {
         return getWhere( createCriterionAsList( "visit", OfficeVisit.getById( id ) ) );
+    }
+
+    /**
+     * Return a list of Lab Procedures for the specified lab tech
+     * 
+     * @param techName
+     *            the username of the labtech to add
+     * @return a list of every lab procedure assigned to that lab tech
+     */
+    public static List<LabProcedure> getForTech ( final String techName ) {
+        return getWhere( createCriterionAsList( "assignedLabTech", LabTech.getByName( techName ) ) );
     }
 }
