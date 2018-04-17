@@ -1,14 +1,10 @@
 package edu.ncsu.csc.itrust2.cucumber;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import cucumber.api.java.After;
@@ -25,10 +21,9 @@ import cucumber.api.java.en.When;
  */
 public class PersonalRepresentativesStepDefs {
 
-    private static final int PAGE_LOAD   = 500;
-    private static final int GLOBAL_WAIT = 6000;
+    private static final int PAGE_LOAD = 500;
     private WebDriver        driver;
-    private final String     baseUrl     = "http://localhost:8080/iTrust2";
+    private final String     baseUrl   = "http://localhost:8080/iTrust2";
     WebDriverWait            wait;
 
     /**
@@ -37,12 +32,6 @@ public class PersonalRepresentativesStepDefs {
     @Before
     public void setup () {
         driver = new HtmlUnitDriver( true );
-        // ChromeDriverManager.getInstance().setup();
-        // final ChromeOptions options = new ChromeOptions();
-        // options.addArguments( "headless" );
-        // options.addArguments( "window-size=1200x600" );
-        // options.addArguments( "blink-settings=imagesEnabled=false" );
-        // driver = new ChromeDriver( options );
         wait = new WebDriverWait( driver, 25 );
     }
 
@@ -63,7 +52,7 @@ public class PersonalRepresentativesStepDefs {
 
     // ------------------------------------------
     // Scenario: A patient should be able to view
-    // their own personal representatives
+    // and add their own personal representatives
     // ------------------------------------------
 
     /**
@@ -116,15 +105,8 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should see (.+) as my personal representative" )
     public void viewReps ( final String name ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( GLOBAL_WAIT );
-        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
-        boolean found = false;
-        for ( final WebElement w : allMIDCells ) {
-            if ( w.getText().contains( name ) ) {
-                found = true;
-            }
-        }
-        assertTrue( found );
+        Thread.sleep( PAGE_LOAD );
+        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representativeMidCell" ), name ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -153,15 +135,8 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should see that I am a personal representative for (.+)" )
     public void viewAmRepFor ( final String patient ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( GLOBAL_WAIT );
-        final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
-        boolean found = false;
-        for ( final WebElement w : allMIDCells ) {
-            if ( w.getText().contains( patient ) ) {
-                found = true;
-            }
-        }
-        assertTrue( found );
+        Thread.sleep( PAGE_LOAD );
+        wait.until( ExpectedConditions.textToBePresentInElementLocated( By.name( "representeeMidCell" ), patient ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -193,15 +168,8 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should not see (.+) as one of my personal representatives" )
     public void notSeeRep ( final String rep ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( GLOBAL_WAIT );
-        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
-        boolean found = false;
-        for ( final WebElement w : allMIDCells ) {
-            if ( w.getText().contains( rep ) ) {
-                found = true;
-            }
-        }
-        assertFalse( found );
+        Thread.sleep( PAGE_LOAD );
+        wait.until( ExpectedConditions.invisibilityOfElementWithText( By.name( "representativeMidCell" ), rep ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -233,15 +201,8 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should not see myself as a personal representative for (.+)" )
     public void notSeeRepresentee ( final String representee ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( GLOBAL_WAIT );
-        final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
-        boolean found = false;
-        for ( final WebElement w : allMIDCells ) {
-            if ( w.getText().contains( representee ) ) {
-                found = true;
-            }
-        }
-        assertFalse( found );
+        Thread.sleep( PAGE_LOAD );
+        wait.until( ExpectedConditions.invisibilityOfElementWithText( By.name( "representeeMidCell" ), representee ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 }
