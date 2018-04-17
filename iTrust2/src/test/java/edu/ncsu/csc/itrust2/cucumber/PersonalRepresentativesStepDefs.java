@@ -2,7 +2,7 @@ package edu.ncsu.csc.itrust2.cucumber;
 
 import static org.junit.Assert.assertFalse;
 
-import java.util.List;
+import java.text.ParseException;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -16,6 +16,12 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import edu.ncsu.csc.itrust2.models.enums.BloodType;
+import edu.ncsu.csc.itrust2.models.enums.Ethnicity;
+import edu.ncsu.csc.itrust2.models.enums.Gender;
+import edu.ncsu.csc.itrust2.models.enums.State;
+import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 
 /**
@@ -27,7 +33,7 @@ import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 public class PersonalRepresentativesStepDefs {
 
     private static final int PAGE_LOAD       = 500;
-    private static final int DATABASE_UPDATE = 5000;
+    private static final int DATABASE_UPDATE = 10000;
     private WebDriver        driver;
     private final String     baseUrl         = "http://localhost:8080/iTrust2";
     WebDriverWait            wait;
@@ -63,12 +69,64 @@ public class PersonalRepresentativesStepDefs {
     // ------------------------------------------
 
     /**
+     * Make sure the 3 patients we need are in the database
+     *
+     * @throws ParseException
+     */
+    @Given ( "the required patients exist in the database" )
+    public void loadRequiredUsers () throws ParseException {
+
+        // make sure the users we need to login exist
+        final Patient dbAlice = Patient.getByName( "AliceThirteen" );
+        final Patient alice = null == dbAlice ? new Patient() : dbAlice;
+        alice.setSelf( User.getByName( "AliceThirteen" ) );
+        alice.setEmail( "alice@gmail.com" );
+        alice.setAddress1( "123 Alice St." );
+        alice.setCity( "Raleigh" );
+        alice.setState( State.NC );
+        alice.setZip( "12345" );
+        alice.setPhone( "123-456-7890" );
+        alice.setBloodType( BloodType.BNeg );
+        alice.setEthnicity( Ethnicity.Caucasian );
+        alice.setGender( Gender.Female );
+        alice.save();
+
+        final Patient dbTim = Patient.getByName( "TimTheOneYearOld" );
+        final Patient tim = null == dbTim ? new Patient() : dbTim;
+        tim.setSelf( User.getByName( "TimTheOneYearOld" ) );
+        tim.setEmail( "tim@gmail.com" );
+        tim.setAddress1( "123 Tim St." );
+        tim.setCity( "Raleigh" );
+        tim.setState( State.NC );
+        tim.setZip( "12345" );
+        tim.setPhone( "123-456-7890" );
+        tim.setBloodType( BloodType.BNeg );
+        tim.setEthnicity( Ethnicity.Caucasian );
+        tim.setGender( Gender.Male );
+        tim.save();
+
+        final Patient dbBob = Patient.getByName( "BobTheFourYearOld" );
+        final Patient bob = null == dbBob ? new Patient() : dbBob;
+        bob.setSelf( User.getByName( "BobTheFourYearOld" ) );
+        bob.setEmail( "bob@gmail.com" );
+        bob.setAddress1( "123 Bob St." );
+        bob.setCity( "Raleigh" );
+        bob.setState( State.NC );
+        bob.setZip( "12345" );
+        bob.setPhone( "123-456-7890" );
+        bob.setBloodType( BloodType.BNeg );
+        bob.setEthnicity( Ethnicity.Caucasian );
+        bob.setGender( Gender.Male );
+        bob.save();
+    }
+
+    /**
      * User logs into iTrust2
      *
      * @param name
      *            The username of the patient to log in as
      */
-    @Given ( "I log in to iTrust2 with my username (.+)" )
+    @When ( "I log in to iTrust2 with my username (.+)" )
     public void loginPatient ( final String name ) {
         driver.get( baseUrl );
         setTextField( By.name( "username" ), name );
@@ -172,22 +230,19 @@ public class PersonalRepresentativesStepDefs {
     /**
      * The patient should not see the person they just removed
      *
+     * @param me
+     *            The user logged in
      * @param rep
      *            The personal representative they assigned to themself
      * @throws InterruptedException
      */
-    @Then ( "I should not see (.+) as one of my personal representatives" )
-    public void notSeeRep ( final String rep ) throws InterruptedException {
+    @Then ( "(.+) should not see (.+) as a personal representative" )
+    public void notSeeRep ( final String me, final String rep ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( DATABASE_UPDATE );
-        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
-        boolean found = false;
-        for ( final WebElement w : allMIDCells ) {
-            if ( w.getText().contains( rep ) ) {
-                found = true;
-            }
-        }
-        assertFalse( found );
+        // Thread.sleep( DATABASE_UPDATE );
+        Patient.getByName( rep ).save();
+        Patient.getByName( me ).save();
+        assertFalse( Patient.getByName( rep ).inRepresentees( Patient.getByName( me ) ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -207,27 +262,5 @@ public class PersonalRepresentativesStepDefs {
         setTextField( By.name( "representee" ), representee );
         final WebElement btn = driver.findElement( By.name( "deleteRepresenteeSubmit" ) );
         btn.click();
-    }
-
-    /**
-     * Patient should not see themself as a representative for this person
-     *
-     * @param representee
-     *            The person they are a representative for
-     * @throws InterruptedException
-     */
-    @Then ( "I should not see myself as a personal representative for (.+)" )
-    public void notSeeRepresentee ( final String representee ) throws InterruptedException {
-        driver.get( driver.getCurrentUrl() );
-        Thread.sleep( DATABASE_UPDATE );
-        final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
-        boolean found = false;
-        for ( final WebElement w : allMIDCells ) {
-            if ( w.getText().contains( representee ) ) {
-                found = true;
-            }
-        }
-        assertFalse( found );
-        driver.findElement( By.id( "logout" ) ).click();
     }
 }

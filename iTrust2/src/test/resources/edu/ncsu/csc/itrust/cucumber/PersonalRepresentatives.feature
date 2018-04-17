@@ -30,24 +30,26 @@ Examples:
 | TimTheOneYearOld	        | BobTheFourYearOld     |
 
 Scenario Outline: A patient should be able to remove one of their personal representatives
-Given I log in to iTrust2 with my username <name>
+Given the required patients exist in the database
+And I log in to iTrust2 with my username <name>
 When I navigate to the personal representatives page
 And I assign <other> as a personal representative
-When I remove my personal representative <other>
-Then I should not see <other> as one of my personal representatives
+And I remove my personal representative <other>
+Then <name> should not see <other> as a personal representative
 Examples:
 | name 						| other                 |
 | BobTheFourYearOld	        | AliceThirteen         |
 
 Scenario Outline: A patient should be able to undeclare themself as a personal representative
-Given I log in to iTrust2 with my username <name>
+Given the required patients exist in the database
+And I log in to iTrust2 with my username <name>
 When I navigate to the personal representatives page
 And I assign <other> as a personal representative
 And I log out
 And I log in to iTrust2 with my username <other>
 And I navigate to the personal representatives page
 And I undeclare myself as a personal representative for <name>
-Then I should not see myself as a personal representative for <name>
+Then <name> should not see <other> as a personal representative
 Examples:
 | name 						| other                 |
 | BobTheFourYearOld	        | TimTheOneYearOld      |
