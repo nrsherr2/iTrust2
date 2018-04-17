@@ -15,6 +15,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 
 /**
  * Step Definitions for the Personal Representatives enhancement [UC 16]
@@ -37,6 +38,7 @@ public class PersonalRepresentativesStepDefs {
     public void setup () {
         driver = new HtmlUnitDriver( true );
         wait = new WebDriverWait( driver, 35 );
+        HibernateDataGenerator.refreshDB();
     }
 
     /**
