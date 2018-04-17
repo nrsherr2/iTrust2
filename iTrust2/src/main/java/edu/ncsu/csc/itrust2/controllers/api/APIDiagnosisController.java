@@ -84,6 +84,8 @@ public class APIDiagnosisController extends APIController {
     /**
      * Returns a list of diagnoses for the requested patient
      *
+     * @param id
+     *            The ID of the office visit to get diagnoses for
      * @return List of Diagnoses for the patient
      */
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ER')" )    

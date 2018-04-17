@@ -164,6 +164,9 @@ public class APIPrescriptionController extends APIController {
     /**
      * Returns a collection of all the prescriptions in the system.
      *
+     * @param id
+     *            the id of the desired prescription
+     *
      * @return all saved prescriptions
      */
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ER')" )
