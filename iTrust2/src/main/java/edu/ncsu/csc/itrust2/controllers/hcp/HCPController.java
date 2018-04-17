@@ -64,7 +64,7 @@ public class HCPController {
         return "hcp/viewEmergencyHealthRecords";
     }
     
-     * Returns the form page for an HCP to view patients' personal
+    /** Returns the form page for an HCP to view patients' personal
      * representatives
      *
      * @param model
