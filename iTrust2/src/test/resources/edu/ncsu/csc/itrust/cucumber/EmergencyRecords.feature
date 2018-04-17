@@ -13,7 +13,7 @@ When I fill in the username of the patient
 Then the patients medical information is displayed
 Examples:
 	|MID    |
-	|AliceThirteen|
+	|AliceThirteen Smith|
 
 Scenario Outline: ER views emergency health records
 Given There is a patient with the name: <MID>
@@ -23,5 +23,5 @@ When I fill in the username of the patient
 Then the patients medical information is displayed
 Examples:
 	|MID    |
-	|AliceThirteen|
+	|AliceThirteen Smith|
 	
