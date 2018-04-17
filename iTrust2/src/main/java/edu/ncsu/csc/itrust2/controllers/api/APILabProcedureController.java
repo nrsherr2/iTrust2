@@ -211,7 +211,6 @@ public class APILabProcedureController extends APIController {
             finally {
                 try {
                     session.getTransaction().commit();
-                    session.close();
                 }
                 catch ( final Exception e ) {
                     e.printStackTrace( System.out );
@@ -219,6 +218,8 @@ public class APILabProcedureController extends APIController {
                 }
             }
         }
+
+        session.close();
 
         return numProcedures;
     }
