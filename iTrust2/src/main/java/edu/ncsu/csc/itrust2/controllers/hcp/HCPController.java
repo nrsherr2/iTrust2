@@ -52,6 +52,18 @@ public class HCPController {
     }
 
     /**
+     * Landing screen for a Patient when they log in
+     *
+     * @param model
+     *            The data from the front end
+     * @return The page to show to the user
+     */
+    @RequestMapping ( value = "hcp/viewEmergencyRecords" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" ) 
+    public String viewEmergencyRecords ( final Model model ) {
+        return "hcp/viewEmergencyHealthRecords";
+    }
+    
      * Returns the form page for an HCP to view patients' personal
      * representatives
      *
