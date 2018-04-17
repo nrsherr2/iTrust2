@@ -2,6 +2,8 @@ package edu.ncsu.csc.itrust2.cucumber;
 
 import static org.junit.Assert.assertFalse;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,7 +16,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.utils.HibernateDataGenerator;
 
 /**
@@ -112,13 +113,9 @@ public class PersonalRepresentativesStepDefs {
     public void viewReps ( final String name ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
         Thread.sleep( PAGE_LOAD );
-        assertFalse( Patient.getByName( name ).getRepresentees().isEmpty() );
-        // wait.until( ExpectedConditions.visibilityOfElementLocated( By.name(
-        // "representativeMidCell" ) ) );
-        // final WebElement cell = driver.findElement( By.name(
-        // "representativeMidCell" ) );
-        // wait.until( ExpectedConditions.textToBePresentInElement( cell, name )
-        // );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "representativeMidCell" ) ) );
+        final WebElement cell = driver.findElement( By.name( "representativeMidCell" ) );
+        wait.until( ExpectedConditions.textToBePresentInElement( cell, name ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -147,14 +144,10 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should see that I am a personal representative for (.+)" )
     public void viewAmRepFor ( final String patient ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( DATABASE_UPDATE );
-        assertFalse( Patient.getByName( patient ).getRepresentatives().isEmpty() );
-        // wait.until( ExpectedConditions.visibilityOfElementLocated( By.name(
-        // "representeeMidCell" ) ) );
-        // final WebElement cell = driver.findElement( By.name(
-        // "representeeMidCell" ) );
-        // wait.until( ExpectedConditions.textToBePresentInElement( cell,
-        // patient ) );
+        Thread.sleep( PAGE_LOAD );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "representeeMidCell" ) ) );
+        final WebElement cell = driver.findElement( By.name( "representeeMidCell" ) );
+        wait.until( ExpectedConditions.textToBePresentInElement( cell, patient ) );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -186,8 +179,15 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should not see (.+) as one of my personal representatives" )
     public void notSeeRep ( final String rep ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( PAGE_LOAD );
-        wait.until( ExpectedConditions.invisibilityOfElementWithText( By.name( "representativeMidCell" ), rep ) );
+        Thread.sleep( DATABASE_UPDATE );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( rep ) ) {
+                found = true;
+            }
+        }
+        assertFalse( found );
         driver.findElement( By.id( "logout" ) ).click();
     }
 
@@ -219,8 +219,15 @@ public class PersonalRepresentativesStepDefs {
     @Then ( "I should not see myself as a personal representative for (.+)" )
     public void notSeeRepresentee ( final String representee ) throws InterruptedException {
         driver.get( driver.getCurrentUrl() );
-        Thread.sleep( PAGE_LOAD );
-        wait.until( ExpectedConditions.invisibilityOfElementWithText( By.name( "representeeMidCell" ), representee ) );
+        Thread.sleep( DATABASE_UPDATE );
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representeeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( representee ) ) {
+                found = true;
+            }
+        }
+        assertFalse( found );
         driver.findElement( By.id( "logout" ) ).click();
     }
 }
