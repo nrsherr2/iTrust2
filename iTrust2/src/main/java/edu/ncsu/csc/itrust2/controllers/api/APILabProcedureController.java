@@ -1,7 +1,11 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +21,8 @@ import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
-import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.User;
+import edu.ncsu.csc.itrust2.utils.HibernateUtil;
 
 /**
  * REST endpoints required to create, delete, and manipulate lab procedure codes
@@ -146,7 +150,7 @@ public class APILabProcedureController extends APIController {
     @GetMapping ( BASE_PATH + "/visit/labprocedures/{visitID}" )
     public List<LabProcedure> getLabProcedures ( @PathVariable ( "visitID" ) final Long id ) {
         // LoggerUtil.log( TransactionType.Lab_VIEW_ALL,
-        return LabProcedure.getByVisit(id);
+        return LabProcedure.getByVisit( id );
     }
 
     @DeleteMapping ( BASE_PATH + "/delete/labprocedures/{visitId]/{id}" )
@@ -172,7 +176,7 @@ public class APILabProcedureController extends APIController {
         catch ( final Exception e ) {
             e.printStackTrace();
             return new ResponseEntity(
-                    errorResponse( "Could not delete Lab Procedure Code " + id + " because of " + e.getMessage() ),
+                    errorResponse( "Could not delete Lab Procedure " + id + " because of " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
         }
     }
@@ -188,14 +192,35 @@ public class APILabProcedureController extends APIController {
     }
 
     /**
-     * Returns a list of all lab techs TODO: Needs to return a hash map with the
-     * lab techs id and the number of procedures they have assigned
+     * Returns a hash map of the lab tech users and the number of assigned lab
+     * procedures they currently have in the system
      *
-     * @return list of all lab techs
+     * @return map of lab techs and numProcedures for each
      */
     @GetMapping ( BASE_PATH + "/labtechs" )
-    public List<User> getLabTechs () {
-        return User.getByRole( Role.ROLE_LABTECH );
+    public Map<User, Integer> getLabTechs () {
+        final Session session = HibernateUtil.openSession();
+        final Map<User, Integer> numProcedures = new HashMap<>();
+        for ( final User user : User.getByRole( Role.ROLE_LABTECH ) ) {
+            try {
+                session.beginTransaction();
+                final List procedureNum = session.createCriteria( LabProcedure.class )
+                        .add( Restrictions.like( "assignedLabTech", user.getUsername() ) ).list();
+                numProcedures.put( user, procedureNum.size() );
+            }
+            finally {
+                try {
+                    session.getTransaction().commit();
+                    session.close();
+                }
+                catch ( final Exception e ) {
+                    e.printStackTrace( System.out );
+                    // Continue
+                }
+            }
+        }
+
+        return numProcedures;
     }
 
 }
