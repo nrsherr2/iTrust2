@@ -15,6 +15,7 @@ import edu.ncsu.csc.itrust2.models.enums.Gender;
 import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
 import edu.ncsu.csc.itrust2.models.enums.PatientSmokingStatus;
+import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
 import edu.ncsu.csc.itrust2.models.enums.State;
 
 /**
@@ -110,6 +111,18 @@ public class APIEnumController extends APIController {
     public List<LabProcedurePriority> getLabProcedurePriority () {
         final List<LabProcedurePriority> ret = Arrays.asList( LabProcedurePriority.values() ).subList( 1,
                 LabProcedurePriority.values().length );
+        return ret;
+    }
+
+    /**
+     * Tells the lab procedure page every procedure status available
+     * 
+     * @return the list of statuses
+     */
+    @GetMapping ( BASE_PATH + "/procstat" )
+    public List<ProcedureStatus> getStatuses () {
+        final List<ProcedureStatus> ret = Arrays.asList( ProcedureStatus.values() ).subList( 1,
+                ProcedureStatus.values().length );
         return ret;
     }
 
