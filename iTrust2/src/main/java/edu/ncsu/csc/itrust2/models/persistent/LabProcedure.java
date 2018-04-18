@@ -71,7 +71,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     private LabProcedureCode     code;
 
     @NotNull
-    private ProcedureStatus      status;
+    private ProcedureStatus      status = ProcedureStatus.NOT_STARTED;
 
     @Override
     public Long getId () {

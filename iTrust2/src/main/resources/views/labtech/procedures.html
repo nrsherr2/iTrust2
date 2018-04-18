@@ -69,12 +69,12 @@
 								<th>Lab Procedure Select</th>
 								<th>Lab Procedure Code</th>
 								<th>Notes</th>
-								<th>Started?</th>
+								<th>Status</th>
 							</tr>
 							<tr name="procedureRow" ng-repeat="p in labprocedures">
 								<td> <input name="selectProcedure" type="radio"/></td>
 								<td name="selectedCell"> {{p.code}}</td>
-								<td>{{p.completed}}</td>
+								<td name="status">{{p.status}}</td>
 							</tr>
 						</table>
 					</td>
