@@ -23,6 +23,9 @@ import cucumber.api.java.en.When;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.State;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
+import edu.ncsu.csc.itrust2.models.enums.BloodType;
+import edu.ncsu.csc.itrust2.models.enums.Ethnicity;
+import edu.ncsu.csc.itrust2.models.enums.Gender;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 
 public class EmergencyRecordsStepDefs {
@@ -33,6 +36,7 @@ public class EmergencyRecordsStepDefs {
     String               PATIENT_GENDER = "Male";
     String               PATIENT_BLOOD  = "APos";
 
+    private static final int PAGE_LOAD = 500;
     private WebDriver    driver;
     private final String baseUrl        = "http://localhost:8080/iTrust2";
 
@@ -42,7 +46,7 @@ public class EmergencyRecordsStepDefs {
     public void setup () {
 
         driver = new HtmlUnitDriver( true );
-        wait = new WebDriverWait( driver, 5 );
+        wait = new WebDriverWait( driver, 35 );
 
         final User hcp = new User( "hcp", "$2a$10$EblZqNptyYvcLm/VwDCVAuBjzZOI7khzdyGPBr08PpIi0na624b8.", Role.ROLE_HCP,
                 1 );
@@ -58,30 +62,32 @@ public class EmergencyRecordsStepDefs {
         driver.close();
     }
 
+    private void setTextField ( final By byval, final String value ) {
+        final WebElement elem = driver.findElement( byval );
+        elem.clear();
+        elem.sendKeys( value );
+    }
+
+
     @Given ( "There is a patient with the name: (.+)" )
-    public void patientExists ( final String name ) throws ParseException {
+    public void patientExists ( String name ) throws ParseException {
 
         /* Create patient record */
-
-        final Patient patient = new Patient();
-        patient.setSelf( User.getByName( PATIENT_NAME ) );
-        patient.setFirstName( name.split( " " )[0] );
-        patient.setLastName( name.split( " " )[1] );
-        patient.setEmail( "email@mail.com" );
-        patient.setAddress1( "847 address place" );
-        patient.setCity( "citytown" );
-        patient.setState( State.CA );
-        patient.setZip( "91505" );
-        patient.setPhone( "123-456-7890" );
-        final SimpleDateFormat sdf = new SimpleDateFormat( "MM/DD/YYYY", Locale.ENGLISH );
-
-        final Calendar time = Calendar.getInstance();
-        time.setTime( sdf.parse( PATIENT_DOB ) );
-
-        patient.setDateOfBirth( time );
-
-        patient.save();
-
+	        // make sure the users we need to login exist
+	name = "AliceThirteen";
+        final Patient dbAlice = Patient.getByName( name);
+        final Patient alice = null == dbAlice ? new Patient() : dbAlice;
+        alice.setSelf( User.getByName( name ) );
+        alice.setEmail( "alice@gmail.com" );
+        alice.setAddress1( "123 Alice St." );
+        alice.setCity( "Raleigh" );
+        alice.setState( State.NC );
+        alice.setZip( "12345" );
+        alice.setPhone( "123-456-7890" );
+        alice.setBloodType( BloodType.BNeg );
+        alice.setEthnicity( Ethnicity.Caucasian );
+        alice.setGender( Gender.Female );
+        alice.save();
     }
 
     @When ( "I log into iTrust2 as an ER" )
@@ -97,23 +103,40 @@ public class EmergencyRecordsStepDefs {
         submit.click();
     }
 
-    @When ( "I navigate to the Emergency Health Records Page" )
-    public void navigateToOfficeVisit () {
-	driver.get( baseUrl + "/hcp/viewEmergencyRecords");
+    @When ( "I navigate to the HCP Emergency Health Records Page" )
+    public void navigateToHCPRecords () throws InterruptedException {
+	System.out.println("CUSTOM DEBUGGING: navigating to Emergency Recoreds");
+        driver.get( baseUrl + "/hcp/viewEmergencyRecords" );
+        Thread.sleep( PAGE_LOAD );
+	System.out.println("CUSTOM DEBUGGING: navigating to Emergency Recoreds -- COMPLETE");
+    }
+
+    @When ( "I navigate to the ER Emergency Health Records Page" )
+    public void navigateToERRecords () throws InterruptedException {
+	System.out.println("CUSTOM DEBUGGING: navigating to Emergency Recoreds");
+        driver.get( baseUrl + "/ER/viewEmergencyRecords" );
+        Thread.sleep( PAGE_LOAD );
+	System.out.println("CUSTOM DEBUGGING: navigating to Emergency Recoreds -- COMPLETE");
     }
 
     @When ( "I fill in the username of the patient" )
     public void searchName () {
+	try {
+	    driver.get( baseUrl + "/hcp/viewEmergencyRecords" );
+	    Thread.sleep( PAGE_LOAD );
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
 
         // Enter the name
         String ename = "searchName";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( ename ) ) );
+        //wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( ename ) ) );
         final WebElement search = driver.findElement( By.name( ename ) );
         search.clear();
         search.sendKeys( PATIENT_NAME );
 
         ename = "submit";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( ename ) ) );
+        //wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( ename ) ) );
         final WebElement searchButton = driver.findElement( By.name( ename ) );
         searchButton.click();
     }
