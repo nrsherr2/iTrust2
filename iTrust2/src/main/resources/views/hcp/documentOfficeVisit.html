@@ -836,7 +836,7 @@
                                 				<li ng-repeat="l in labtechs">
                                   					<label>
                                     					<input type="radio" ng-model="$parent.procTechEntry" ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
-                                    					<span class="glyphicon glyphicon-user"></span>{{l.username}}]
+                                    					<span class="glyphicon glyphicon-user"></span>{{l.username}}
                                  					</label>
                                 				</li>
                               				</ul>
@@ -879,7 +879,7 @@
                                     Code: {{p.code.code}}
                                   	</div>
                                   	<div class="col-md-3">
-                                    Assigned Lab Tech ID: {{p.assignedLabTech.username}}
+                                    Assigned Lab Tech ID: {{p.assignedLabTech}}
                                   	</div>
                                   	<div class="col-md-3">
                                     Priority: {{p.priority}}
