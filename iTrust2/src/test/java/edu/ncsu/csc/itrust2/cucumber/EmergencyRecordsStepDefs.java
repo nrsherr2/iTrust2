@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.lang.AssertionError;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -31,10 +32,10 @@ import edu.ncsu.csc.itrust2.models.persistent.User;
 public class EmergencyRecordsStepDefs {
 
     int                  PATIENT_AGE    = 100;
-    String               PATIENT_NAME   = "patient";
-    String               PATIENT_DOB    = "01/01/2011";
-    String               PATIENT_GENDER = "Male";
-    String               PATIENT_BLOOD  = "APos";
+    String               PATIENT_NAME   = "AliceThirteen";
+    String               PATIENT_DOB    = "12/26/2010";
+    Gender               PATIENT_GENDER = Gender.Female;
+    BloodType            PATIENT_BLOOD  = BloodType.BPos;
 
     private static final int PAGE_LOAD = 500;
     private WebDriver    driver;
@@ -55,6 +56,11 @@ public class EmergencyRecordsStepDefs {
         final User er = new User( "Emergency", "$2a$10$EblZqNptyYvcLm/VwDCVAuBjzZOI7khzdyGPBr08PpIi0na624b8.",
                 Role.ROLE_HCP, 1 );
         er.save();
+
+	final User pat = new User( PATIENT_NAME, "$2a$10$EblZqNptyYvcLm/VwDCVAuBjzZOI7khzdyGPBr08PpIi0na624b8.",
+                Role.ROLE_PATIENT, 1 );
+        pat.save();
+
     }
 
     @After
@@ -74,7 +80,7 @@ public class EmergencyRecordsStepDefs {
 
         /* Create patient record */
 	        // make sure the users we need to login exist
-	name = "AliceThirteen";
+	name = PATIENT_NAME;
         final Patient dbAlice = Patient.getByName( name);
         final Patient alice = null == dbAlice ? new Patient() : dbAlice;
         alice.setSelf( User.getByName( name ) );
@@ -84,9 +90,16 @@ public class EmergencyRecordsStepDefs {
         alice.setState( State.NC );
         alice.setZip( "12345" );
         alice.setPhone( "123-456-7890" );
-        alice.setBloodType( BloodType.BNeg );
+        alice.setBloodType( PATIENT_BLOOD );
         alice.setEthnicity( Ethnicity.Caucasian );
-        alice.setGender( Gender.Female );
+        alice.setGender( PATIENT_GENDER );
+	final SimpleDateFormat sdf = new SimpleDateFormat( "MM/DD/YYYY", Locale.ENGLISH );
+        final Calendar time = Calendar.getInstance();
+        time.setTime( sdf.parse( PATIENT_DOB ) );
+
+        alice.setDateOfBirth( time );
+
+	
         alice.save();
     }
 
@@ -120,12 +133,17 @@ public class EmergencyRecordsStepDefs {
     }
 
     @When ( "I fill in the username of the patient" )
-    public void searchName () {
+    public void searchName () throws InterruptedException, ParseException {
 	try {
-	    driver.get( baseUrl + "/hcp/viewEmergencyRecords" );
-	    Thread.sleep( PAGE_LOAD );
+	    driver.get( baseUrl );
+	    setTextField( By.name( "username" ), "hcp" );
+	    setTextField( By.name( "password" ), "123456" );
+	    driver.findElement( By.className( "btn" ) ).click();
+	    patientExists(PATIENT_NAME);
+	    navigateToHCPRecords();
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    throw e;
 	}
 
         // Enter the name
@@ -139,15 +157,28 @@ public class EmergencyRecordsStepDefs {
         //wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( ename ) ) );
         final WebElement searchButton = driver.findElement( By.name( ename ) );
         searchButton.click();
+
+	Thread.sleep(30000);
+	
+	final String[] expected = { PATIENT_NAME, PATIENT_DOB, PATIENT_GENDER.toString(), PATIENT_BLOOD.toString() };
+
+        for ( int i = 0; i < expected.length; i++ ) {
+	    try {
+		assertTrue( driver.getPageSource().contains( expected[i] ) );
+	    } catch (AssertionError e) {
+		throw new AssertionError("CUSTOM DEBUG: " + expected[i] + "\n" + driver.getPageSource());
+	    }
+        }
+
     }
 
     @Then ( "the patients medical information is displayed" )
     public void checkRecords () {
 
-        final String[] expected = { PATIENT_NAME, PATIENT_DOB, PATIENT_GENDER, PATIENT_BLOOD };
+        //final String[] expected = { PATIENT_NAME, PATIENT_DOB, PATIENT_GENDER, PATIENT_BLOOD };
 
-        for ( int i = 0; i < expected.length; i++ ) {
-            assertTrue( driver.getPageSource().contains( expected[i] ) );
-        }
+        //for ( int i = 0; i < expected.length; i++ ) {
+	    //    assertTrue( driver.getPageSource().contains( expected[i] ) );
+        //}
     }
 }
