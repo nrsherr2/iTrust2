@@ -18,7 +18,7 @@
 				
 				$scope.searchFilter = "";
 				$scope.filterProcs = function(labProc){
-					return($scope.displayName(l)).toLowerCase().match($scope.searchFilter.toLowerCase());
+					return($scope.displayName(labProc)).toLowerCase().match($scope.searchFilter.toLowerCase());
 				}
 				
 				function formDifferent(current, original){
@@ -28,7 +28,7 @@
 					return false;
 				}
 				
-				funciton zeroPad(number, characters){
+				function zeroPad(number, characters){
 					var s = String(number);
 					while(s.length < characters) s = "0" + s;
 					return s;
@@ -36,6 +36,21 @@
 				
 				$scope.originalForm = {};
 				$scope.labForm = {};
+				$scope.selectedProcedureID = null;
+				$scope.selectedProcedure = {};
+				
+				function markStarted(){
+					$scope.selectedProcedure.started = true;
+				}
+				
+				function markComplete(){
+					$scope.selectedProcedure.complete = true;
+				}
+				
+				$http.get("/iTrust2/api/v1/labprocedures")
+	              .then(function (response) {
+	                $scope.labprocedures = response.data;
+	              });
 				
 			});
 			/*]]>*/
@@ -46,9 +61,54 @@
 			<h4 style="color:red" ng-model="message"></h4>
 			
 			<h1>Manage Lab Procedures</h1>
-			
-			
-			
+			<table style="width:100%">
+				<tr>
+					<td style="vertical-align: top">
+						<table class="table">
+							<tr>
+								<th>Lab Procedure Select</th>
+								<th>Lab Procedure Code</th>
+								<th>Notes</th>
+								<th>Started?</th>
+							</tr>
+							<tr name="procedureRow" ng-repeat="p in labprocedures">
+								<td> <input name="selectProcedure" type="radio"/></td>
+								<td name="selectedCell"> {{p.code}}</td>
+								<td>{{p.completed}}</td>
+							</tr>
+						</table>
+					</td>
+					<td style="width:35%;vertical-align: top">
+						<div style="padding: 10px 10px 30px 20px">
+							<h3>Add Notes</h3>
+						</div>
+						<div class="form-group" style="padding-left:30px">
+							<label>Notes:</label>
+							<textarea class="form-control" rows="5" name="notes" ng-model="procedure.notes" required ng-minlength="1"></textarea>
+							<br />
+							<button class="btn btn-primary" name="submit">Add Note</button>
+						</div>
+							
+						<div class="form-group" style="padding-left:30px">								
+							<div>
+								<button class="btn btn-primary" name="started" ng-click="markStarted()">Mark Started</button>
+								<button class="btn btn-primary" name="complete" ng-click="markComplete()">Mark Complete</button>
+							</div>
+						</div>
+						<div class="form-group" style="padding-left:30px">								
+							<div>
+								<label>Assign to:</label>
+								<table>
+									<tr name="assignTechRow" ng-repeat="l in labtechs">
+										<td> <input name="selectLabTech" type="radio"/>{{l.firstName}} {{l.lastName}}</td>
+									</tr>
+								</table>
+								<button class="btn btn-primary" name="complete" ng-click="assignLabTech()">Assign</button>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
 		</div>
 		</div>
 	</body>
