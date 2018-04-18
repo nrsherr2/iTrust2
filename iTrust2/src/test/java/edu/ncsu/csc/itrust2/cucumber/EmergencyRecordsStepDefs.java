@@ -99,7 +99,7 @@ public class EmergencyRecordsStepDefs {
 
     @When ( "I navigate to the Emergency Health Records Page" )
     public void navigateToOfficeVisit () {
-        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('emergencyHealthRecords').click();" );
+	driver.get( baseUrl + "/hcp/viewEmergencyRecords");
     }
 
     @When ( "I fill in the username of the patient" )
