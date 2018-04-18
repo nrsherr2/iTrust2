@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
-import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 
@@ -55,7 +54,7 @@ public class LabProcedureForm implements Serializable {
 
     private String               comments;
 
-    private ProcedureStatus      status;
+    private String               status;
 
     /**
      * Empty constructor for filling in fields without a Prescription object.
@@ -161,11 +160,11 @@ public class LabProcedureForm implements Serializable {
         this.labProcedureCode = labProcedureCode;
     }
 
-    public ProcedureStatus getStatus () {
+    public String getStatus () {
         return status;
     }
 
-    public void setStatus ( ProcedureStatus status ) {
+    public void setStatus ( final String status ) {
         this.status = status;
     }
 

@@ -41,11 +41,12 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      *            The LabProcedureForm to use to create the LabProcedure
      */
     public LabProcedure ( final LabProcedureForm form ) {
-        this.visit = form.getOv();
-        this.comments = form.getComments();
-        this.assignedLabTech = form.getAssignedTech();
-        this.code = form.getLabProcedureCode();
-        this.priority = form.getLpp();
+        setPriority( form.getLpp() );
+        setVisit( form.getOv() );
+        setComments( form.getComments() );
+        setAssignedLabTech( form.getAssignedTech() );
+        setCode( form.getLabProcedureCode() );
+        setStatus( ProcedureStatus.parse( form.getStatus() ) );
     }
 
     @NotNull

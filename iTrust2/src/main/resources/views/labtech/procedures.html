@@ -36,8 +36,8 @@
 				
 				$scope.originalForm = {};
 				$scope.labForm = {};
-				$scope.selectedProcedureID = null;
-				$scope.selectedProcedure = {};
+				$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:""};
+				
 				
 				$http.get("/iTrust2/api/v1/labprocedures")
 	              .then(function (response) {
@@ -48,6 +48,35 @@
 	              .then(function (response) {
 	                $scope.statuses = response.data;
 	              });
+				
+				$http.get("/iTrust2/api/v1/labtechs")
+	              .then(function (response) {
+	                $scope.labtechs = response.data[0];
+	              });
+				
+			
+				
+				$scope.selectProcedure = function(proc){
+					$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:""};
+					$scope.selectedProcedure.id = proc.id;
+					$scope.selectedProcedure.comments = proc.comments;
+					$scope.selectedProcedure.assignedLabTech = proc.assignedLabTech;
+					$scope.selectedProcedure.code = proc.code;
+				}
+				
+				$scope.saveProcedure = function(){
+					
+					
+					$http({
+			     	   method: 'PUT',
+			           url: '/iTrust2/api/v1/labprocedures/' + $scope.selectedProcedure.id,
+			           data: $scope.selectedProcedure
+			           	}).then(function (response) {
+			            	$scope.message = "Procedure edited successfully";
+			            }, function (rejection) {
+			                $scope.message = "Error occurred editing procedure";
+			        	})	
+					}
 				
 			});
 			/*]]>*/
@@ -65,12 +94,11 @@
 							<tr>
 								<th>Lab Procedure Select</th>
 								<th>Lab Procedure Code</th>
-								<th>Notes</th>
 								<th>Status</th>
 							</tr>
 							<tr name="procedureRow" ng-repeat="p in labprocedures">
-								<td> <input name="selectProcedure" type="radio"/></td>
-								<td name="selectedCell"> {{p.code}}</td>
+								<td> <input name="selectProcedure" type="radio" ng-model="$parent.selectedProcedure" ng-click="$parent.selectProcedure(p)"/></td>
+								<td name="selectedCell"> {{p.code.code}}</td>
 								<td name="status">{{p.status}}</td>
 							</tr>
 						</table>
@@ -81,27 +109,27 @@
 						</div>
 						<div class="form-group" style="padding-left:30px">
 							<label>Notes:</label>
-							<textarea class="form-control" rows="5" name="notes" ng-model="procedure.notes" required ng-minlength="1"></textarea>
-							<br />
-							<button class="btn btn-primary" name="submit">Add Note</button>
+							<textarea class="form-control" rows="5" name="notes" ng-model="selectedProcedure.comments" ></textarea>
 						</div>
 							
 						<div class="form-group" style="padding-left:30px">								
 							<div>
-								<button class="btn btn-primary" name="started" ng-click="markStarted()">Mark Started</button>
-								<button class="btn btn-primary" name="complete" ng-click="markComplete()">Mark Complete</button>
+								<label>Progress Status:</label>
+								<select ng-model="selectedProcedure.status" name="progStat">
+									<option ng-repeat="s in statuses">{{s}}</option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group" style="padding-left:30px">								
 							<div>
 								<label>Assign to:</label>
-								<table>
-									<tr name="assignTechRow" ng-repeat="l in labtechs">
-										<td> <input name="selectLabTech" type="radio"/>{{l.firstName}} {{l.lastName}}</td>
-									</tr>
-								</table>
-								<button class="btn btn-primary" name="complete" ng-click="assignLabTech()">Assign</button>
+								<select ng-model="selectedProcedure.assignedLabTech" name="assignTechRow">
+									<option ng-repeat="l in labtechs">{{l.username}}</option>
+								</select>
 							</div>
+						</div>
+						<div class="form-group" style="padding-left:30px">
+							<button class="btn btn-primary" name="procSave" ng-click="saveProcedure()">Save Changes</button>
 						</div>
 					</td>
 				</tr>

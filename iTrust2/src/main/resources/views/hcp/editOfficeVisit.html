@@ -246,7 +246,7 @@
             $scope.submit = function () {     
               $scope.selectedVisit.hcp = /*[[${#httpServletRequest.remoteUser}]]*/null; /* Ugly hack; use this to retrieve the name of the HCP who is currently logged in.  This grabs it from Thymeleaf */
               $scope.errorMsg = "";
-              $scope.selectedVisit.status = "NOT_STARTED";
+              $scope.selectedVisit.status = "PENDING";
 
               if ($scope.selectedVisit.type == null) {
                 $scope.errorMsg += "Please select a visit type\n";

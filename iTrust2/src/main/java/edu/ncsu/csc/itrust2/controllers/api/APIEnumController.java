@@ -116,12 +116,12 @@ public class APIEnumController extends APIController {
 
     /**
      * Tells the lab procedure page every procedure status available
-     * 
+     *
      * @return the list of statuses
      */
     @GetMapping ( BASE_PATH + "/procstat" )
     public List<ProcedureStatus> getStatuses () {
-        final List<ProcedureStatus> ret = Arrays.asList( ProcedureStatus.values() ).subList( 1,
+        final List<ProcedureStatus> ret = Arrays.asList( ProcedureStatus.values() ).subList( 0,
                 ProcedureStatus.values().length );
         return ret;
     }
