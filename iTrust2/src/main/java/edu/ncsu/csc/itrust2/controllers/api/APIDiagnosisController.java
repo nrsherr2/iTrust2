@@ -84,11 +84,13 @@ public class APIDiagnosisController extends APIController {
     /**
      * Returns a list of diagnoses for the requested patient
      *
+     * @param id
+     *            The ID of the office visit to get diagnoses for
      * @return List of Diagnoses for the patient
      */
-    @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ER')" )    
+    @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ER')" )
     @GetMapping ( BASE_PATH + "/diagnosis/patient/{id}" )
-    public List<Diagnosis> getPatientDiagnosis (@PathVariable ( "id" ) final String id) {
+    public List<Diagnosis> getPatientDiagnosis ( @PathVariable ( "id" ) final String id ) {
         final User self = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
         if ( self == null ) {
             return null;
@@ -96,12 +98,13 @@ public class APIDiagnosisController extends APIController {
         LoggerUtil.log( TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL, self.getUsername(),
                 self.getUsername() + " requested a patetients diagnosis" );
 
-	final User u = User.getByName(id);
+        final User u = User.getByName( id );
 
-	if (u != null) {
-	    return Diagnosis.getForPatient( u );
-	} else {
-	    return null;
-	}
-    }    
+        if ( u != null ) {
+            return Diagnosis.getForPatient( u );
+        }
+        else {
+            return null;
+        }
+    }
 }

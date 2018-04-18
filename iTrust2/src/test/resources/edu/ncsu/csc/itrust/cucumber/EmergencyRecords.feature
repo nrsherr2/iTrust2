@@ -6,22 +6,22 @@ Feature: As a developer, I want to automate
 		 be confirmed through the UI 
 		 
 Scenario Outline: HCP views emergency health records
-Given There is a patient with the name <MID>
-And I log into iTrust2 as an HCP
-And I navigate to the Emergency Health Records Page
+Given There is a patient with the name: <MID>
+And I log into iTrust2 as the HCP my way
+And I navigate to the HCP Emergency Health Records Page
 When I fill in the username of the patient
 Then the patients medical information is displayed
 Examples:
 	|MID    |
-	|AliceThirteen|
+	|AliceThirteen Smith|
 
 Scenario Outline: ER views emergency health records
-Given There is a patient with the name <MID>
+Given There is a patient with the name: <MID>
 And I log into iTrust2 as an ER
-And I navigate to the Emergency Health Records Page
+And I navigate to the ER Emergency Health Records Page
 When I fill in the username of the patient
 Then the patients medical information is displayed
 Examples:
 	|MID    |
-	|AliceThirteen|
+	|AliceThirteen Smith|
 	

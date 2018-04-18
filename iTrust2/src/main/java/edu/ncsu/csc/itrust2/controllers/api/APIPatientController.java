@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +41,12 @@ public class APIPatientController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/patients" )
     public List<Patient> getPatients () {
-        return Patient.getPatients();
+        final List<Patient> pats = Patient.getPatients();
+        for ( final Patient p : pats ) {
+            p.setRepresenatives( new HashSet<Patient>() );
+            p.setRepresentees( new HashSet<Patient>() );
+        }
+        return pats;
     }
 
     /**
@@ -59,6 +66,14 @@ public class APIPatientController extends APIController {
                     HttpStatus.NOT_FOUND );
         }
         else {
+            for ( final Patient p : patient.getRepresentatives() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
+            for ( final Patient p : patient.getRepresentees() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
             LoggerUtil.log( TransactionType.VIEW_DEMOGRAPHICS, LoggerUtil.currentUser(), self.getUsername(),
                     "Retrieved demographics for user " + self.getUsername() );
             return new ResponseEntity( patient, HttpStatus.OK );
@@ -81,6 +96,14 @@ public class APIPatientController extends APIController {
                     HttpStatus.NOT_FOUND );
         }
         else {
+            for ( final Patient p : patient.getRepresentatives() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
+            for ( final Patient p : patient.getRepresentees() ) {
+                p.setRepresenatives( new HashSet<Patient>() );
+                p.setRepresentees( new HashSet<Patient>() );
+            }
             LoggerUtil.log( TransactionType.PATIENT_DEMOGRAPHICS_VIEW, LoggerUtil.currentUser(), username,
                     "HCP retrieved demographics for patient with username " + username );
             return new ResponseEntity( patient, HttpStatus.OK );
@@ -178,4 +201,406 @@ public class APIPatientController extends APIController {
         }
     }
 
+    /**
+     * get a list of everyone who represents this user. this is the call for
+     * HCPs. patients will have a different one
+     *
+     * @param patientId
+     *            the patient you want to know about
+     * @return the list of that patient's representatives
+     */
+    @GetMapping ( BASE_PATH + "/patients/representatives/{patientId}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity getRepresentatives ( @PathVariable final String patientId ) {
+        final Patient p = Patient.getByName( patientId );
+        if ( p == null ) {
+            return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
+        }
+        else {
+            for ( final Patient r : p.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_VIEW_REPRESENTATIVES, LoggerUtil.currentUser(), patientId,
+                    LoggerUtil.currentUser() + " viewed " + patientId + "'s representees" );
+            return new ResponseEntity( p.getRepresentatives(), HttpStatus.OK );
+        }
+    }
+
+    /**
+     * gets a list of everyone who represents this user. this is the call for
+     * patients. hcps have a different one.
+     *
+     * @return the representative list for the currently logged in patient
+     */
+    @GetMapping ( BASE_PATH + "/patients/representatives" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public ResponseEntity getRepresentativesPatient () {
+        final Patient currentPatient = Patient.getByName( LoggerUtil.currentUser() );
+        if ( currentPatient == null ) {
+            return new ResponseEntity( "Current patient cannot be found", HttpStatus.NOT_FOUND );
+        }
+        else {
+            for ( final Patient r : currentPatient.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.VIEW_REPRESENTATIVES, LoggerUtil.currentUser() );
+            return new ResponseEntity( currentPatient.getRepresentatives(), HttpStatus.OK );
+        }
+    }
+
+    /**
+     * get a list of everyone a patient represents. this is the HCP call.
+     *
+     * @param patientId
+     *            the patient you want to know about
+     * @return the list of representees associated with that patient
+     */
+    @GetMapping ( BASE_PATH + "/patients/representees/{patientId}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity getRepresentees ( @PathVariable final String patientId ) {
+        final Patient p = Patient.getByName( patientId );
+        if ( p == null ) {
+            return new ResponseEntity( "Could not find " + patientId, HttpStatus.NOT_FOUND );
+        }
+        else {
+            for ( final Patient r : p.getRepresentees() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_VIEW_REPRESENTEES, LoggerUtil.currentUser(), patientId,
+                    LoggerUtil.currentUser() + " viewed " + patientId + "'s representees" );
+            return new ResponseEntity( p.getRepresentees(), HttpStatus.OK );
+        }
+    }
+
+    /**
+     * get a list of everyone a patient represents. this is the patient call.
+     *
+     * @return the list of representees for the currently logged in user
+     */
+    @GetMapping ( BASE_PATH + "/patients/representees" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public ResponseEntity getRepresenteesPatient () {
+        final Patient currentPatient = Patient.getByName( LoggerUtil.currentUser() );
+        if ( currentPatient == null ) {
+            return new ResponseEntity( "Current patient cannot be found", HttpStatus.NOT_FOUND );
+        }
+        else {
+            for ( final Patient r : currentPatient.getRepresentees() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.VIEW_REPRESENTEES, LoggerUtil.currentUser() );
+            return new ResponseEntity( currentPatient.getRepresentees(), HttpStatus.OK );
+        }
+    }
+
+    /**
+     * as a patient, call this method to add a representative for yourself
+     *
+     * @param rep
+     *            the MID of the patient you want to add
+     * @return your new list of representatives
+     */
+    @PostMapping ( BASE_PATH + "/patients/representatives" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public ResponseEntity addRepresentativePatient ( @RequestBody String rep ) {
+        // trim the string because I'm not about that long line life
+        rep = rep.substring( 1, rep.length() - 1 );
+        final String curr = LoggerUtil.currentUser();
+        if ( rep.equals( curr ) ) {
+            return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
+        }
+        // make sure these guys exist
+        final Patient representee = Patient.getByName( curr );
+        if ( representee == null ) {
+            return new ResponseEntity( "Could not find patient with username " + curr, HttpStatus.NOT_FOUND );
+        }
+        final Patient representative = Patient.getByName( rep );
+        if ( representative == null ) {
+            return new ResponseEntity( "Could not find patient with username " + rep, HttpStatus.NOT_FOUND );
+        }
+        // now add the rep
+        try {
+            final HashSet<Patient> reps = new HashSet<Patient>();
+            reps.addAll( representee.getRepresentatives() );
+            final int oldSize = reps.size();
+            reps.add( representative );
+            if ( reps.size() == oldSize ) {
+                return new ResponseEntity( rep + " is already a representative of " + curr, HttpStatus.BAD_REQUEST );
+            }
+            representee.setRepresenatives( reps );
+            representee.save();
+            for ( final Patient r : representee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.ADD_REPRESENTATIVE, curr, rep,
+                    "Added " + rep + " to " + curr + "'s representatives" );
+            return new ResponseEntity( representee.getRepresentatives(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "Could not add representative because " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST );
+        }
+
+    }
+
+    /**
+     * adds a representative to a patient's list of personal representatives.
+     * should map the other way as well, so the representative's list will be
+     * updated as well. This is the call for the HCP
+     *
+     * @param representee
+     *            the person who's list you will add to
+     * @param representative
+     *            the person you will add to the list
+     * @return the updated list of representatives for the representee parameter
+     */
+    @PostMapping ( BASE_PATH + "/patients/representatives/{representee}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity addRepresentative ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        if ( representee.equals( representative.substring( 1, representative.length() - 1 ) ) ) {
+            return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
+        }
+        // make sure the patients exist
+        final Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
+        }
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
+        }
+        // now add the rep
+        try {
+            final HashSet<Patient> newList = new HashSet<Patient>();
+            newList.addAll( tee.getRepresentatives() );
+            final int oldSize = newList.size();
+            newList.add( tive );
+            if ( newList.size() == oldSize ) {
+                return new ResponseEntity( representative + " is already a representative of " + representee,
+                        HttpStatus.BAD_REQUEST );
+            }
+            tee.setRepresenatives( newList );
+            tee.save();
+            for ( final Patient r : tee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_ADD_REPRESENTATIVE, LoggerUtil.currentUser(),
+                    tee.getSelf().getUsername(),
+                    "Added " + representee + " to " + representative + "'s representatives" );
+            return new ResponseEntity( tee.getRepresentatives(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "could not add representative", HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * adds a representee to a patient's list of personal representees. should
+     * map the other way as well, so the representative's list will be updated
+     * as well. This is the call for the HCP
+     *
+     * @param representee
+     *            the person who's list you will add to
+     * @param representative
+     *            the person you will add to the list
+     * @return the updated list of representatives for the representee parameter
+     */
+    @PostMapping ( BASE_PATH + "/patients/representees/{representee}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity addRepresentee ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        if ( representee.equals( representative.substring( 1, representative.length() - 1 ) ) ) {
+            return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
+        }
+        // make sure the patients exist
+        final Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
+        }
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
+        }
+        // now add the rep
+        try {
+            final HashSet<Patient> newList = new HashSet<Patient>();
+            newList.addAll( tee.getRepresentatives() );
+            final int oldSize = newList.size();
+            newList.add( tive );
+            if ( newList.size() == oldSize ) {
+                return new ResponseEntity( representative + " is already a representative of " + representee,
+                        HttpStatus.BAD_REQUEST );
+            }
+            tee.setRepresenatives( newList );
+            tee.save();
+            for ( final Patient r : tee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_ADD_REPRESENTATIVE, LoggerUtil.currentUser(),
+                    tee.getSelf().getUsername(),
+                    "Added " + representee + " to " + representative + "'s representatives" );
+            return new ResponseEntity( tive.getRepresentees(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "could not add representative", HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * deletes a representative from a patient's list of personal
+     * representatives. mapping works both ways, so the representative will lose
+     * their reference to the representee as well.
+     *
+     * @param representee
+     *            the patient whose list will be changed
+     * @param representative
+     *            the patient you will add to the list
+     * @return the new list of representatives for the representee parameter
+     */
+    @DeleteMapping ( BASE_PATH + "/patients/representatives/{representee}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity deleteRepresentative ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        final Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient named " + representee, HttpStatus.NOT_FOUND );
+        }
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient named " + representative, HttpStatus.NOT_FOUND );
+        }
+        if ( !tee.inRepresentatives( tive ) ) {
+            return new ResponseEntity( representative + " didn't represent " + representee + " in the first place",
+                    HttpStatus.BAD_REQUEST );
+        }
+        try {
+            final HashSet<Patient> reps = new HashSet<Patient>();
+            for ( final Patient p : tee.getRepresentatives() ) {
+                if ( !Patient.samePatient( tive, p ) ) {
+                    reps.add( p );
+                }
+            }
+            tee.setRepresenatives( reps );
+            tee.save();
+            for ( final Patient r : tee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_DELETE_REPRESENTATIVE, LoggerUtil.currentUser(),
+                    tee.getSelf().getUsername(),
+                    "Deleted " + representee + " from " + representative + "'s representatives" );
+            return new ResponseEntity( tee.getRepresentatives(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "Could not remove representative because " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * Deletes a representative from the logged-in patient's list of
+     * representatives
+     *
+     * @param rep
+     *            The MID of the patient to remove
+     * @return the new list of representatives for the logged-in patient
+     */
+    @DeleteMapping ( BASE_PATH + "/patients/representatives" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public ResponseEntity deleteRepresentativePatient ( @RequestBody String rep ) {
+        // trim the string because I'm not about that long line life
+        rep = rep.substring( 1, rep.length() - 1 );
+        // check they exist
+        final Patient representative = Patient.getByName( rep );
+        if ( representative == null ) {
+            return new ResponseEntity( "Could not find patient " + rep, HttpStatus.NOT_FOUND );
+        }
+        final Patient representee = Patient.getByName( LoggerUtil.currentUser() );
+        if ( representee == null ) {
+            return new ResponseEntity( "Could not find patient " + LoggerUtil.currentUser(), HttpStatus.NOT_FOUND );
+        }
+        if ( !representee.inRepresentatives( representative ) ) {
+            return new ResponseEntity( "patient was never represented in the first place", HttpStatus.BAD_REQUEST );
+        }
+        // and delete
+        try {
+            final HashSet<Patient> reps = new HashSet<Patient>();
+            for ( final Patient p : representee.getRepresentatives() ) {
+                if ( !Patient.samePatient( p, representative ) ) {
+                    reps.add( p );
+                }
+            }
+            representee.setRepresenatives( reps );
+            representee.save();
+            for ( final Patient r : representee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.DELETE_REPRESENTATIVE, LoggerUtil.currentUser(), rep,
+                    "Deleted " + rep + " from " + LoggerUtil.currentUser() + "'s representatives" );
+            return new ResponseEntity( representee.getRepresentatives(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "Could not remove representative because " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * when logged in as a patient, use this mapping to delete a patient from
+     * your list of representees
+     *
+     * @param rep
+     *            the MID of the patient you want to delete
+     * @return the updated list of representees
+     */
+    @DeleteMapping ( BASE_PATH + "/patients/representees" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public ResponseEntity deleteRepresenteePatient ( @RequestBody String rep ) {
+        // trim the string because I'm not about that long line life
+        rep = rep.substring( 1, rep.length() - 1 );
+        // check that they exist
+        Patient representative = Patient.getByName( LoggerUtil.currentUser() );
+        if ( representative == null ) {
+            return new ResponseEntity( "Could not find patient " + rep, HttpStatus.NOT_FOUND );
+        }
+        final Patient representee = Patient.getByName( rep );
+        if ( representee == null ) {
+            return new ResponseEntity( "Could not find patient " + LoggerUtil.currentUser(), HttpStatus.NOT_FOUND );
+        }
+        if ( !representee.inRepresentatives( representative ) ) {
+            return new ResponseEntity( "patient was never represented in the first place", HttpStatus.BAD_REQUEST );
+        }
+        // now delete
+        try {
+            final HashSet<Patient> reps = new HashSet<Patient>();
+            for ( final Patient p : representee.getRepresentatives() ) {
+                if ( !Patient.samePatient( p, representative ) ) {
+                    reps.add( p );
+                }
+            }
+            representee.setRepresenatives( reps );
+            representee.save();
+            representative = Patient.getByName( LoggerUtil.currentUser() );
+            for ( final Patient r : representative.getRepresentees() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.DELETE_REPRESENTEE, LoggerUtil.currentUser(), rep,
+                    "Deleted " + rep + " from " + LoggerUtil.currentUser() + "'s representees" );
+            return new ResponseEntity( representative.getRepresentees(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "Could not remove representee because " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
 }
