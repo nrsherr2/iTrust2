@@ -15,6 +15,7 @@ import org.hibernate.criterion.Criterion;
 
 import edu.ncsu.csc.itrust2.forms.hcp.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
+import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
 
 /**
  * Class to represent a Lab Procedure which ias associated with an office visit
@@ -70,7 +71,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     private LabProcedureCode     code;
 
     @NotNull
-    private boolean              completed;
+    private ProcedureStatus      status;
 
     @Override
     public Long getId () {
@@ -224,11 +225,32 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     /**
      * Return a list of Lab Procedures for the specified lab tech
      *
-     * @param techName
-     *            the username of the labtech to add
-     * @return a list of every lab procedure assigned to that lab tech
+     * the username of the labtech to add
+     *
+     * @return the status
      */
-    public static List<LabProcedure> getForTech ( final String techName ) {
-        return getWhere( createCriterionAsList( "assignedLabTech", LabTech.getByName( techName ) ) );
+    public ProcedureStatus getStatus () {
+        return status;
+    }
+
+    /**
+     * Sets the status of this Procedure
+     *
+     * @param status
+     *            the status to set
+     */
+    public void setStatus ( final ProcedureStatus status ) {
+        this.status = status;
+    }
+
+    /**
+     * gets all lab procedures assigned to a specific lab tech
+     *
+     * @param techMID
+     *            the MID of the tech you want to retrieve for
+     * @return a list of lab procedures assigned to that tech
+     */
+    public static List<LabProcedure> getByTech ( final String techMID ) {
+        return getWhere( createCriterionAsList( "assignedLabTech", techMID ) );
     }
 }
