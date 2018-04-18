@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
+import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 
@@ -45,7 +46,7 @@ public class LabProcedureForm implements Serializable {
      * the id of the assigned lab tech
      */
     @NotEmpty
-    private String               assignedTech;
+    private String               assignedLabTech;
 
     /**
      * the date that the lab procedure was assigned
@@ -53,6 +54,8 @@ public class LabProcedureForm implements Serializable {
     private String               date;
 
     private String               comments;
+
+    private ProcedureStatus      status;
 
     /**
      * Empty constructor for filling in fields without a Prescription object.
@@ -139,7 +142,7 @@ public class LabProcedureForm implements Serializable {
      * @return the assignedTech
      */
     public String getAssignedTech () {
-        return assignedTech;
+        return assignedLabTech;
     }
 
     /**
@@ -147,7 +150,7 @@ public class LabProcedureForm implements Serializable {
      *            the assignedTech to set
      */
     public void setAssignedTech ( final String assignedTech ) {
-        this.assignedTech = assignedTech;
+        this.assignedLabTech = assignedTech;
     }
 
     public LabProcedureCode getLabProcedureCode () {
@@ -156,6 +159,14 @@ public class LabProcedureForm implements Serializable {
 
     public void setLabProcedureCode ( final LabProcedureCode labProcedureCode ) {
         this.labProcedureCode = labProcedureCode;
+    }
+
+    public ProcedureStatus getStatus () {
+        return status;
+    }
+
+    public void setStatus ( ProcedureStatus status ) {
+        this.status = status;
     }
 
 }

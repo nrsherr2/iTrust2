@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
+import edu.ncsu.csc.itrust2.forms.hcp.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
@@ -29,6 +31,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
  * and lab procedures
  *
  * @author Nicholas Wrenn
+ * @author Nicholas Sherrill
  *
  */
 @RestController
@@ -242,6 +245,41 @@ public class APILabProcedureController extends APIController {
     public ResponseEntity getForTech () {
         return new ResponseEntity( LabProcedure.getByTech( LoggerUtil.currentUser() ), HttpStatus.OK );
     }
-    
+
+    /**
+     * A lab tech can edit the details of a lab procedure after it has been
+     * assigned to them. This will input the info and save it.
+     * 
+     * @param lpf
+     *            the form with all of the new information
+     * @return a response saying whether or not the operation was successful
+     */
+    @PutMapping ( BASE_PATH + "/labprocedures/{id}" )
+    @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
+    public ResponseEntity editLabProcedure ( @PathVariable final Long id, @RequestBody final LabProcedureForm lpf ) {
+        try {
+            final LabProcedure lp = new LabProcedure( lpf );
+            if ( lp.getId() != null && !id.equals( lp.getId() ) ) {
+                return new ResponseEntity(
+                        errorResponse( "The ID provided does not match the ID of the LabProcedure provided" ),
+                        HttpStatus.CONFLICT );
+            }
+            final LabProcedure dbLP = LabProcedure.getById( id );
+            if ( dbLP == null ) {
+                return new ResponseEntity( errorResponse( "No lab procedure with id " + id + " found" ),
+                        HttpStatus.NOT_FOUND );
+            }
+            if ( dbLP.getStatus() != lp.getStatus() ) {
+                // TODO: Add logging to say you updated the status
+            }
+            lp.save(); /* overwrite dbLP */
+            // TODO: I guess log here as well that we edited it
+            return new ResponseEntity( lp, HttpStatus.OK );
+        }
+        catch ( Exception e ) {
+            return new ResponseEntity( "could not update " + lpf.toString() + " because " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
 
 }
