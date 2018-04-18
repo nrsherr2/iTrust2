@@ -22,8 +22,10 @@ import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
+import edu.ncsu.csc.itrust2.models.persistent.LabTech;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.HibernateUtil;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
 /**
  * REST endpoints required to create, delete, and manipulate lab procedure codes
@@ -201,15 +203,15 @@ public class APILabProcedureController extends APIController {
     @GetMapping ( BASE_PATH + "/labtechs" )
     public List<List> getLabTechs () {
         final Session session = HibernateUtil.openSession();
-	final List<User> techs = User.getByRole( Role.ROLE_LABTECH );
-	final List<Integer> numbers = new ArrayList<Integer>();
-	
+        final List<User> techs = User.getByRole( Role.ROLE_LABTECH );
+        final List<Integer> numbers = new ArrayList<Integer>();
+
         for ( final User user : User.getByRole( Role.ROLE_LABTECH ) ) {
             try {
                 session.beginTransaction();
                 final List procedureNums = session.createCriteria( LabProcedure.class )
                         .add( Restrictions.like( "assignedLabTech", user.getUsername() ) ).list();
-		numbers.add( procedureNums.size() );
+                numbers.add( procedureNums.size() );
             }
             finally {
                 try {
@@ -224,11 +226,24 @@ public class APILabProcedureController extends APIController {
 
         session.close();
 
-	List<List> ret = new ArrayList<List>();
-	ret.add(techs);
-	ret.add(numbers);
+        List<List> ret = new ArrayList<List>();
+        ret.add( techs );
+        ret.add( numbers );
 
         return ret;
+    }
+
+    /**
+     * returns a list of assigned lab procedures to the front end. returns only
+     * a list of what is assigned to the designated tech.
+     * 
+     * @return a list of lab procedures assigned to the currently logged in lab
+     *         tech
+     */
+    @GetMapping ( BASE_PATH + "/labprocedures" )
+    @PreAuthorize ( "hasRole('ROLE_LABTECH'" )
+    public ResponseEntity getForTech () {
+        return new ResponseEntity( LabProcedure.getByTech( LoggerUtil.currentUser() ), HttpStatus.OK );
     }
 
 }

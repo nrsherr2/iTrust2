@@ -209,4 +209,15 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     public static List<LabProcedure> getByVisit ( final Long id ) {
         return getWhere( createCriterionAsList( "visit", OfficeVisit.getById( id ) ) );
     }
+
+    /**
+     * gets all lab procedures assigned to a specific lab tech
+     * 
+     * @param techId
+     *            the MID of the tech you want to retrieve for
+     * @return a list of lab procedures assigned to that tech
+     */
+    public static List<LabProcedure> getByTech ( final String techId ) {
+        return getWhere( createCriterionAsList( "assignedLabTech", techId ) );
+    }
 }
