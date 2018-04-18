@@ -238,9 +238,10 @@ public class APILabProcedureController extends APIController {
      *         tech
      */
     @GetMapping ( BASE_PATH + "/labprocedures" )
-    @PreAuthorize ( "hasRole('ROLE_LABTECH'" )
+    @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public ResponseEntity getForTech () {
         return new ResponseEntity( LabProcedure.getByTech( LoggerUtil.currentUser() ), HttpStatus.OK );
     }
+    
 
 }
