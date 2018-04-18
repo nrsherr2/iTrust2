@@ -1,8 +1,6 @@
 package edu.ncsu.csc.itrust2.forms.hcp;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.List;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -35,7 +33,7 @@ public class LabProcedureForm implements Serializable {
      */
     private String               id;
 
-    private String               labProcedureCode;
+    private LabProcedureCode     labProcedureCode;
 
     /**
      * the priority assigned to the procedure
@@ -54,7 +52,7 @@ public class LabProcedureForm implements Serializable {
      */
     private String               date;
 
-    private List<String>         comments;
+    private String               comments;
 
     /**
      * Empty constructor for filling in fields without a Prescription object.
@@ -73,7 +71,7 @@ public class LabProcedureForm implements Serializable {
      * @param ov
      *            the ov to set
      */
-    public void setOv ( OfficeVisit ov ) {
+    public void setOv ( final OfficeVisit ov ) {
         this.ov = ov;
     }
 
@@ -88,7 +86,7 @@ public class LabProcedureForm implements Serializable {
      * @param id
      *            the id to set
      */
-    public void setId ( String id ) {
+    public void setId ( final String id ) {
         this.id = id;
     }
 
@@ -103,7 +101,7 @@ public class LabProcedureForm implements Serializable {
      * @param lpp
      *            the lpp to set
      */
-    public void setLpp ( LabProcedurePriority lpp ) {
+    public void setLpp ( final LabProcedurePriority lpp ) {
         this.lpp = lpp;
     }
 
@@ -118,14 +116,14 @@ public class LabProcedureForm implements Serializable {
      * @param date
      *            the date to set
      */
-    public void setDate ( String date ) {
+    public void setDate ( final String date ) {
         this.date = date;
     }
 
     /**
      * @return the comments
      */
-    public List<String> getComments () {
+    public String getComments () {
         return comments;
     }
 
@@ -133,7 +131,7 @@ public class LabProcedureForm implements Serializable {
      * @param comments
      *            the comments to set
      */
-    public void setComments ( List<String> comments ) {
+    public void setComments ( final String comments ) {
         this.comments = comments;
     }
 
@@ -148,15 +146,15 @@ public class LabProcedureForm implements Serializable {
      * @param assignedTech
      *            the assignedTech to set
      */
-    public void setAssignedTech ( String assignedTech ) {
+    public void setAssignedTech ( final String assignedTech ) {
         this.assignedTech = assignedTech;
     }
 
-    public String getLabProcedureCode () {
+    public LabProcedureCode getLabProcedureCode () {
         return labProcedureCode;
     }
 
-    public void setLabProcedureCode ( String labProcedureCode ) {
+    public void setLabProcedureCode ( final LabProcedureCode labProcedureCode ) {
         this.labProcedureCode = labProcedureCode;
     }
 

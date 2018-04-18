@@ -1,9 +1,6 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
-import java.text.ParseException;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,12 +33,26 @@ public class LabProcedure extends DomainObject<LabProcedure> {
 
     }
 
+    /**
+     * Constructor for LabProcedure using a LabProcedureForm
+     *
+     * @param form
+     *            The LabProcedureForm to use to create the LabProcedure
+     */
+    public LabProcedure ( final LabProcedureForm form ) {
+        this.visit = form.getOv();
+        this.comments = form.getComments();
+        this.assignedLabTech = form.getAssignedTech();
+        this.code = form.getLabProcedureCode();
+        this.priority = form.getLpp();
+    }
+
     @NotNull
     @ManyToOne
     @JoinColumn ( name = "visit_id", nullable = false )
     private OfficeVisit          visit;
 
-    private ArrayList<String>    comments;
+    private String               comments;
 
     @NotNull
     private LabProcedurePriority priority;
@@ -101,7 +112,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      * @param n
      *            The new note
      */
-    public void setComments ( final ArrayList<String> n ) {
+    public void setComments ( final String n ) {
         this.comments = n;
     }
 
@@ -110,7 +121,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      *
      * @return The note
      */
-    public ArrayList<String> getComments () {
+    public String getComments () {
         return comments;
     }
 
@@ -148,7 +159,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      * @param priority
      *            the priority to set
      */
-    public void setPriority ( LabProcedurePriority priority ) {
+    public void setPriority ( final LabProcedurePriority priority ) {
         this.priority = priority;
     }
 
@@ -167,7 +178,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      * @param assignedLabTech
      *            username of lab tech to assign
      */
-    public void setAssignedLabTech ( String assignedLabTech ) {
+    public void setAssignedLabTech ( final String assignedLabTech ) {
         this.assignedLabTech = assignedLabTech;
     }
 
@@ -212,7 +223,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
 
     /**
      * Return a list of Lab Procedures for the specified lab tech
-     * 
+     *
      * @param techName
      *            the username of the labtech to add
      * @return a list of every lab procedure assigned to that lab tech
