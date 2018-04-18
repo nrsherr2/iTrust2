@@ -745,32 +745,34 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
             throw ex;
         }
 
-	//// SAVE PROCEDURES ////
+        //// SAVE PROCEDURES ////
 
-	// Get saved visit
+        // Get saved visit
         final OfficeVisit oVisit = OfficeVisit.getById( id );
 
         // Get prescription ids included in this office visit
-        final Set<Long> curIds = this.getProcedures().stream().map( LabProcedure::getId )
-                .collect( Collectors.toSet() );
+        final Set<Long> curIds = this.getProcedures().stream().map( LabProcedure::getId ).collect( Collectors.toSet() );
 
         // Get prescription ids saved previously
         final Set<Long> sIds = oVisit == null ? Collections.emptySet()
-	    : LabProcedure.getByVisit(id).stream().map( LabProcedure::getId ).collect( Collectors.toSet() );
+                : LabProcedure.getByVisit( id ).stream().map( LabProcedure::getId ).collect( Collectors.toSet() );
 
-	System.out.println("curIds: " + curIds.toString());
-	System.out.println("sIds: " + sIds.toString());
+        System.out.println( "curIds: " + curIds.toString() );
+        System.out.println( "sIds: " + sIds.toString() );
 
         // Save each of the prescriptions
         this.getProcedures().forEach( p -> {
             final boolean isSaved = sIds.contains( p.getId() );
             if ( isSaved ) {
-                //LoggerUtil.log( TransactionType.PRESCRIPTION_EDIT, LoggerUtil.currentUser(), getPatient().getUsername(),
-		//      "Editing prescription with id " + p.getId() );
+                // LoggerUtil.log( TransactionType.PRESCRIPTION_EDIT,
+                // LoggerUtil.currentUser(), getPatient().getUsername(),
+                // "Editing prescription with id " + p.getId() );
             }
             else {
-                //LoggerUtil.log( TransactionType.PRESCRIPTION_CREATE, LoggerUtil.currentUser(),
-		//      getPatient().getUsername(), "Creating prescription with id " + p.getId() );
+                // LoggerUtil.log( TransactionType.PRESCRIPTION_CREATE,
+                // LoggerUtil.currentUser(),
+                // getPatient().getUsername(), "Creating prescription with id "
+                // + p.getId() );
             }
             p.save();
         } );
@@ -780,16 +782,17 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
             sIds.forEach( id -> {
                 final boolean isMissing = !curIds.contains( id );
                 if ( isMissing ) {
-                    //LoggerUtil.log( TransactionType.PRESCRIPTION_DELETE, LoggerUtil.currentUser(),
-		    //      getPatient().getUsername(), "Deleting prescription with id " + id );
-		    System.out.println("Deleting Procedure " + id);
+                    // LoggerUtil.log( TransactionType.PRESCRIPTION_DELETE,
+                    // LoggerUtil.currentUser(),
+                    // getPatient().getUsername(), "Deleting prescription with
+                    // id " + id );
+                    System.out.println( "Deleting Procedure " + id );
                     LabProcedure.getById( id ).delete();
                 }
             } );
         }
-	
-        //// END PROCEDURES ////
 
+        //// END PROCEDURES ////
 
     }
 

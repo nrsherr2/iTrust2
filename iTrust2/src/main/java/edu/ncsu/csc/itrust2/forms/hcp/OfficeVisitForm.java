@@ -156,7 +156,7 @@ public class OfficeVisitForm implements Serializable {
     private List<PrescriptionForm> prescriptions;
 
     /**
-     * Creates an OfficeVisitForm from the OfficeVisit provided
+     * Creates an OfficeVisitForm from the OfficeVisit provideds
      *
      * @param ov
      *            OfficeVisit to turn into an OfficeVisitForm
