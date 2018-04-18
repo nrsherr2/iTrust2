@@ -39,17 +39,14 @@
 				$scope.selectedProcedureID = null;
 				$scope.selectedProcedure = {};
 				
-				function markStarted(){
-					$scope.selectedProcedure.started = true;
-				}
-				
-				function markComplete(){
-					$scope.selectedProcedure.complete = true;
-				}
-				
 				$http.get("/iTrust2/api/v1/labprocedures")
 	              .then(function (response) {
 	                $scope.labprocedures = response.data;
+	              });
+				
+				$http.get("/iTrust2/api/v1/procstat")
+	              .then(function (response) {
+	                $scope.statuses = response.data;
 	              });
 				
 			});
