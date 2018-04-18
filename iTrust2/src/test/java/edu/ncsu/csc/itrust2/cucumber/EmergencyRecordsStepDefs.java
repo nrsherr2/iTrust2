@@ -100,6 +100,20 @@ public class EmergencyRecordsStepDefs {
 
         alice.save();
     }
+    
+    @When ( "I log into iTrust2 as the HCP my way" )
+    public void hcpLogin () {
+        driver.get( baseUrl );
+        final WebElement username = driver.findElement( By.name( "username" ) );
+        username.clear();
+        username.sendKeys( "hcp" );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( "123456" );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+    }
+
 
     @When ( "I log into iTrust2 as an ER" )
     public void erLogin () {
@@ -116,8 +130,12 @@ public class EmergencyRecordsStepDefs {
 
     @When ( "I navigate to the HCP Emergency Health Records Page" )
     public void navigateToHCPRecords () throws InterruptedException {
-        driver.get( baseUrl );
-        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('viewEmergencyRecords').click();" );
+        driver.get( baseUrl + "/hcp");
+	try {
+	    ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('viewEmergencyRecords').click();" );
+	} catch (Exception e) {
+	    throw new InterruptedException(driver.getPageSource() + "\n" + e.getMessage());
+	}
     }
 
     @When ( "I navigate to the ER Emergency Health Records Page" )
