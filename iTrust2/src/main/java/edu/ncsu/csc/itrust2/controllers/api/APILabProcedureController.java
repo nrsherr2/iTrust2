@@ -1,9 +1,7 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -22,7 +20,6 @@ import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
-import edu.ncsu.csc.itrust2.models.persistent.LabTech;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.utils.HibernateUtil;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;

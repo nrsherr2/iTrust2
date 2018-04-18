@@ -1,9 +1,7 @@
 package edu.ncsu.csc.itrust2.models.persistent;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,6 +16,7 @@ import org.hibernate.criterion.Criterion;
 
 import edu.ncsu.csc.itrust2.forms.hcp.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
+import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
 
 /**
  * Class to represent a Lab Procedure which ias associated with an office visit
@@ -59,7 +58,7 @@ public class LabProcedure extends DomainObject<LabProcedure> {
     private LabProcedureCode     code;
 
     @NotNull
-    private boolean              completed;
+    private ProcedureStatus status;
 
     @Override
     public Long getId () {
@@ -208,6 +207,20 @@ public class LabProcedure extends DomainObject<LabProcedure> {
      */
     public static List<LabProcedure> getByVisit ( final Long id ) {
         return getWhere( createCriterionAsList( "visit", OfficeVisit.getById( id ) ) );
+    }
+
+    /**
+     * @return the status
+     */
+    public ProcedureStatus getStatus () {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus ( ProcedureStatus status ) {
+        this.status = status;
     }
 
     /**
