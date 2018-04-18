@@ -130,7 +130,6 @@ public class EmergencyRecordsStepDefs {
 
     @When ( "I navigate to the HCP Emergency Health Records Page" )
     public void navigateToHCPRecords () throws InterruptedException {
-        driver.get( baseUrl + "/hcp");
 	try {
 	    ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('viewEmergencyRecords').click();" );
 	} catch (Exception e) {

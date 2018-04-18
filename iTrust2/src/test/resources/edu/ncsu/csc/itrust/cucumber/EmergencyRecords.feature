@@ -7,7 +7,7 @@ Feature: As a developer, I want to automate
 		 
 Scenario Outline: HCP views emergency health records
 Given There is a patient with the name: <MID>
-And I log in to iTrust2 as the HCP my way
+And I log into iTrust2 as the HCP my way
 And I navigate to the HCP Emergency Health Records Page
 When I fill in the username of the patient
 Then the patients medical information is displayed
