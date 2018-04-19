@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.forms.hcp.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -45,8 +46,6 @@ public class APILabProcedureController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/labcodes" )
     public List<LabProcedureCode> getCodes () {
-        // LoggerUtil.log( TransactionType.Lab_VIEW_ALL,
-        // LoggerUtil.currentUser(), "Fetched icd codes" );
         return LabProcedureCode.getAll();
     }
 
@@ -64,9 +63,6 @@ public class APILabProcedureController extends APIController {
             if ( code == null ) {
                 return new ResponseEntity( errorResponse( "No code with id " + id ), HttpStatus.NOT_FOUND );
             }
-            // TODO: ADD LOGGING
-            // LoggerUtil.log( TransactionType.Lab_VIEW,
-            // LoggerUtil.currentUser(), "Fetched icd code with id " + id );
             return new ResponseEntity( code, HttpStatus.OK );
         }
         catch ( final Exception e ) {
@@ -96,8 +92,8 @@ public class APILabProcedureController extends APIController {
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            // LoggerUtil.log( TransactionType.Lab_CREATE, user.getUsername(),
-            // user.getUsername() + " created an Lab Procedure Code" );
+            LoggerUtil.log( TransactionType.LAB_CODE_CREATE, user.getUsername(),
+                    user.getUsername() + " created an Lab Procedure Code" );
 
             return new ResponseEntity( code, HttpStatus.OK );
         }
@@ -130,10 +126,8 @@ public class APILabProcedureController extends APIController {
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            // TODO: Add Logging
-            // LoggerUtil.log( TransactionType.Lab_DELETE,
-            // LoggerUtil.currentUser(),
-            // user.getUsername() + " deleted an Lab Procedure code Code" );
+            LoggerUtil.log( TransactionType.LAB_CODE_DELETE, LoggerUtil.currentUser(),
+                    user.getUsername() + " deleted a Lab Procedure Code" );
 
             return new ResponseEntity( HttpStatus.OK );
         }
@@ -148,45 +142,40 @@ public class APILabProcedureController extends APIController {
     /**
      * Returns a list of lab procedure codes in the system
      *
+     * @param id
+     *            The ID of the office visit to get lab procedures for
      * @return All the codes in the system
      */
     @GetMapping ( BASE_PATH + "/visit/labprocedures/{visitID}" )
     public List<LabProcedure> getLabProcedures ( @PathVariable ( "visitID" ) final Long id ) {
-        // LoggerUtil.log( TransactionType.Lab_VIEW_ALL,
+        // LoggerUtil.log( TransactionType.Lab_VIEW_ALL, ?
         return LabProcedure.getByVisit( id );
     }
 
-    @DeleteMapping ( BASE_PATH + "/delete/labprocedures/{visitId]/{id}" )
-    public ResponseEntity deleteProcedure ( @PathVariable ( "visitID" ) final Long vistId,
-            @PathVariable ( "id" ) final Long id ) {
-        try {
-            final LabProcedure procedure = LabProcedure.getById( id );
-            procedure.delete();
-            User user = null;
-            try {
-                user = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
-            }
-            catch ( final Exception e ) {
-                // ignore, its was a test that wasn't authenticated properly.
-            }
-            // TODO: Add Logging
-            // LoggerUtil.log( TransactionType.Lab_DELETE,
-            // LoggerUtil.currentUser(),
-            // user.getUsername() + " deleted an Lab Procedure code Code" );
-
-            return new ResponseEntity( HttpStatus.OK );
-        }
-        catch ( final Exception e ) {
-            e.printStackTrace();
-            return new ResponseEntity(
-                    errorResponse( "Could not delete Lab Procedure " + id + " because of " + e.getMessage() ),
-                    HttpStatus.BAD_REQUEST );
-        }
-    }
+    /*
+     * I'm pretty sure this is never used
+     * @DeleteMapping ( BASE_PATH + "/delete/labprocedures/{visitId}/{id}" )
+     * public ResponseEntity deleteProcedure ( @PathVariable ( "visitID" ) final
+     * Long vistId,
+     * @PathVariable ( "id" ) final Long id ) { try { final LabProcedure
+     * procedure = LabProcedure.getById( id ); procedure.delete(); User user =
+     * null; try { user = User.getByName(
+     * SecurityContextHolder.getContext().getAuthentication().getName() ); }
+     * catch ( final Exception e ) { // ignore, its was a test that wasn't
+     * authenticated properly. } LoggerUtil.log(
+     * TransactionType.LAB_CODE_DELETE, LoggerUtil.currentUser(),
+     * user.getUsername() + " deleted a Lab Procedure Code" ); return new
+     * ResponseEntity( HttpStatus.OK ); } catch ( final Exception e ) {
+     * e.printStackTrace(); return new ResponseEntity( errorResponse(
+     * "Could not delete Lab Procedure " + id + " because of " + e.getMessage()
+     * ), HttpStatus.BAD_REQUEST ); } }
+     */
 
     /**
      * Returns a specific lab procedure, based on id
      *
+     * @param id
+     *            The ID of the lab procedure to get
      * @return the lab procedure with the id in the system
      */
     @GetMapping ( BASE_PATH + "/labprocedures/{id}" )
@@ -252,6 +241,8 @@ public class APILabProcedureController extends APIController {
      *
      * @param lpf
      *            the form with all of the new information
+     * @param id
+     *            The ID of the lab procedure to update
      * @return a response saying whether or not the operation was successful
      */
     @PutMapping ( BASE_PATH + "/labprocedures/{id}" )
@@ -272,12 +263,17 @@ public class APILabProcedureController extends APIController {
                 return new ResponseEntity( errorResponse( "No lab procedure with id " + id + " found" ),
                         HttpStatus.NOT_FOUND );
             }
-            if ( dbLP.getStatus() != lp.getStatus() ) {
-                // TODO: Add logging to say you updated the status
+            User user = null;
+            try {
+                user = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
+            }
+            catch ( final Exception e ) {
+                // ignore, its was a test that wasn't authenticated properly.
             }
             dbLP.delete();
-            lp.save(); /* overwrite dbLP */
-            // TODO: I guess log here as well that we edited it
+            lp.save();
+            LoggerUtil.log( TransactionType.LAB_PROCEDURE_EDIT, LoggerUtil.currentUser(),
+                    user.getUsername() + " deleted a Lab Procedure Code" );
             return new ResponseEntity( lp, HttpStatus.OK );
         }
         catch ( final Exception e ) {
@@ -285,5 +281,4 @@ public class APILabProcedureController extends APIController {
                     HttpStatus.BAD_REQUEST );
         }
     }
-
 }

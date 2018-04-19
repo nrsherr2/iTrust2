@@ -63,6 +63,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Gets the office visit associated with this lab procedure
+     *
      * @return the ov
      */
     public OfficeVisit getOv () {
@@ -70,6 +72,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Sets the office visit to be associated with this lab procedure
+     *
      * @param ov
      *            the visit to set
      */
@@ -78,6 +82,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Gets the ID of this lab procedure
+     *
      * @return the id
      */
     public String getId () {
@@ -85,6 +91,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Sets the ID of this lab procedure
+     *
      * @param id
      *            the id to set
      */
@@ -93,6 +101,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Gets the priority of this lab procedure
+     *
      * @return the priority
      */
     public LabProcedurePriority getLpp () {
@@ -100,6 +110,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Sets the priority of this lab procedure
+     *
      * @param priority
      *            the priority to set
      */
@@ -108,6 +120,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Gets the date for this lab procedure
+     *
      * @return the date
      */
     public String getDate () {
@@ -115,6 +129,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Sets the date for this lab procedure
+     *
      * @param date
      *            the date to set
      */
@@ -123,6 +139,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Gets the comments for this lab procedure
+     *
      * @return the comments
      */
     public String getComments () {
@@ -130,6 +148,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Sets the comments for this lab procedure
+     *
      * @param comments
      *            the comments to set
      */
@@ -138,6 +158,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Gets the assigned lab tech for this lab procedure
+     *
      * @return the assignedTech
      */
     public String getAssignedTech () {
@@ -145,6 +167,8 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
+     * Sets the assigned lab tech for this lab procedure
+     *
      * @param assignedTech
      *            the assignedTech to set
      */
@@ -152,18 +176,40 @@ public class LabProcedureForm implements Serializable {
         this.assignedLabTech = assignedTech;
     }
 
+    /**
+     * Gets the procedure code for this lab procedure
+     *
+     * @return The procedure code for this lab procedure
+     */
     public LabProcedureCode getLabProcedureCode () {
         return code;
     }
 
+    /**
+     * Sets the procedure code for this lab procedure
+     *
+     * @param labProcedureCode
+     *            The procedure code for this lab procedure
+     */
     public void setLabProcedureCode ( final LabProcedureCode labProcedureCode ) {
         this.code = labProcedureCode;
     }
 
+    /**
+     * Gets the completion status for this lab procedure
+     *
+     * @return The status of this lab procedure
+     */
     public String getStatus () {
         return status;
     }
 
+    /**
+     * Sets the completion status for this lab procedure
+     *
+     * @param status
+     *            The status to set for this procedure
+     */
     public void setStatus ( final String status ) {
         this.status = status;
     }
