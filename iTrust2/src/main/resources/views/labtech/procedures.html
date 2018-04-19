@@ -73,8 +73,6 @@
 	                $scope.labtechs = response.data[0];
 	              });
 				
-				console.log($scope);
-				
 				
 				$scope.selectProcedure = function(proc){
 					$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:"", priority:"", visit:"", status:""};
@@ -100,7 +98,7 @@
 			            }, function (rejection) {
 			                $scope.message = "Error occurred editing procedure";
 			        	})	
-			        //location.reload(true);	
+			        location.reload(true);	
 			        
 				}
 				

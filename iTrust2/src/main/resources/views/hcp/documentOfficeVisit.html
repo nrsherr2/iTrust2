@@ -163,11 +163,15 @@
               function (response) {
               	$scope.priority = response.data;
               });
+            $http.get("/iTrust2/api/v1/procstat")
+            .then(function (response) {
+              $scope.statuses = response.data;
+            });
 
             $scope.submit = function () {
               $scope.errorMsg = "";
               $scope.visit.hcp = /*[[${#httpServletRequest.remoteUser}]]*/null; /* Ugly hack; use this to retrieve the name of the HCP who is currently logged in.  This grabs it from Thymeleaf */
-              $scope.visit.status = "NOT_STARTED";
+              $scope.visit.status = $scope.statuses[0];
 
               if ($scope.visit.type == null) {
                 $scope.errorMsg += "Please select a visit type\n";
@@ -333,7 +337,7 @@
                 code: $scope.procCodeEntry,
                 note: $scope.procNoteEntry,
                 priority: $scope.procPriorityEntry,
-		status: "Not Started"
+				status: $scope.statuses[0]
               });
               resetProceduresForm();
             }
@@ -792,10 +796,12 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="lc in labcodes">
-					                              <label>
-					                                <input type="radio" ng-model="$parent.procCodeEntry" ng-click="$parent.procCodeEntry = lc" name="labcode" value="{{lc}}" required="false" /> 
+					                              
+					                              	<div ng-model="$parent.procCodeEntry">
+					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode" value="{{lc}}" required="false" /> 
+					                                </div>
 					                                {{lc.code}}
-					                              </label>
+					                              	
 					                            </li>
                               				</ul>
                             			</div>
@@ -809,10 +815,11 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="p in priority">
-                                  					<label>
-                                    					<input type="radio" ng-model="$parent.procPriorityEntry" name="priority" value="{{p}}" required="true"/> 
-                                    					{{p}}
-                                 					</label>
+                                  					<div ng-model="$parent.procPriorityEntry">
+                                    					<input type="radio" ng-click="$parent.procPriorityEntry = p"  name="priority" value="{{p}}" required="true"/> 
+                                    				</div>
+                                    				{{p}}
+                                 					
                                 				</li>
                               				</ul>
                             			</div>
@@ -835,10 +842,10 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="l in labtechs">
-                                  					<label>
-                                    					<input type="radio" ng-model="$parent.procTechEntry" ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
+                                  					<div ng-model="$parent.procTechEntry">
+                                    					<input type="radio"  ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
                                     					<span class="glyphicon glyphicon-user"></span>{{l.username}}
-                                 					</label>
+                                 					</div>
                                 				</li>
                               				</ul>
                             			</div>
