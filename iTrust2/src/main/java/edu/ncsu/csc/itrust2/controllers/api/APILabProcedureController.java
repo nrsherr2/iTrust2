@@ -1,7 +1,7 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -226,7 +226,7 @@ public class APILabProcedureController extends APIController {
 
         session.close();
 
-        List<List> ret = new ArrayList<List>();
+        final List<List> ret = new ArrayList<List>();
         ret.add( techs );
         ret.add( numbers );
 
@@ -236,7 +236,7 @@ public class APILabProcedureController extends APIController {
     /**
      * returns a list of assigned lab procedures to the front end. returns only
      * a list of what is assigned to the designated tech.
-     * 
+     *
      * @return a list of lab procedures assigned to the currently logged in lab
      *         tech
      */
@@ -249,7 +249,7 @@ public class APILabProcedureController extends APIController {
     /**
      * A lab tech can edit the details of a lab procedure after it has been
      * assigned to them. This will input the info and save it.
-     * 
+     *
      * @param lpf
      *            the form with all of the new information
      * @return a response saying whether or not the operation was successful
@@ -258,6 +258,9 @@ public class APILabProcedureController extends APIController {
     @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public ResponseEntity editLabProcedure ( @PathVariable final Long id, @RequestBody final LabProcedureForm lpf ) {
         try {
+            System.out.println( lpf.getAssignedTech() + "\n" + lpf.getComments() + "\n" + lpf.getDate() + "\n"
+                    + lpf.getId() + "\n" + lpf.getStatus() + "\n" + lpf.getLabProcedureCode() + "\n" + lpf.getLpp()
+                    + "\n" + lpf.getOv() );
             final LabProcedure lp = new LabProcedure( lpf );
             if ( lp.getId() != null && !id.equals( lp.getId() ) ) {
                 return new ResponseEntity(
@@ -272,11 +275,12 @@ public class APILabProcedureController extends APIController {
             if ( dbLP.getStatus() != lp.getStatus() ) {
                 // TODO: Add logging to say you updated the status
             }
+            dbLP.delete();
             lp.save(); /* overwrite dbLP */
             // TODO: I guess log here as well that we edited it
             return new ResponseEntity( lp, HttpStatus.OK );
         }
-        catch ( Exception e ) {
+        catch ( final Exception e ) {
             return new ResponseEntity( "could not update " + lpf.toString() + " because " + e.getMessage(),
                     HttpStatus.BAD_REQUEST );
         }

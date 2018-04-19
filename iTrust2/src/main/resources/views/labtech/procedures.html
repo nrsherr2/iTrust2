@@ -34,9 +34,28 @@
 					return s;
 				}
 				
+				$scope.getTime = function getTime(date) {
+		              var hour = date.hourOfDay;
+		              var suffix;
+		              if (hour > 12) {
+		                hour = hour - 12;
+		                suffix = "PM";
+		              } else {
+		                suffix = "AM";
+		              }
+		              return twoDigit(hour) + ":" + twoDigit(date.minute) + " " + suffix;
+		        }
+				
+				function twoDigit(num) {
+		              if (num < 10) {
+		                return "0" + num;
+		              }
+		              return num;
+		        }
+				
 				$scope.originalForm = {};
 				$scope.labForm = {};
-				$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:""};
+				$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:"", priority:"", visit:"", status:""};
 				
 				
 				$http.get("/iTrust2/api/v1/labprocedures")
@@ -54,19 +73,23 @@
 	                $scope.labtechs = response.data[0];
 	              });
 				
-			
+				console.log($scope);
+				
 				
 				$scope.selectProcedure = function(proc){
-					$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:""};
+					$scope.selectedProcedure = {id:0, comments:"", assignedLabTech:"", code:"", priority:"", visit:"", status:""};
 					$scope.selectedProcedure.id = proc.id;
 					$scope.selectedProcedure.comments = proc.comments;
 					$scope.selectedProcedure.assignedLabTech = proc.assignedLabTech;
 					$scope.selectedProcedure.code = proc.code;
+					$scope.selectedProcedure.priority = proc.priority;
+					$scope.selectedProcedure.visit = proc.visit;
+					$scope.selectedProcedure.status = proc.status;
 				}
 				
 				$scope.saveProcedure = function(){
 					
-					
+					console.log($scope);
 					$http({
 			     	   method: 'PUT',
 			           url: '/iTrust2/api/v1/labprocedures/' + $scope.selectedProcedure.id,
@@ -75,8 +98,8 @@
 			            	$scope.message = "Procedure edited successfully";
 			            }, function (rejection) {
 			                $scope.message = "Error occurred editing procedure";
-			        	})	
-					}
+			        	})		
+				}
 				
 			});
 			/*]]>*/
@@ -92,14 +115,16 @@
 					<td style="vertical-align: top">
 						<table class="table">
 							<tr>
-								<th>Lab Procedure Select</th>
+								<th>Select Procedure</th>
 								<th>Lab Procedure Code</th>
-								<th>Status</th>
+								<th>Visit Description</th>
 							</tr>
 							<tr name="procedureRow" ng-repeat="p in labprocedures">
-								<td> <input name="selectProcedure" type="radio" ng-model="$parent.selectedProcedure" ng-click="$parent.selectProcedure(p)"/></td>
-								<td name="selectedCell"> {{p.code.code}}</td>
-								<td name="status">{{p.status}}</td>
+								<td ng-model="$parent.selectedProcedure" > 
+									<input name="selectProcedure" type="radio" ng-click="$parent.selectProcedure(p)"/>
+								</td>
+								<td name="selectedCell">{{p.code.code}}</td>
+								<td name="visit">{{selectedProcedure.visit.patient.username}}'s {{selectedProcedure.visit.type}} on {{selectedProcedure.visit.formattedDate}} at {{getTime(selectedProcedure.visit.date)}}</td>
 							</tr>
 						</table>
 					</td>
@@ -109,7 +134,7 @@
 						</div>
 						<div class="form-group" style="padding-left:30px">
 							<label>Notes:</label>
-							<textarea class="form-control" rows="5" name="notes" ng-model="selectedProcedure.comments" ></textarea>
+							<textarea class="form-control" rows="5" name="notes" ng-model="selectedProcedure.comments"></textarea>
 						</div>
 							
 						<div class="form-group" style="padding-left:30px">								
@@ -131,6 +156,11 @@
 						<div class="form-group" style="padding-left:30px">
 							<button class="btn btn-primary" name="procSave" ng-click="saveProcedure()">Save Changes</button>
 						</div>
+						<div name="errorMsg" class="text-success">
+                            {{message}}
+                          </div>
+                          <div name="success" class="text-danger">
+                            {{errorMsg}}
 					</td>
 				</tr>
 			</table>

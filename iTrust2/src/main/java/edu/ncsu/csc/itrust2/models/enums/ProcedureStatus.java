@@ -35,11 +35,10 @@ public enum ProcedureStatus {
      *
      * @param state
      *            Name of the ProcedureStatus to find
-     * @return The ProcedureStatus enum, or North Carolina (NC) if there was no
-     *         match.
+     * @return The ProcedureStatus enum, or NOT_STARTED if there was no match.
      */
     public static ProcedureStatus parse ( final String status ) {
-        for ( final ProcedureStatus myStatus : values() ) {
+        for ( final ProcedureStatus myStatus : ProcedureStatus.values() ) {
             if ( myStatus.getText().equals( status ) ) {
                 return myStatus;
             }

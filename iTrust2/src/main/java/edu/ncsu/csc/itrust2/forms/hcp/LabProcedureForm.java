@@ -26,20 +26,20 @@ public class LabProcedureForm implements Serializable {
      * office visit associated with the procedure
      */
     @NotEmpty
-    private OfficeVisit          ov;
+    private OfficeVisit          visit;
 
     /**
      * id of the procedure
      */
     private String               id;
 
-    private LabProcedureCode     labProcedureCode;
+    private LabProcedureCode     code;
 
     /**
      * the priority assigned to the procedure
      */
     @NotEmpty
-    private LabProcedurePriority lpp;
+    private LabProcedurePriority priority;
 
     /**
      * the id of the assigned lab tech
@@ -66,15 +66,15 @@ public class LabProcedureForm implements Serializable {
      * @return the ov
      */
     public OfficeVisit getOv () {
-        return ov;
+        return visit;
     }
 
     /**
      * @param ov
-     *            the ov to set
+     *            the visit to set
      */
     public void setOv ( final OfficeVisit ov ) {
-        this.ov = ov;
+        this.visit = ov;
     }
 
     /**
@@ -93,18 +93,18 @@ public class LabProcedureForm implements Serializable {
     }
 
     /**
-     * @return the lpp
+     * @return the priority
      */
     public LabProcedurePriority getLpp () {
-        return lpp;
+        return priority;
     }
 
     /**
-     * @param lpp
-     *            the lpp to set
+     * @param priority
+     *            the priority to set
      */
-    public void setLpp ( final LabProcedurePriority lpp ) {
-        this.lpp = lpp;
+    public void setLpp ( final LabProcedurePriority priority ) {
+        this.priority = priority;
     }
 
     /**
@@ -153,11 +153,11 @@ public class LabProcedureForm implements Serializable {
     }
 
     public LabProcedureCode getLabProcedureCode () {
-        return labProcedureCode;
+        return code;
     }
 
     public void setLabProcedureCode ( final LabProcedureCode labProcedureCode ) {
-        this.labProcedureCode = labProcedureCode;
+        this.code = labProcedureCode;
     }
 
     public String getStatus () {

@@ -513,7 +513,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * @param procedures2
      *            the list to set it to
      */
-    private void setProcedures ( List<LabProcedure> procedures2 ) {
+    private void setProcedures ( final List<LabProcedure> procedures2 ) {
         procedures = procedures2;
     }
 
@@ -609,7 +609,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * not serialized or saved in DB If removed, serializer gets into an
      * infinite loop
      */
-    @OneToMany ( mappedBy = "visit" )
+    @OneToMany ( mappedBy = "visit", orphanRemoval = true )
     public transient List<LabProcedure> procedures;
 
     /**
