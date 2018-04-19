@@ -401,13 +401,12 @@
           	//remove local procedure from list if not started by labtech
             $scope.removeProcedure = function ($index) {
           	  //if (not started by labtech)
-              $scope.procedures.splice($index, 1);
+              $scope.selectedVisit.procedures.splice($index, 1);
             }
 
             //call initally 
             resetPrescriptionForm();
             resetDiagnosisForm();
-            resetProceduresForm();
 
           });
 
