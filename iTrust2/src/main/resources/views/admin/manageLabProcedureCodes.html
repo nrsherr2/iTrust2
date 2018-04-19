@@ -45,12 +45,12 @@
 				}
 				
 				$scope.removeRow = function(code) {
-					$http.delete('/iTrust2/api/v1/labcode/' + code.id).then(
+					$http.delete('/iTrust2/api/v1/labcodes/' + code.id).then(
 							function(response) {
 								$scope.loadTable();
 								$scope.message = "";
 							}, function(rejection) {
-								$scope.message = "Could not remove code";
+								$scope.message = "Cannot remove; code in use by Lab Procedure";
 							})
 				}
 				
@@ -81,6 +81,7 @@
 									<input type="button" value="Remove" class="btn btn-primary" ng-click="removeRow(c)"/>
 								</td>
 							</tr>
+							<td style="color:red">{{message}}</td>
 						</table>
 					</td>
 					<td style="width:35%;vertical-align: top">
@@ -108,7 +109,7 @@
 							<p style="color:red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
 						</div>	
 						<div>
-							<!-- Formate guidelines from https://loinc.org/ -->
+							<!-- Format guidelines from https://loinc.org/ -->
 							<h4 style="color: blue">LOINC Code Format: "nnnnn-n", where each "n" is a digit</h4>
 						</div>
 					</td>

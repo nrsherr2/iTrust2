@@ -1,5 +1,12 @@
 package edu.ncsu.csc.itrust2.models.enums;
 
+/**
+ * Enumeration for the completion status of a lab procedure
+ *
+ * @author nrsherr2
+ * @author jgschwab
+ *
+ */
 public enum ProcedureStatus {
     /** the procedure has not started */
     NOT_STARTED ( "Not Started" ),
@@ -33,9 +40,9 @@ public enum ProcedureStatus {
     /**
      * Finds a ProcedureStatus enum from the string provided.
      *
-     * @param state
+     * @param status
      *            Name of the ProcedureStatus to find
-     * @return The ProcedureStatus enum, or NOT_STARTED if there was no match.
+     * @return The ProcedureStatus enum, throw IAE if none of these
      */
     public static ProcedureStatus parse ( final String status ) {
         if ( status.equals( "NOT_STARTED" ) ) {
