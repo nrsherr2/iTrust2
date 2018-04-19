@@ -38,11 +38,18 @@ public enum ProcedureStatus {
      * @return The ProcedureStatus enum, or NOT_STARTED if there was no match.
      */
     public static ProcedureStatus parse ( final String status ) {
-        for ( final ProcedureStatus myStatus : ProcedureStatus.values() ) {
-            if ( myStatus.getText().equals( status ) ) {
-                return myStatus;
-            }
+        if ( status.equals( "NOT_STARTED" ) ) {
+            return ProcedureStatus.NOT_STARTED;
         }
-        return ProcedureStatus.NOT_STARTED;
+        else if ( status.equals( "IN_PROGRESS" ) ) {
+            return ProcedureStatus.IN_PROGRESS;
+        }
+        else if ( status.equals( "COMPLETE" ) ) {
+            return ProcedureStatus.COMPLETE;
+        }
+        else {
+            throw new IllegalArgumentException( "Unknown Procedure status: " + "\'" + status
+                    + "\', should be \"NOT_STARTED\", \"IN_PROGRESS\", or \"COMPLETE\"." );
+        }
     }
 }
