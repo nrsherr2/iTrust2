@@ -158,6 +158,7 @@
             $http.get("/iTrust2/api/v1/labtechs").then(
               function (response) {
                 $scope.labtechs = response.data[0];
+                $scope.numAssigned = response.data[1];
               });
             $http.get("/iTrust2/api/v1/priority").then(
               function (response) {
@@ -327,6 +328,10 @@
   	              $scope.prescriptions.push(p);
   	              resetPrescriptionForm();
                 }
+            }
+            
+            $scope.getNumAssigned = function($index){
+            	return $scope.numAssigned[$index];
             }
             
          	// capture each lab procedure into an array
@@ -844,7 +849,7 @@
                                 				<li ng-repeat="l in labtechs">
                                   					<div ng-model="$parent.procTechEntry">
                                     					<input type="radio"  ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
-                                    					<span class="glyphicon glyphicon-user"></span>  {{l.username}} ({{l.firstName}} {{l.lastName}})
+                                    					<span class="glyphicon glyphicon-user"></span>  {{l.username}} ({{$parent.getNumAssigned($index)}} assigned)
                                  					</div>
                                 				</li>
                               				</ul>
