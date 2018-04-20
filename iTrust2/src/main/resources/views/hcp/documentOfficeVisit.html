@@ -797,7 +797,7 @@
                                 				<li ng-repeat="lc in labcodes">
 					                              
 					                              	<div ng-model="$parent.procCodeEntry">
-					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode" value="{{lc}}" required="false" /> 
+					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode-{{lc.code}}" value="{{lc}}" required="false" /> 
 					                                </div>
 					                                {{lc.code}}
 					                              	
@@ -842,7 +842,7 @@
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="l in labtechs">
                                   					<div ng-model="$parent.procTechEntry">
-                                    					<input type="radio"  ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
+                                    					<input type="radio"  ng-click="$parent.procTechEntry = l" name="tech-{{l.username}}" value="{{l}}" required="true"/> 
                                     					<span class="glyphicon glyphicon-user"></span>{{l.username}}
                                  					</div>
                                 				</li>

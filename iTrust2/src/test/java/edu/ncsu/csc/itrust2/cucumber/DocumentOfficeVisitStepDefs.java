@@ -32,6 +32,7 @@ import edu.ncsu.csc.itrust2.models.persistent.Hospital;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.models.persistent.User;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 
 public class DocumentOfficeVisitStepDefs {
 
@@ -47,10 +48,23 @@ public class DocumentOfficeVisitStepDefs {
 
     WebDriverWait           wait         = new WebDriverWait( driver, 2 );
 
+    private final LabProcedureCode testcode;
+    private String LAB_CODE = "10191-11";
+    
+    private final LabProcedure proc;
+
     @Given ( "The required facilities exist" )
     public void personnelExists () throws Exception {
         OfficeVisit.deleteAll();
         DomainObject.deleteAll( BasicHealthMetrics.class );
+
+	LabProcedureCodeForm form = new LabProcedureCodeForm();
+	form.setCode(LAB_CODE);
+	form.setDescription("Office visit testing");
+	form.setId(27614);
+
+	testCode = new LabProcedureCode(form);
+	testCode.save();
 
         // All tests can safely assume the existence of the 'hcp', 'admin', and
         // 'patient' users
@@ -174,6 +188,33 @@ public class DocumentOfficeVisitStepDefs {
                 .findElement( By.cssSelector( "input[value=\"" + PatientSmokingStatus.NEVER.toString() + "\"]" ) );
         patientSmokeElement.click();
 
+	// PROCEDURES
+
+	String search = "labcode-" + LAB_CODE;
+	wait.until( ExpectedConditions.visibilityOfElementLocated( By.cssSelector( "input[value=\"" + search + "\"]" ) ) );
+        final WebElement codeElement = driver
+	    .findElement( By.cssSelector( "input[value=\"" + search + "\"]" ) );
+        codeElement.click();
+
+	wait.until( ExpectedConditions.visibilityOfElementLocated( By.cssSelector( "input[value=\"PRIORITY_1\"]" ) ) );
+        final WebElement priorityElement = driver
+	    .findElement( By.cssSelector( "input[value=\"PRIORITY_1\"]" ) );
+        priorityElement.click();
+
+	search = "tech-techie69";
+	wait.until( ExpectedConditions.visibilityOfElementLocated( By.cssSelector( "input[value=\"" + search + "\"]" ) ) );
+        final WebElement techElement = driver
+	    .findElement( By.cssSelector( "input[value=\"" + search + "\"]" ) );
+        techElement.click();
+
+	search = "fillProcedure";
+	wait.until( ExpectedConditions.visibilityOfElementLocated( By.cssSelector( "input[value=\"" + search + "\"]" ) ) );
+        final WebElement addProcElement = driver
+	    .findElement( By.cssSelector( "input[value=\"" + search + "\"]" ) );
+        addProcElement.click();
+	
+	// END PROCEDURES
+
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "submit" ) ) );
         final WebElement submit = driver.findElement( By.name( "submit" ) );
         submit.click();
@@ -237,6 +278,23 @@ public class DocumentOfficeVisitStepDefs {
         assertEquals( expectedBhm.getSystolic(), actualBhm.getSystolic() );
         assertEquals( expectedBhm.getDiastolic(), actualBhm.getDiastolic() );
         assertEquals( expectedBhm.getHouseSmokingStatus(), actualBhm.getHouseSmokingStatus() );
+    }
+
+    /**
+     * Ensures that the lab procedure was created
+     *
+     * @throws InterruptedException
+     */
+    @Then ( "The lab procedure was created" )
+    public void labProceduresCorrect () throws InterruptedException {
+	boolean ret = false;
+	List<LabProcedure> list = LabProcedure.getByTech("techie69");
+	for ( LabProcedure l : list ) {
+	    if (l.getCode().getCode().equals(LAB_CODE)) {
+		ret = true;
+	    }
+	}
+	assertTrue(ret);
     }
 
     /**
