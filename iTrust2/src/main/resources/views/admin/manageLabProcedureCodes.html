@@ -24,12 +24,18 @@
 							});
 				}
 				
+				var checkValidCode = function(code){
+					if (/^\d\d\d\d\d-\d$/.test(code) == false) {
+						$scope.errorAdding = "Code doesn't meet specifications";
+						return false;
+					} 
+					return true;
+				}
+				
 				// handle add code button click
 				$scope.addCode = function() {
 					if ($scope.code.description.length > 250) {
 						$scope.errorAdding = "Description exceeds character limit of 250";
-					} else if (/^\d\d\d\d\d-\d$/.test($scope.code.code) == false) {
-						$scope.errorAdding = "Code doesn't meet specifications";
 					} else {
 						$http.post("/iTrust2/api/v1/labcodes", $scope.code).then(
 								function(response) {
@@ -43,6 +49,38 @@
 					}
 					
 				}
+				
+				$scope.selectedCode = {};
+
+		        $scope.getTemplate = function (code) {
+		          if (code.id === $scope.selectedCode.id) return 'edit';
+		          else return 'view';
+		        };
+		        
+		        $scope.editCode = function (code) {
+		            $scope.selectedCode = angular.copy(code);
+		          };
+		          
+		        $scope.resetSelected = function () {
+			        $scope.selectedCode = {};
+			    };
+		          
+		        $scope.saveCode = function () {
+		         	  var err = checkValidCode($scope.selectedCode);
+		            if (err) {
+		              $scope.errorAdding = err;
+		            } else {
+		              $http.put("/iTrust2/api/v1/labcodes/" + $scope.selectedCode.id, $scope.selectedCode).then(
+		                function (response) {
+		                  $scope.loadTable();
+		                  $scope.resetSelected();
+		                }, function (rejection) {
+		                  $scope.errorAdding = "Failed to edit code";
+		                });
+		            }
+		          };
+
+		        
 				
 				$scope.removeRow = function(code) {
 					$http.delete('/iTrust2/api/v1/labcodes/' + code.id).then(
@@ -74,15 +112,49 @@
 								<th>Description</th>
 								<th>Action</th>
 							</tr>
-							<tr name="codeRow" ng-repeat="c in codes | orderBy: 'code'" codeId={{c.id}}>
-								<td name="codeCell">{{c.code}}</td>
-								<td name="descriptionCell">{{c.description}}</td>
-								<td>
-									<input type="button" value="Remove" class="btn btn-primary" ng-click="removeRow(c)"/>
-								</td>
+							<tr name="codeRow" ng-repeat="c in codes | orderBy: 'code'" ng-include="getTemplate(c)" codeId={{c.id}}>
 							</tr>
 							<td style="color:red">{{message}}</td>
 						</table>
+						
+						
+						<!-- table in view mode -->
+                <script type="text/ng-template" id="view">
+                  	<td name="codeCell">{{c.code}}</td>
+				  	<td name="descriptionCell">{{c.description}}</td>
+					<td>
+						<input type="button" value="Remove" class="btn btn-primary" ng-click="removeRow(c)"/>
+				  	</td>
+                  	<td>
+                    	<div class="row text-center">
+                      		<div class="col-md-6">
+                        		<input type="button" value="Edit" class="btn btn-primary" name="editCode" ng-click="editCode(c)" />                         
+                      		</div>
+                    	</div>
+                  	</td>
+                </script>
+
+                <!-- table in edit mode -->
+                <script type="text/ng-template" id="edit">
+                  <td name="editCodeCell">
+                    <input type="text" class="form-control" ng-model="selectedCode.code" />
+                  </td>
+                  <td name="editCodeCell">
+                    <input type="text" class="form-control" ng-model="selectedCode.description" />
+                  </td>
+                  <td>
+                    <div class="row text-center">
+                      <div class="col-md-6">
+                          <input type="button" value="Save" class="btn btn-success" name="saveCode" ng-click="saveCode()" />                          
+                      </div>
+                      <div class="col-md-6">
+                          <input type="button" value="Cancel" class="btn btn-danger" name="cancelEdit" ng-click="resetSelected()" />                            
+                      </div>
+                    </div>
+                  </td>
+                </script>
+						
+						
 					</td>
 					<td style="width:35%;vertical-align: top">
 						<div style="padding: 0px 0px 20px 30px">

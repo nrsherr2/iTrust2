@@ -107,6 +107,50 @@ public class APILabProcedureController extends APIController {
     }
 
     /**
+     * Updates the code with the specified ID to the value supplied.
+     *
+     * @param id
+     *            The ID of the code to edit
+     * @param form
+     *            The new values for the Code
+     * @return The Response of the action
+     */
+    @PutMapping ( BASE_PATH + "/labcodes/{id}" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public ResponseEntity updateCode ( @PathVariable ( "id" ) final Long id,
+            @RequestBody final LabProcedureCodeForm form ) {
+        try {
+            final LabProcedureCode code = LabProcedureCode.getById( id );
+            if ( code == null ) {
+                return new ResponseEntity( "No code with id " + id, HttpStatus.NOT_FOUND );
+            }
+            form.setId( id );
+            final LabProcedureCode updatedCode = new LabProcedureCode( form );
+            updatedCode.save();
+
+            try {
+                // User user = null;
+                // user = User.getByName(
+                // SecurityContextHolder.getContext().getAuthentication().getName()
+                // );
+            }
+            catch ( final Exception e ) {
+                // ignore, its was a test that wasn't authenticated properly.
+            }
+            // TODO log it
+            // LoggerUtil.log( TransactionType.ICD_EDIT, user.getUsername(),
+            // user.getUsername() + " edited an ICD Code" );
+
+            return new ResponseEntity( updatedCode, HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity(
+                    errorResponse( "Could not update Lab Procedure Code " + id + " because of " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
      * Deletes a lab procedure code from the system.
      *
      * @param id
