@@ -184,7 +184,8 @@
 				$http.get("/iTrust2/api/v1/patients/" + $scope.searchname).then(function(response) {
 		                        $scope.data = response.data;
 		                        var date = $scope.data.dateOfBirth;
-		                        $scope.data.dateOfBirth = date.month + "/" + date.dayOfMonth + "/" + date.year;
+		                        $scope.data.dateOfBirth = (date.month + 1) + "/" + date.dayOfMonth + "/" + date.year;
+		                        $scope.data.age = 2018 - date.year;
 
 		                        $scope.message = "";
 				},
