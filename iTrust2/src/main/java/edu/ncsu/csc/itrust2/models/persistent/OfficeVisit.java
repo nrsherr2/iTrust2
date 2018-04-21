@@ -513,7 +513,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * @param procedures2
      *            the list to set it to
      */
-    private void setProcedures ( final List<LabProcedure> procedures2 ) {
+    public void setProcedures ( final List<LabProcedure> procedures2 ) {
         procedures = procedures2;
     }
 

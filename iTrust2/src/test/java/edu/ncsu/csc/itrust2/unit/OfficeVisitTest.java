@@ -7,13 +7,17 @@ import java.util.Vector;
 
 import org.junit.Test;
 
+import edu.ncsu.csc.itrust2.forms.hcp.LabProcedureForm;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
+import edu.ncsu.csc.itrust2.models.enums.LabProcedurePriority;
 import edu.ncsu.csc.itrust2.models.persistent.BasicHealthMetrics;
 import edu.ncsu.csc.itrust2.models.persistent.Diagnosis;
 import edu.ncsu.csc.itrust2.models.persistent.Drug;
 import edu.ncsu.csc.itrust2.models.persistent.Hospital;
 import edu.ncsu.csc.itrust2.models.persistent.ICDCode;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.Prescription;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -79,8 +83,24 @@ public class OfficeVisitTest {
         pres.setDosage( 3 );
         pres.setDrug( drug );
 
+        // add in a lab procedure to this visit to create it
+        final LabProcedureCode lpc = new LabProcedureCode();
+        lpc.setCode( "12345-6" );
+        lpc.setDescription( "Listen to 24/7 lo-fi hip hop study beats" );
+        lpc.save();
         final Calendar end = Calendar.getInstance();
         end.add( Calendar.DAY_OF_WEEK, 10 );
+
+        final LabProcedureForm lpf = new LabProcedureForm();
+        lpf.setAssignedTech( "labtech" );
+        lpf.setLabProcedureCode( lpc );
+        lpf.setLpp( LabProcedurePriority.PRIORITY_2 );
+        lpf.setComments( "Post in chat" );
+        lpf.setOv( visit );
+        lpf.setStatus( "Not Started" );
+        final LabProcedure proc = new LabProcedure( lpf );
+        proc.save();
+
         pres.setEndDate( end );
         pres.setPatient( User.getByName( "AliceThirteen" ) );
         pres.setStartDate( Calendar.getInstance() );
@@ -94,6 +114,10 @@ public class OfficeVisitTest {
 
         visit.setPrescriptions( Collections.emptyList() );
 
+        visit.save();
+        
+        visit.setProcedures( Collections.singletonList( proc ) );
+        
         visit.save();
 
         visit.delete();
