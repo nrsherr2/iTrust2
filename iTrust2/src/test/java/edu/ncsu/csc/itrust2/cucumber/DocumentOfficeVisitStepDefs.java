@@ -33,6 +33,8 @@ import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
+import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 
 public class DocumentOfficeVisitStepDefs {
 
@@ -48,23 +50,26 @@ public class DocumentOfficeVisitStepDefs {
 
     WebDriverWait           wait         = new WebDriverWait( driver, 2 );
 
-    private final LabProcedureCode testcode;
-    private String LAB_CODE = "10191-11";
+    private LabProcedureCode testCode;
+    private String LAB_CODE = "10191-1";
     
-    private final LabProcedure proc;
-
     @Given ( "The required facilities exist" )
     public void personnelExists () throws Exception {
+	DomainObject.deleteAll( LabProcedure.class );
         OfficeVisit.deleteAll();
         DomainObject.deleteAll( BasicHealthMetrics.class );
 
 	LabProcedureCodeForm form = new LabProcedureCodeForm();
 	form.setCode(LAB_CODE);
 	form.setDescription("Office visit testing");
-	form.setId(27614);
+	//form.setId(27614L);
 
 	testCode = new LabProcedureCode(form);
-	testCode.save();
+	try {
+	    testCode.save();
+	} catch (Exception e) {
+	    throw new Exception(e.getMessage() + " " + testCode.getId());
+	}
 
         // All tests can safely assume the existence of the 'hcp', 'admin', and
         // 'patient' users
