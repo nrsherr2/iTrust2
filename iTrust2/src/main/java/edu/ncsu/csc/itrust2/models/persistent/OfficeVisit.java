@@ -764,15 +764,12 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
         this.getProcedures().forEach( p -> {
             final boolean isSaved = sIds.contains( p.getId() );
             if ( isSaved ) {
-                // LoggerUtil.log( TransactionType.PRESCRIPTION_EDIT,
-                // LoggerUtil.currentUser(), getPatient().getUsername(),
-                // "Editing prescription with id " + p.getId() );
+                LoggerUtil.log( TransactionType.LAB_PROCEDURE_EDIT, LoggerUtil.currentUser(),
+                        "Edited lab procedure with id " + p.getId() );
             }
             else {
-                // LoggerUtil.log( TransactionType.PRESCRIPTION_CREATE,
-                // LoggerUtil.currentUser(),
-                // getPatient().getUsername(), "Creating prescription with id "
-                // + p.getId() );
+                LoggerUtil.log( TransactionType.LAB_PROCEDURE_CREATE, LoggerUtil.currentUser(), p.getAssignedLabTech(),
+                        LoggerUtil.currentUser() + " created a lab procedure for " + p.getAssignedLabTech() );
             }
             p.save();
         } );
@@ -786,6 +783,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
                     // LoggerUtil.currentUser(),
                     // getPatient().getUsername(), "Deleting prescription with
                     // id " + id );
+                    LoggerUtil.log( TransactionType.LAB_PROCEDURE_DELETE, LoggerUtil.currentUser(), "Deleted lab procedure #" + id );
                     System.out.println( "Deleting Procedure " + id );
                     LabProcedure.getById( id ).delete();
                 }

@@ -312,13 +312,25 @@ public enum TransactionType {
      */
     LAB_CODE_DELETE ( 1702, "Lab Procedure Code Deleted", false ),
     /**
+     * View a list of all lab codes
+     */
+    LAB_CODES_VIEW ( 1703, "Lab Procedure codes viewed", false ),
+    /**
+     * Admin edits a lab code
+     */
+    LAB_CODE_EDIT ( 1704, "Lab Procedure code edited", false ),
+    /**
      * Lab Procedure Created
      */
-    LAB_PROCEDURE_CREATE ( 1703, "HCP creates a lab procedure", true ),
+    LAB_PROCEDURE_CREATE ( 1723, "HCP creates a lab procedure", true ),
     /**
      * Lab Procedure Edited
      */
-    LAB_PROCEDURE_EDIT ( 1704, "Lab Tech edits a lab procedure", true );
+    LAB_PROCEDURE_EDIT ( 1724, "Lab procedure is edited", true ),
+    /**
+     * delete lab procedure
+     */
+    LAB_PROCEDURE_DELETE ( 1725, "Lab procedure is deleted", true );
 
     /**
      *
