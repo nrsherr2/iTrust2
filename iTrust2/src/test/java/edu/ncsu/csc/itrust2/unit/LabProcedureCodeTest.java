@@ -11,21 +11,19 @@ import edu.ncsu.csc.itrust2.forms.admin.LabProcedureCodeForm;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 
 /**
- * Class that strives to get coverage of labprocedurecode and labprocedure
- * classes
+ * Class that strives to get coverage of labprocedurecode class
  * 
  * @author Nick Sherrill
  *
  */
-public class LabProcedureTest {
+public class LabProcedureCodeTest {
     /**
-     * test all of the major functionality of lab procedure codes and lab
-     * procedures
+     * test all of the major functionality of lab procedure codes
      * 
      * @throws Exception
      */
     @Test
-    public void testLabProcedures () throws Exception {
+    public void testLabProcedureCodes () throws Exception {
         // let's try to stress test creating a new lab procedure code
         LabProcedureCodeForm form = new LabProcedureCodeForm();
         LabProcedureCode code = new LabProcedureCode();
@@ -112,11 +110,6 @@ public class LabProcedureTest {
         catch ( IllegalArgumentException e ) {
             fail( "THIS TEST WAS SUPPOSED TO BE VALID AND IT ALL WENT WRONG!" );
         }
-
-        /**
-         * Now that we have a valid code, let's try to set up a procedure in
-         * every way it could go wrong
-         */
     }
 
     /**
