@@ -71,9 +71,9 @@ public class LabProcedureStepDefs {
 		submit.click();
 	}
 
-	@When("I logout")
-	public void logout() {
-		final WebElement logout = driver.findElement(By.id("Log out"));
+        @When("I now logout of itrust")
+	public void logoutLabProc() {
+		final WebElement logout = driver.findElement(By.id("logout"));
 		logout.click();
 	}
 
@@ -92,6 +92,7 @@ public class LabProcedureStepDefs {
 		String search = "code";
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
 		final WebElement codeElement = driver.findElement(By.name(search));
+		codeElement.clear();
 		codeElement.sendKeys(LAB_CODE);
 
 		search = "description";
@@ -134,6 +135,7 @@ public class LabProcedureStepDefs {
 		String search = "code";
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
 		final WebElement codeElement = driver.findElement(By.name(search));
+		codeElement.clear();
 		codeElement.sendKeys(LAB_CODE);
 
 		search = "description";
