@@ -31,7 +31,6 @@ import edu.ncsu.csc.itrust2.models.persistent.BasicHealthMetrics;
 import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
 import edu.ncsu.csc.itrust2.models.persistent.Hospital;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
-import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -50,7 +49,6 @@ public class DocumentOfficeVisitStepDefs {
 
     WebDriverWait            wait         = new WebDriverWait( driver, 2 );
 
-    private LabProcedureCode testCode;
     private final String     LAB_CODE     = "10191-1";
 
     @Given ( "The required facilities exist" )

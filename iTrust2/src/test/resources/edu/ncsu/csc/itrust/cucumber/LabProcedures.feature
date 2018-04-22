@@ -30,14 +30,24 @@ When I delete the lab procedure code
 Then the lab procedure code should no longer exist
 
 Scenario: Updating a lab procedure should succeed
-Given I login as a lab tech with a lab procedure
+Given The required facilities exist
+And I log in to iTrust2 as a HCP
+And I navigate to the Document Office Visit page
+And I fill in information on the office visit
+And I logout
+And I login as a lab tech with a lab procedure
 And I navigate to the lab procedures page
 When I update the lab procedure
 Then the lab procedure should be updated
 
 
 Scenario: Reassigning a lab procedure should succeed
-Given I login as a lab tech with a lab procedure
+Given The required facilities exist
+And I log in to iTrust2 as a HCP
+And I navigate to the Document Office Visit page
+And I fill in information on the office visit
+And I logout
+And I login as a lab tech with a lab procedure
 And I navigate to the lab procedures page
 When I reassign the lab procedure
 Then the lab procedure should be reassigned
