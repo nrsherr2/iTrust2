@@ -90,12 +90,12 @@ public class APILabProcedureController extends APIController {
             User user = null;
             try {
                 user = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
+                LoggerUtil.log( TransactionType.LAB_CODE_CREATE, user.getUsername(),
+                        user.getUsername() + " created an Lab Procedure Code" );
             }
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            LoggerUtil.log( TransactionType.LAB_CODE_CREATE, user.getUsername(),
-                    user.getUsername() + " created an Lab Procedure Code" );
 
             return new ResponseEntity( code, HttpStatus.OK );
         }
@@ -132,12 +132,12 @@ public class APILabProcedureController extends APIController {
             User user = null;
             try {
                 user = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
+                LoggerUtil.log( TransactionType.LAB_CODE_EDIT, LoggerUtil.currentUser(),
+                        user.getId() + " edited code #" + id );
             }
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            LoggerUtil.log( TransactionType.LAB_CODE_EDIT, LoggerUtil.currentUser(),
-                    user.getId() + " edited code #" + id );
 
             return new ResponseEntity( updatedCode, HttpStatus.OK );
         }
@@ -164,12 +164,12 @@ public class APILabProcedureController extends APIController {
             User user = null;
             try {
                 user = User.getByName( SecurityContextHolder.getContext().getAuthentication().getName() );
+                LoggerUtil.log( TransactionType.LAB_CODE_DELETE, LoggerUtil.currentUser(),
+                        user.getUsername() + " deleted a Lab Procedure Code" );
             }
             catch ( final Exception e ) {
                 // ignore, its was a test that wasn't authenticated properly.
             }
-            LoggerUtil.log( TransactionType.LAB_CODE_DELETE, LoggerUtil.currentUser(),
-                    user.getUsername() + " deleted a Lab Procedure Code" );
 
             return new ResponseEntity( HttpStatus.OK );
         }
@@ -272,9 +272,6 @@ public class APILabProcedureController extends APIController {
     @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public ResponseEntity editLabProcedure ( @PathVariable final Long id, @RequestBody final LabProcedureForm lpf ) {
         try {
-            System.out.println( lpf.getAssignedTech() + "\n" + lpf.getComments() + "\n" + lpf.getDate() + "\n"
-                    + lpf.getId() + "\n" + lpf.getStatus() + "\n" + lpf.getLabProcedureCode() + "\n" + lpf.getLpp()
-                    + "\n" + lpf.getOv() );
             final LabProcedure lp = new LabProcedure( lpf );
             if ( lp.getId() != null && !id.equals( lp.getId() ) ) {
                 return new ResponseEntity(
