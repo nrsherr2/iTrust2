@@ -97,7 +97,7 @@ public class OfficeVisitTest {
         lpf.setLpp( LabProcedurePriority.PRIORITY_2 );
         lpf.setComments( "Post in chat" );
         lpf.setOv( visit );
-        lpf.setStatus( "Not Started" );
+        lpf.setStatus( "NOT_STARTED" );
         final LabProcedure proc = new LabProcedure( lpf );
         proc.save();
 
@@ -105,6 +105,10 @@ public class OfficeVisitTest {
         pres.setPatient( User.getByName( "AliceThirteen" ) );
         pres.setStartDate( Calendar.getInstance() );
         pres.setRenewals( 5 );
+
+        visit.setProcedures( Collections.singletonList( proc ) );
+        
+        visit.save();
 
         pres.save();
 
@@ -116,9 +120,6 @@ public class OfficeVisitTest {
 
         visit.save();
         
-        visit.setProcedures( Collections.singletonList( proc ) );
-        
-        visit.save();
 
         visit.delete();
     }

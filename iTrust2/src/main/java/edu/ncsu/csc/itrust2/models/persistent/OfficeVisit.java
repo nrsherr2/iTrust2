@@ -610,7 +610,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * infinite loop
      */
     @OneToMany ( mappedBy = "visit", orphanRemoval = true )
-    public transient List<LabProcedure> procedures;
+    public transient List<LabProcedure> procedures    = Collections.emptyList();
 
     /**
      * The notes of this office visit
@@ -783,7 +783,8 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
                     // LoggerUtil.currentUser(),
                     // getPatient().getUsername(), "Deleting prescription with
                     // id " + id );
-                    LoggerUtil.log( TransactionType.LAB_PROCEDURE_DELETE, LoggerUtil.currentUser(), "Deleted lab procedure #" + id );
+                    LoggerUtil.log( TransactionType.LAB_PROCEDURE_DELETE, LoggerUtil.currentUser(),
+                            "Deleted lab procedure #" + id );
                     System.out.println( "Deleting Procedure " + id );
                     LabProcedure.getById( id ).delete();
                 }
@@ -808,6 +809,19 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
                             getPatient().getUsername(), getHcp() + " deleted a diagnosis for " + getPatient() );
                 }
                 catch ( final Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if ( procedures != null ) {
+            for ( final LabProcedure p : procedures ) {
+                p.delete();
+                try {
+                    LoggerUtil.log( TransactionType.LAB_PROCEDURE_DELETE, LoggerUtil.currentUser(),
+                            p.getAssignedLabTech(),
+                            LoggerUtil.currentUser() + "Deleted the office visit associated with this procedure" );
+                }
+                catch ( Exception e ) {
                     e.printStackTrace();
                 }
             }
