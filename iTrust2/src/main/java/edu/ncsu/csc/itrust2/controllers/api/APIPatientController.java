@@ -402,6 +402,59 @@ public class APIPatientController extends APIController {
     }
 
     /**
+     * adds a representee to a patient's list of personal representees. should
+     * map the other way as well, so the representative's list will be updated
+     * as well. This is the call for the HCP
+     *
+     * @param representee
+     *            the person who's list you will add to
+     * @param representative
+     *            the person you will add to the list
+     * @return the updated list of representatives for the representee parameter
+     */
+    @PostMapping ( BASE_PATH + "/patients/representees/{representee}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public ResponseEntity addRepresentee ( @PathVariable final String representee,
+            @RequestBody final String representative ) {
+        if ( representee.equals( representative.substring( 1, representative.length() - 1 ) ) ) {
+            return new ResponseEntity( "You can't represent yourself", HttpStatus.BAD_REQUEST );
+        }
+        // make sure the patients exist
+        final Patient tee = Patient.getByName( representee );
+        if ( tee == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representee, HttpStatus.NOT_FOUND );
+        }
+        final Patient tive = Patient.getByName( representative.substring( 1, representative.length() - 1 ) );
+        if ( tive == null ) {
+            return new ResponseEntity( "Could not find patient with username " + representative, HttpStatus.NOT_FOUND );
+        }
+        // now add the rep
+        try {
+            final HashSet<Patient> newList = new HashSet<Patient>();
+            newList.addAll( tee.getRepresentatives() );
+            final int oldSize = newList.size();
+            newList.add( tive );
+            if ( newList.size() == oldSize ) {
+                return new ResponseEntity( representative + " is already a representative of " + representee,
+                        HttpStatus.BAD_REQUEST );
+            }
+            tee.setRepresenatives( newList );
+            tee.save();
+            for ( final Patient r : tee.getRepresentatives() ) {
+                r.setRepresenatives( new HashSet<Patient>() );
+                r.setRepresentees( new HashSet<Patient>() );
+            }
+            LoggerUtil.log( TransactionType.HCP_ADD_REPRESENTATIVE, LoggerUtil.currentUser(),
+                    tee.getSelf().getUsername(),
+                    "Added " + representee + " to " + representative + "'s representatives" );
+            return new ResponseEntity( tive.getRepresentees(), HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            return new ResponseEntity( "could not add representative", HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
      * deletes a representative from a patient's list of personal
      * representatives. mapping works both ways, so the representative will lose
      * their reference to the representee as well.
@@ -452,6 +505,14 @@ public class APIPatientController extends APIController {
         }
     }
 
+    /**
+     * Deletes a representative from the logged-in patient's list of
+     * representatives
+     *
+     * @param rep
+     *            The MID of the patient to remove
+     * @return the new list of representatives for the logged-in patient
+     */
     @DeleteMapping ( BASE_PATH + "/patients/representatives" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
     public ResponseEntity deleteRepresentativePatient ( @RequestBody String rep ) {
@@ -507,7 +568,7 @@ public class APIPatientController extends APIController {
         // trim the string because I'm not about that long line life
         rep = rep.substring( 1, rep.length() - 1 );
         // check that they exist
-        final Patient representative = Patient.getByName( LoggerUtil.currentUser() );
+        Patient representative = Patient.getByName( LoggerUtil.currentUser() );
         if ( representative == null ) {
             return new ResponseEntity( "Could not find patient " + rep, HttpStatus.NOT_FOUND );
         }
@@ -521,13 +582,14 @@ public class APIPatientController extends APIController {
         // now delete
         try {
             final HashSet<Patient> reps = new HashSet<Patient>();
-            for ( final Patient p : representative.getRepresentees() ) {
-                if ( !Patient.samePatient( p, representee ) ) {
+            for ( final Patient p : representee.getRepresentatives() ) {
+                if ( !Patient.samePatient( p, representative ) ) {
                     reps.add( p );
                 }
             }
-            representative.setRepresentees( reps );
-            representative.save();
+            representee.setRepresenatives( reps );
+            representee.save();
+            representative = Patient.getByName( LoggerUtil.currentUser() );
             for ( final Patient r : representative.getRepresentees() ) {
                 r.setRepresenatives( new HashSet<Patient>() );
                 r.setRepresentees( new HashSet<Patient>() );

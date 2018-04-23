@@ -158,6 +158,7 @@
             $http.get("/iTrust2/api/v1/labtechs").then(
               function (response) {
                 $scope.labtechs = response.data[0];
+                $scope.numAssigned = response.data[1];
               });
             $http.get("/iTrust2/api/v1/priority").then(
               function (response) {
@@ -327,6 +328,10 @@
   	              $scope.prescriptions.push(p);
   	              resetPrescriptionForm();
                 }
+            }
+            
+            $scope.getNumAssigned = function($index){
+            	return $scope.numAssigned[$index];
             }
             
          	// capture each lab procedure into an array
@@ -795,11 +800,11 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="lc in labcodes">
-					                              
+					               
 					                              	<div ng-model="$parent.procCodeEntry">
 					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode-{{lc.code}}" value="{{lc}}" required="false" /> 
 					                                </div>
-					                                {{lc.code}}
+					                                {{lc.code}} ({{lc.description}})
 					                              	
 					                            </li>
                               				</ul>
@@ -814,7 +819,7 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="p in priority">
-                                  					<div ng-model="$parent.procPriorityEntry">
+                                  					<div style="display:inline;" ng-model="$parent.procPriorityEntry">
                                     					<input type="radio" ng-click="$parent.procPriorityEntry = p"  name="priority" value="{{p}}" required="true"/> 
                                     				</div>
                                     				{{p}}
@@ -842,8 +847,10 @@
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="l in labtechs">
                                   					<div ng-model="$parent.procTechEntry">
+
                                     					<input type="radio"  ng-click="$parent.procTechEntry = l" name="tech-{{l.username}}" value="{{l}}" required="true"/> 
-                                    					<span class="glyphicon glyphicon-user"></span>{{l.username}}
+                                    					<span class="glyphicon glyphicon-user"></span>  {{l.username}} ({{$parent.getNumAssigned($index)}} assigned)
+
                                  					</div>
                                 				</li>
                               				</ul>
@@ -883,7 +890,7 @@
                             <div class="panel-body">
                             	<div class="row" ng-repeat="p in procedures">
                                 	<div class="col-md-3">
-                                    Code: {{p.code.code}}
+                                    Code: {{p.code.code}} ({{p.code.description}})
                                   	</div>
                                   	<div class="col-md-3">
                                     Assigned Lab Tech ID: {{p.assignedLabTech}}

@@ -513,7 +513,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * @param procedures2
      *            the list to set it to
      */
-    private void setProcedures ( final List<LabProcedure> procedures2 ) {
+    public void setProcedures ( final List<LabProcedure> procedures2 ) {
         procedures = procedures2;
     }
 
@@ -610,7 +610,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * infinite loop
      */
     @OneToMany ( mappedBy = "visit", orphanRemoval = true )
-    public transient List<LabProcedure> procedures;
+    public transient List<LabProcedure> procedures    = Collections.emptyList();
 
     /**
      * The notes of this office visit
@@ -764,15 +764,12 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
         this.getProcedures().forEach( p -> {
             final boolean isSaved = sIds.contains( p.getId() );
             if ( isSaved ) {
-                // LoggerUtil.log( TransactionType.PRESCRIPTION_EDIT,
-                // LoggerUtil.currentUser(), getPatient().getUsername(),
-                // "Editing prescription with id " + p.getId() );
+                LoggerUtil.log( TransactionType.LAB_PROCEDURE_EDIT, LoggerUtil.currentUser(),
+                        "Edited lab procedure with id " + p.getId() );
             }
             else {
-                // LoggerUtil.log( TransactionType.PRESCRIPTION_CREATE,
-                // LoggerUtil.currentUser(),
-                // getPatient().getUsername(), "Creating prescription with id "
-                // + p.getId() );
+                LoggerUtil.log( TransactionType.LAB_PROCEDURE_CREATE, LoggerUtil.currentUser(), p.getAssignedLabTech(),
+                        LoggerUtil.currentUser() + " created a lab procedure for " + p.getAssignedLabTech() );
             }
             p.save();
         } );
@@ -786,6 +783,8 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
                     // LoggerUtil.currentUser(),
                     // getPatient().getUsername(), "Deleting prescription with
                     // id " + id );
+                    LoggerUtil.log( TransactionType.LAB_PROCEDURE_DELETE, LoggerUtil.currentUser(),
+                            "Deleted lab procedure #" + id );
                     System.out.println( "Deleting Procedure " + id );
                     LabProcedure.getById( id ).delete();
                 }
@@ -810,6 +809,19 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
                             getPatient().getUsername(), getHcp() + " deleted a diagnosis for " + getPatient() );
                 }
                 catch ( final Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if ( procedures != null ) {
+            for ( final LabProcedure p : procedures ) {
+                p.delete();
+                try {
+                    LoggerUtil.log( TransactionType.LAB_PROCEDURE_DELETE, LoggerUtil.currentUser(),
+                            p.getAssignedLabTech(),
+                            LoggerUtil.currentUser() + "Deleted the office visit associated with this procedure" );
+                }
+                catch ( Exception e ) {
                     e.printStackTrace();
                 }
             }

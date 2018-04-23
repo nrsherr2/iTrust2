@@ -255,7 +255,7 @@ public class NewUsersStepDefs {
          * attempting to do so.
          */
         try {
-            driver.findElement( By.linkText( "iTrust2" ) );
+            wait.until( ExpectedConditions.visibilityOfElementLocated( By.linkText( "iTrust2" ) ) );
         }
         catch ( final Exception e ) {
             Assert.assertNull( e );
