@@ -254,7 +254,7 @@ public class APILabProcedureTest {
         // then do it for real
         mvc.perform( put( BASE_PATH + "labprocedures/" + proc.getId() ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( lpf ) ) ).andExpect( status().isOk() );
-
+        HibernateDataGenerator.refreshDB();
         // TODO: add this back in when you merge and the duplication issue is
         // fixed
         // now let's make a conflict
