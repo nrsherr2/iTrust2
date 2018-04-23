@@ -228,23 +228,30 @@ public class LabProcedureStepDefs {
      * Used to update the lab procedure
      */
     @When ( "I update the lab procedure" )
-    public void updateLabProcedure () {
-        search = "selectProcedure";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement codeElement = driver.findElement( By.name( search ) );
-        codeElement.click();
+    public void updateLabProcedure () throws InterruptedException {
+	try {
+	    Thread.sleep( 3000 );
+	    search = "selectProcedure";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement codeElement = driver.findElement( By.name( search ) );
+	    codeElement.click();
 
-        // changet the description
-        search = "notes";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement noteElement = driver.findElement( By.name( search ) );
-        noteElement.clear();
-        noteElement.sendKeys( NEW_DESC );
+	    Thread.sleep( 3000 );
 
-        search = "procSave";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement submit = driver.findElement( By.name( search ) );
-        submit.click();
+	    // changet the description
+	    search = "notes";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement noteElement = driver.findElement( By.name( search ) );
+	    noteElement.clear();
+	    noteElement.sendKeys( NEW_DESC );
+
+	    search = "procSave";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement submit = driver.findElement( By.name( search ) );
+	    submit.click();
+	} catch (Exception e) {
+	    throw new AssertionError(e.getMessage() + driver.getPageSource());
+	}
     }
 
     /**
@@ -262,7 +269,11 @@ public class LabProcedureStepDefs {
                 found = true;
             }
         }
-        assertTrue( found );
+	try {
+	    assertTrue( found );
+	} catch (Exception e) {
+	    throw new AssertionError(e.getMessage() + driver.getPageSource());
+	}
     }
 
     /**
