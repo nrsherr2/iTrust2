@@ -1,5 +1,8 @@
 package edu.ncsu.csc.itrust2.cucumber;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -14,266 +17,279 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import edu.ncsu.csc.itrust2.models.persistent.User;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
+import edu.ncsu.csc.itrust2.models.persistent.User;
 
+/**
+ * The cucumber step definitions for the lab procedure codes and lab procedures
+ * selenium automation
+ *
+ * @author nlwrenn, amshafe2
+ *
+ */
 public class LabProcedureStepDefs {
 
-	private final WebDriver driver = new HtmlUnitDriver(true);
-	private final String baseUrl = "http://localhost:8080/iTrust2";
-	WebDriverWait wait = new WebDriverWait(driver, 2);
+    private final WebDriver driver   = new HtmlUnitDriver( true );
+    private final String    baseUrl  = "http://localhost:8080/iTrust2";
+    WebDriverWait           wait     = new WebDriverWait( driver, 2 );
 
-	private final String LAB_CODE = "10191-2";
-	private final String NEW_DESC = "new lpCode";
-	private String search;
+    /** Constant for the lab procedure code used */
+    private final String    LAB_CODE = "10191-2";
+    /** Constant for the lab procedure description used */
+    private final String    NEW_DESC = "new lpCode";
 
-	@Before
-	public void setup() {
-		User labtech = new User("labtech2", "123456", Role.ROLE_LABTECH, 1);
-		labtech.save();
-	}
+    private String          search;
 
-	/**
-	 * Admin log in
-	 */
-	@When("I login iTrust2 as an admin")
-	public void adminLogin() {
-		driver.get(baseUrl);
-		final WebElement username = driver.findElement(By.name("username"));
-		username.clear();
-		username.sendKeys("admin");
-		final WebElement password = driver.findElement(By.name("password"));
-		password.clear();
-		password.sendKeys("123456");
-		final WebElement submit = driver.findElement(By.className("btn"));
-		submit.click();
-	}
+    /**
+     * Setup
+     */
+    @Before
+    public void setup () {
+        final User labtech = new User( "labtech2", "123456", Role.ROLE_LABTECH, 1 );
+        labtech.save();
+    }
 
-	/**
-	 * Admin log in
-	 */
-	@When("I login as a lab tech with a lab procedure")
-	public void labTechLogin() {
-		driver.get(baseUrl);
-		final WebElement username = driver.findElement(By.name("username"));
-		username.clear();
-		username.sendKeys("labtech");
-		final WebElement password = driver.findElement(By.name("password"));
-		password.clear();
-		password.sendKeys("123456");
-		final WebElement submit = driver.findElement(By.className("btn"));
-		submit.click();
-	}
+    /**
+     * Admin log in
+     */
+    @When ( "I login iTrust2 as an admin" )
+    public void adminLogin () {
+        driver.get( baseUrl );
+        final WebElement username = driver.findElement( By.name( "username" ) );
+        username.clear();
+        username.sendKeys( "admin" );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( "123456" );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+    }
 
-        @When("I now logout of itrust")
-	public void logoutLabProc() {
-	    driver.get(baseUrl);
-	    try {
-		final WebElement logout = driver.findElement(By.id("logout"));
-		logout.click();
-	    } catch (Exception e) {
-		throw new AssertionError(e.getMessage() + driver.getPageSource());
-	    }
-	}
+    /**
+     * Admin log in
+     */
+    @When ( "I login as a lab tech with a lab procedure" )
+    public void labTechLogin () {
+        driver.get( baseUrl );
+        final WebElement username = driver.findElement( By.name( "username" ) );
+        username.clear();
+        username.sendKeys( "labtech" );
+        final WebElement password = driver.findElement( By.name( "password" ) );
+        password.clear();
+        password.sendKeys( "123456" );
+        final WebElement submit = driver.findElement( By.className( "btn" ) );
+        submit.click();
+    }
 
-	@When("I navigate to the lab procedure codes page")
-	public void navigateLabProcedures() {
-		((JavascriptExecutor) driver).executeScript("document.getElementById('manageLabProcedureCodes').click();");
-	}
+    /**
+     * Used to log out of iTrust2
+     */
+    @When ( "I now logout of itrust" )
+    public void logoutLabProc () {
+        final WebElement logout = driver.findElement( By.id( "logout" ) );
+        logout.click();
+    }
 
-	@When("I navigate to the lab procedures page")
-	public void navigateProcedures() {
-		((JavascriptExecutor) driver).executeScript("document.getElementById('procedures').click();");
-	}
+    @When ( "I navigate to the lab procedure codes page" )
+    public void navigateLabProcedures () {
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('manageLabProcedureCodes').click();" );
+    }
 
-	@When("I create a lab procedure code")
-	public void createLabProcedureCode() {
-		String search = "code";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement codeElement = driver.findElement(By.name(search));
-		codeElement.clear();
-		codeElement.sendKeys(LAB_CODE);
+    /**
+     * Used to navigate to the lab procedures page
+     */
+    @When ( "I navigate to the lab procedures page" )
+    public void navigateProcedures () {
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('procedures').click();" );
+    }
 
-		search = "description";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement descElement = driver.findElement(By.name(search));
-		descElement.sendKeys("Office Visit testing Lab Procedure Code");
+    /**
+     * Used to create a lab procedure code
+     */
+    @When ( "I create a lab procedure code" )
+    public void createLabProcedureCode () {
+        String search = "code";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement codeElement = driver.findElement( By.name( search ) );
+        codeElement.clear();
+        codeElement.sendKeys( LAB_CODE );
 
-		search = "submit";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement sub = driver.findElement(By.name(search));
-		sub.click();
+        search = "description";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement descElement = driver.findElement( By.name( search ) );
+        descElement.sendKeys( "Office Visit testing Lab Procedure Code" );
 
-	}
+        search = "submit";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement sub = driver.findElement( By.name( search ) );
+        sub.click();
 
-	@Then("the lab procedure code should be created successfully")
-	public void assertLabProcedureCode() {
-		boolean found = false;
-		final List<LabProcedureCode> list = LabProcedureCode.getAll();
-		for (final LabProcedureCode l : list) {
-			if (l.getCode().equals(LAB_CODE)) {
-				found = true;
-			}
-		}
-		try {
-		    assertTrue(found);
-		} catch (Exception e) {
-		    String m = "";
-		    for (final LabProcedureCode l : list) {
-			m += "" + l.getCode() + "\n";
-		    }
-		    throw new AssertionError(e.getMessage() + m);
-		}
-	}
+    }
 
-	@Then("I delete the lab procedure code")
-	public void deleteLabProcedureCode() {
-		final List<LabProcedureCode> list = LabProcedureCode.getAll();
-		for (final LabProcedureCode l : list) {
-			if (l.getCode().equals(LAB_CODE)) {
-			    // TODO
-			    l.delete();
-			}
-		}
-	}
+    /**
+     * Makes sure the lab procedure code has been created
+     *
+     * @throws InterruptedException
+     */
+    @Then ( "the lab procedure code should be created successfully" )
+    public void assertLabProcedureCode () throws InterruptedException {
+        Thread.sleep( 3000 );
+        boolean found = false;
+        final List<LabProcedureCode> list = LabProcedureCode.getAll();
+        for ( final LabProcedureCode l : list ) {
+            if ( l.getCode().equals( LAB_CODE ) ) {
+                found = true;
+            }
+        }
+        assertTrue( found );
+    }
 
-	@When("I edit the lab procedure code")
-	public void editLabProcedureCode() {
-		// TODO when in dev
-		String search = "code";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement codeElement = driver.findElement(By.name(search));
-		codeElement.clear();
-		codeElement.sendKeys(LAB_CODE);
+    /**
+     * Used to delete the lab procedure code
+     *
+     * @throws InterruptedException
+     */
+    @Then ( "I delete the lab procedure code" )
+    public void deleteLabProcedureCode () throws InterruptedException {
+        Thread.sleep( 3000 );
+        final List<LabProcedureCode> list = LabProcedureCode.getAll();
+        for ( final LabProcedureCode l : list ) {
+            if ( l.getCode().equals( LAB_CODE ) ) {
+                l.delete();
+            }
+        }
+    }
 
-		search = "description";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement desc = driver.findElement(By.name(search));
-		desc.sendKeys(NEW_DESC);
+    /**
+     * Used to edit the lab procedure code
+     */
+    @When ( "I edit the lab procedure code" )
+    public void editLabProcedureCode () {
+        // TODO when in dev
+        String search = "code";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement codeElement = driver.findElement( By.name( search ) );
+        codeElement.clear();
+        codeElement.sendKeys( LAB_CODE );
 
-		search = "submit";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement sub = driver.findElement(By.name(search));
-		sub.click();
+        search = "description";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement desc = driver.findElement( By.name( search ) );
+        desc.sendKeys( NEW_DESC );
 
-	}
+        search = "submit";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement sub = driver.findElement( By.name( search ) );
+        sub.click();
 
-	@Then("the lab procedure code should be updated")
-	public void assertLabProcCodeUp() {
-		boolean found = false;
-		final List<LabProcedureCode> list = LabProcedureCode.getAll();
-		for (final LabProcedureCode l : list) {
-			if (l.getCode().equals(LAB_CODE) && l.getDescription().equals(NEW_DESC)) {
-				found = true;
-			}
-		}
-		try {
-		    assertTrue(found);
-		} catch (AssertionError e) {
-		    String m = "";
-		    for (final LabProcedureCode l : list) {
-			m += "" + l.getCode() + "\n";
-		    }
-		    throw new AssertionError(e.getMessage() + m);
-		}
-	}
+    }
 
-	@Then("the lab procedure code should no longer exist")
-	public void assertLabCodeDeleted() {
-		boolean found = false;
-		final List<LabProcedureCode> list = LabProcedureCode.getAll();
-		for (final LabProcedureCode l : list) {
-			if (l.getCode().equals(LAB_CODE)) {
-				found = true;
-			}
-		}
-		try {
-		    assertFalse(found);
-		} catch (Exception e) {
-		    String m = "";
-		    for (final LabProcedureCode l : list) {
-			m += "" + l.getCode() + "\n";
-		    }
-		    throw new AssertionError(e.getMessage() + m);
-		}
-	}
+    /**
+     * Makes sure the lab procedure code was updated
+     *
+     * @throws InterruptedException
+     */
+    @Then ( "the lab procedure code should be updated" )
+    public void assertLabProcCodeUp () throws InterruptedException {
+        Thread.sleep( 3000 );
+        boolean found = false;
+        final List<LabProcedureCode> list = LabProcedureCode.getAll();
+        for ( final LabProcedureCode l : list ) {
+            if ( l.getCode().equals( LAB_CODE ) && l.getDescription().equals( NEW_DESC ) ) {
+                found = true;
+            }
+        }
+        assertTrue( found );
+    }
 
-	@When("I update the lab procedure")
-	public void updateLabProcedure() {
-		search = "selectProcedure";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement codeElement = driver.findElement(By.name(search));
-		codeElement.click();
+    /**
+     * Makes sure the lab procedure code was deleted
+     *
+     * @throws InterruptedException
+     */
+    @Then ( "the lab procedure code should no longer exist" )
+    public void assertLabCodeDeleted () throws InterruptedException {
+        Thread.sleep( 3000 );
+        boolean found = false;
+        final List<LabProcedureCode> list = LabProcedureCode.getAll();
+        for ( final LabProcedureCode l : list ) {
+            if ( l.getCode().equals( LAB_CODE ) ) {
+                found = true;
+            }
+        }
+        assertFalse( found );
+    }
 
-		// changet the description
-		search = "notes";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement noteElement = driver.findElement(By.name(search));
-		noteElement.clear();
-		noteElement.sendKeys(NEW_DESC);
+    /**
+     * Used to update the lab procedure
+     */
+    @When ( "I update the lab procedure" )
+    public void updateLabProcedure () {
+        search = "selectProcedure";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement codeElement = driver.findElement( By.name( search ) );
+        codeElement.click();
 
-		search = "procSave";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement submit = driver.findElement(By.name(search));
-		submit.click();
-	}
+        // changet the description
+        search = "notes";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement noteElement = driver.findElement( By.name( search ) );
+        noteElement.clear();
+        noteElement.sendKeys( NEW_DESC );
 
-	@Then("the lab procedure should be updated")
-	public void assertLabCodeUpdated() {
-		boolean found = false;
-		final List<LabProcedure> list = LabProcedure.getByTech("labtech");
-		for (final LabProcedure l : list) {
-			if (l.getComments().equals(NEW_DESC)) {
-				found = true;
-			}
-		}
-		try {
-		    assertTrue(found);
-		} catch (AssertionError e) {
-		    String m = "";
-		    for (final LabProcedure l : list) {
-			m += "" + l.getComments() + "\n";
-		    }
-		    throw new AssertionError(e.getMessage() + m);
-		}
+        search = "procSave";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement submit = driver.findElement( By.name( search ) );
+        submit.click();
+    }
 
-	}
+    /**
+     * Makes sure the lab procedure code was updated
+     */
+    @Then ( "the lab procedure should be updated" )
+    public void assertLabCodeUpdated () {
+        boolean found = false;
+        final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
+        for ( final LabProcedure l : list ) {
+            if ( l.getComments().equals( NEW_DESC ) ) {
+                found = true;
+            }
+        }
+        assertTrue( found );
+    }
 
-	@When("I reassign the lab procedure")
-	public void reassignLabProcedure() {
-		try {
-		search = "selectProcedure";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement codeElement = driver.findElement(By.name(search));
-		codeElement.click();
+    /**
+     * Used to reassign a lab procedure
+     */
+    @When ( "I reassign the lab procedure" )
+    public void reassignLabProcedure () {
+        search = "selectProcedure";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement codeElement = driver.findElement( By.name( search ) );
+        codeElement.click();
 
-		// changet the assignment
-		search = "lt-labtech2";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement techElement = driver.findElement(By.name(search));
-		techElement.click();
+        // changet the assignment
+        search = "lt-labtech2";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement techElement = driver.findElement( By.name( search ) );
+	techElement.click();
 
-		search = "procSave";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
-		final WebElement submit = driver.findElement(By.name(search));
-		submit.click();
-		} catch (Exception e) {
-			throw new AssertionError(e.getMessage() + driver.getPageSource());
-		}
-	}
+        search = "procSave";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement submit = driver.findElement( By.name( search ) );
+        submit.click();
+    }
 
-	@Then("the lab procedure should be reassigned")
-	public void assertLabCodeReassigned() {
-		boolean found = false;
-		final List<LabProcedure> list = LabProcedure.getByTech("labtech2");
-		found = list.size() > 0 ? true : false;		
-		assertTrue(found);
-	}
-
+    /**
+     * Makes sure the lab procedure was reassigned
+     */
+    @Then ( "the lab procedure should be reassigned" )
+    public void assertLabCodeReassigned () {
+        boolean found = false;
+        final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
+        found = list.size() > 0 ? true : false;
+        assertTrue( found );
+    }
 }
