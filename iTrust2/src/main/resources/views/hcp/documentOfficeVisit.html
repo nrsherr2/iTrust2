@@ -344,7 +344,6 @@
                 priority: $scope.procPriorityEntry,
 				status: $scope.statuses[0]
               });
-              resetProceduresForm();
             }
 
             //remove local diagnosis from list
@@ -801,10 +800,10 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="lc in labcodes">
-					                              
-					                              	<div style="display:inline;" ng-model="$parent.procCodeEntry">
-					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode" value="{{lc}}" required="false" /> 
-					                                </div >
+					               
+					                              	<div ng-model="$parent.procCodeEntry">
+					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode-{{lc.code}}" value="{{lc}}" required="false" /> 
+					                                </div>
 					                                {{lc.code}} ({{lc.description}})
 					                              	
 					                            </li>
@@ -848,8 +847,10 @@
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="l in labtechs">
                                   					<div ng-model="$parent.procTechEntry">
-                                    					<input type="radio"  ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
+
+                                    					<input type="radio"  ng-click="$parent.procTechEntry = l" name="tech-{{l.username}}" value="{{l}}" required="true"/> 
                                     					<span class="glyphicon glyphicon-user"></span>  {{l.username}} ({{$parent.getNumAssigned($index)}} assigned)
+
                                  					</div>
                                 				</li>
                               				</ul>
