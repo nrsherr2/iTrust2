@@ -297,10 +297,39 @@ public class DocumentOfficeVisitStepDefs {
      */
     @When ( "I delete the lab procedure from the office visit" )
     public void deleteLabProcedure () {
-        final String search = "removeProcedure";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement procedureElement = driver.findElement( By.name( search ) );
-        procedureElement.click();
+	String visit = "";
+	final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
+        for ( final LabProcedure l : list ) {
+            if ( l.getCode().getCode().equals( LAB_CODE ) ) {
+                visit += l.getVisit().getId();
+		break;
+            }
+        }	
+
+	try {
+	    String search = visit;
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement sel = driver.findElement( By.name( search ) );
+	    sel.click();
+
+	    Thread.sleep(30000);
+	
+	    search = "removeProcedure";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement procedureElement = driver.findElement( By.name( search ) );
+	    procedureElement.click();
+	
+	    search = "submit";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement sub = driver.findElement( By.name( search ) );
+	    sub.click();
+
+	} catch (Exception e) {
+	    throw new AssertionError(e.getMessage() + driver.getPageSource());
+	}
+	
+	// wait for success
+	wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "success" ) ) );
     }
 
     /**
