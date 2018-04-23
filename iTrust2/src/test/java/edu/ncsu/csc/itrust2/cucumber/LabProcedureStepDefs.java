@@ -280,22 +280,32 @@ public class LabProcedureStepDefs {
      * Used to reassign a lab procedure
      */
     @When ( "I reassign the lab procedure" )
-    public void reassignLabProcedure () {
-        search = "selectProcedure";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement codeElement = driver.findElement( By.name( search ) );
-        codeElement.click();
+    public void reassignLabProcedure () throws InterruptedException {
+	try {
+	    Thread.sleep( 3000 );
+	    search = "selectProcedure";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement codeElement = driver.findElement( By.name( search ) );
+	    codeElement.click();
 
-        // changet the assignment
-        search = "lt-labtech2";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement techElement = driver.findElement( By.name( search ) );
-        techElement.click();
+	    Thread.sleep( 3000 );
 
-        search = "procSave";
-        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-        final WebElement submit = driver.findElement( By.name( search ) );
-        submit.click();
+	    // changet the assignment
+	    search = "lt-labtech2";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement techElement = driver.findElement( By.name( search ) );
+	    techElement.click();
+
+	    search = "procSave";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement submit = driver.findElement( By.name( search ) );
+	    submit.click();
+
+	    throw new Exception();
+	} catch (Exception e) {
+	    throw new AssertionError(e.getMessage() + driver.getPageSource());
+	}
+
     }
 
     /**
@@ -305,10 +315,15 @@ public class LabProcedureStepDefs {
      */
     @Then ( "the lab procedure should be reassigned" )
     public void assertLabCodeReassigned () throws InterruptedException {
-        Thread.sleep( 3000 );
-        boolean found = false;
-        final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
-        found = list.size() > 0 ? true : false;
-        assertTrue( found );
+	try {
+	    Thread.sleep( 3000 );
+	    boolean found = false;
+	    final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
+	    found = list.size() > 0 ? true : false;
+	    assertTrue( found );
+	} catch (Exception e) {
+	    throw new AssertionError(e.getMessage() + driver.getPageSource());
+	}
+
     }
 }
