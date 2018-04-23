@@ -834,6 +834,7 @@ public class OfficeVisit extends DomainObject<OfficeVisit> {
      * office visit)
      */
     public static void deleteAll () {
+        DomainObject.deleteAll( LabProcedure.class );
         DomainObject.deleteAll( Diagnosis.class );
         DomainObject.deleteAll( OfficeVisit.class );
     }
