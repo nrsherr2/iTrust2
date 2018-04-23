@@ -1,0 +1,193 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>Manage Lab Procedure Codes</title>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+
+		<script th:inline="javascript">
+		/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+		/*<![CDATA[*/
+			var app = angular.module("manageLabCodesApp", []);
+			app.controller('manageLabCodesCtrl', function($scope, $http) {
+
+				$scope.codes = [];
+				$scope.loadTable = function() {
+					// get list of lab procedure codes from rest api
+					$http.get("/iTrust2/api/v1/labcodes").then(
+							function(response) {
+								$scope.codes = response.data; // or just response?
+								$scope.message = "";
+							}, function(rejection) {
+								$scope.codes = [];
+								$scope.codes = "Could not display Lab Procedure Codes";
+							});
+				}
+				
+				var checkValidCode = function(code){
+					if (/^\d\d\d\d\d-\d$/.test(code) == false) {
+						$scope.errorAdding = "Code doesn't meet specifications";
+						return false;
+					} 
+					return true;
+				}
+				
+				// handle add code button click
+				$scope.addCode = function() {
+					if ($scope.code.description.length > 250) {
+						$scope.errorAdding = "Description exceeds character limit of 250";
+					} else {
+						$http.post("/iTrust2/api/v1/labcodes", $scope.code).then(
+								function(response) {
+									$scope.loadTable();
+									$scope.code.code = "";
+									$scope.code.description = "";
+									$scope.errorAdding = "";
+								}, function(rejection) {
+									$scope.errorAdding = "Could not add code";
+								})
+					}
+					
+				}
+				
+				$scope.selectedCode = {};
+
+		        $scope.getTemplate = function (code) {
+		          if (code.id === $scope.selectedCode.id) return 'edit';
+		          else return 'view';
+		        };
+		        
+		        $scope.editCode = function (code) {
+		            $scope.selectedCode = angular.copy(code);
+		          };
+		          
+		        $scope.resetSelected = function () {
+			        $scope.selectedCode = {};
+			    };
+		          
+		        $scope.saveCode = function () {
+		         	  var err = checkValidCode($scope.selectedCode);
+		            if (err) {
+		              $scope.errorAdding = err;
+		            } else {
+		              $http.put("/iTrust2/api/v1/labcodes/" + $scope.selectedCode.id, $scope.selectedCode).then(
+		                function (response) {
+		                  $scope.loadTable();
+		                  $scope.resetSelected();
+		                }, function (rejection) {
+		                  $scope.errorAdding = "Failed to edit code";
+		                });
+		            }
+		          };
+
+		        
+				
+				$scope.removeRow = function(code) {
+					$http.delete('/iTrust2/api/v1/labcodes/' + code.id).then(
+							function(response) {
+								$scope.loadTable();
+								$scope.message = "";
+							}, function(rejection) {
+								$scope.message = "Cannot remove; code in use by Lab Procedure";
+							})
+				}
+				
+				// load table upon page loading
+				$scope.loadTable();
+			});
+			/*]]>*/
+		</script>
+		
+		<div ng-app="manageLabCodesApp" ng-controller="manageLabCodesCtrl">
+		<!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->			
+			<h4 style="color:red" ng-model="message"></h4>
+			
+			<h1>Manage Lab Procedure Codes</h1>
+			<table style="width:100%">
+				<tr>
+					<td style="vertical-align: top">
+						<table class="table">
+							<tr>
+								<th>Lab Procedure Code</th>
+								<th>Description</th>
+								<th>Action</th>
+							</tr>
+							<tr name="codeRow" ng-repeat="c in codes | orderBy: 'code'" ng-include="getTemplate(c)" codeId={{c.id}}>
+							</tr>
+							<td style="color:red">{{message}}</td>
+						</table>
+						
+						
+						<!-- table in view mode -->
+                <script type="text/ng-template" id="view">
+                  	<td name="codeCell">{{c.code}}</td>
+				  	<td name="descriptionCell">{{c.description}}</td>
+					<td>
+						<input type="button" value="Remove" class="btn btn-primary" ng-click="removeRow(c)"/>
+				  	</td>
+                  	<td>
+                    	<div class="row text-center">
+                      		<div class="col-md-6">
+                        		<input type="button" value="Edit" class="btn btn-primary" name="editCode" ng-click="editCode(c)" />                         
+                      		</div>
+                    	</div>
+                  	</td>
+                </script>
+
+                <!-- table in edit mode -->
+                <script type="text/ng-template" id="edit">
+                  <td name="editCodeCell">
+                    <input type="text" class="form-control" ng-model="selectedCode.code" />
+                  </td>
+                  <td name="editCodeCell">
+                    <input type="text" class="form-control" ng-model="selectedCode.description" />
+                  </td>
+                  <td>
+                    <div class="row text-center">
+                      <div class="col-md-6">
+                          <input type="button" value="Save" class="btn btn-success" name="saveCode" ng-click="saveCode()" />                          
+                      </div>
+                      <div class="col-md-6">
+                          <input type="button" value="Cancel" class="btn btn-danger" name="cancelEdit" ng-click="resetSelected()" />                            
+                      </div>
+                    </div>
+                  </td>
+                </script>
+						
+						
+					</td>
+					<td style="width:35%;vertical-align: top">
+						<div style="padding: 0px 0px 20px 30px">
+							<h3>Add a Lab Procedure Code</h3>
+						</div>
+						<form class="form-horizontal" role="form" name="addCodeForm" ng-submit="addCode(addCodeForm.$valid)">
+							<div class="form-group" style="padding-left:30px">
+								<label>Lab Procedure Code</label>
+								<input type="text" class="form-control" name="code" ng-model="code.code" required/>
+							</div>
+							<div class="form-group" style="padding-left:30px">
+								<label>Description</label>
+								<textarea class="form-control" rows="5" name="description" ng-model="code.description" required ng-minlength="1"></textarea>
+							</div>
+							<div class="form-group" style="padding-left:30px">								
+								<div style="padding-left:170px">
+									<button class="btn btn-primary" name="submit">Add Code</button> 
+									<!-- <input type="submit" value="Add Code" class="btn btn-primary"/>  -->
+								</div>
+							</div>
+						</form>
+						<div>
+							<!-- <h4 style="color: red" ng-show="addCodeForm.$valid">Code doesn't meet specifications</h4>  -->
+							<p style="color:red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+						</div>	
+						<div>
+							<!-- Format guidelines from https://loinc.org/ -->
+							<h4 style="color: blue">LOINC Code Format: "nnnnn-n", where each "n" is a digit</h4>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		</div>
+	</body>
+</html>
