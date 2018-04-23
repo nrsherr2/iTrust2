@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust2.cucumber;
 import static org.junit.Assert.assertFalse;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -43,7 +44,7 @@ public class PersonalRepresentativesStepDefs {
     @Before
     public void setup () {
         driver = new HtmlUnitDriver( true );
-        wait = new WebDriverWait( driver, 35 );
+        wait = new WebDriverWait( driver, 10 );
         HibernateDataGenerator.generateTestFaculties();
     }
 
@@ -134,13 +135,92 @@ public class PersonalRepresentativesStepDefs {
     }
 
     /**
-     * User navigates to their personal reps page
+     * HCP assigns a representative
+     *
+     * @param tive
+     *            The representative-to-be
+     * @param tee
+     *            The representee-to-be
+     *
+     */
+    @When ( "I assign representative (.+) for the patient (.+)" )
+    public void hcpAssignTive ( final String tive, final String tee ) {
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=" + tee + "]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=" + tee + "]" ) ).click();
+        setTextField( By.name( "representative" ), tive );
+        driver.findElement( By.name( "representativeSubmit" ) ).click();
+    }
+
+    /**
+     * HCP assigns a representee
+     *
+     * @param tive
+     *            The representative-to-be
+     * @param tee
+     *            The representee-to-be
+     *
+     */
+    @When ( "I assign representee (.+) for the patient (.+)" )
+    public void hcpAssignTee ( final String tee, final String tive ) {
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=" + tive + "]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=" + tive + "]" ) ).click();
+        setTextField( By.name( "representee" ), tee );
+        driver.findElement( By.name( "representeeSubmit" ) ).click();
+        Patient.getByName( tive ).save();
+        Patient.getByName( tee ).save();
+    }
+
+    /**
+     * HCP sees that the correct representative has been set
+     *
+     * @param tive
+     *            The representative in question
+     * @param tee
+     *            The representee in question
+     * @throws InterruptedException
+     */
+    @Then ( "I, as an HCP, see that (.+) now represents (.+)" )
+    public void hcpViewRep ( final String tive, final String tee ) throws InterruptedException {
+        driver.get( driver.getCurrentUrl() );
+        Thread.sleep( PAGE_LOAD );
+        wait.until( ExpectedConditions
+                .visibilityOfElementLocated( By.cssSelector( "input[type=radio][value=" + tee + "]" ) ) );
+        driver.findElement( By.cssSelector( "input[type=radio][value=" + tee + "]" ) ).click();
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "representativeMidCell" ) ) );
+        Thread.sleep( PAGE_LOAD );
+
+        final List<WebElement> allMIDCells = driver.findElements( By.name( "representativeMidCell" ) );
+        boolean found = false;
+        for ( final WebElement w : allMIDCells ) {
+            if ( w.getText().contains( tive ) ) {
+                found = true;
+            }
+        }
+        assert ( found );
+        driver.findElement( By.id( "logout" ) ).click();
+    }
+
+    /**
+     * Patient navigates to their personal reps page
      *
      * @throws InterruptedException
      */
     @When ( "I navigate to the personal representatives page" )
     public void goToRepsPage () throws InterruptedException {
         driver.get( baseUrl + "/patient/viewPersonalRepresentatives" );
+        Thread.sleep( PAGE_LOAD );
+    }
+
+    /**
+     * HCP navigates to the personal reps page
+     *
+     * @throws InterruptedException
+     */
+    @When ( "I navigate to the HCP personal representatives page" )
+    public void goToRepsPageHCP () throws InterruptedException {
+        driver.get( baseUrl + "/hcp/viewPersonalRepresentatives" );
         Thread.sleep( PAGE_LOAD );
     }
 
