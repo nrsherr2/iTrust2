@@ -102,11 +102,6 @@ public class HibernateDataGenerator {
         labCode.setCode( "10191-1" );
         labCode.setDescription( "testCode" );
         labCode.save();
-
-        final LabProcedureCode lab = new LabProcedureCode();
-        labCode.setCode( "10191-1" );
-        labCode.setDescription( "testCode" );
-        labCode.save();
     }
 
     /**
