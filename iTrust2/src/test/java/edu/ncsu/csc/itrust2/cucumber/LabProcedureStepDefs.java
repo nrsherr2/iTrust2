@@ -73,8 +73,13 @@ public class LabProcedureStepDefs {
 
         @When("I now logout of itrust")
 	public void logoutLabProc() {
+	    driver.get(baseUrl);
+	    try {
 		final WebElement logout = driver.findElement(By.id("logout"));
 		logout.click();
+	    } catch (Exception e) {
+		throw new AssertionError(e.getMessage() + driver.getPageSource());
+	    }
 	}
 
 	@When("I navigate to the lab procedure codes page")
@@ -116,7 +121,15 @@ public class LabProcedureStepDefs {
 				found = true;
 			}
 		}
-		assertTrue(found);
+		try {
+		    assertTrue(found);
+		} catch (Exception e) {
+		    String m = "";
+		    for (final LabProcedureCode l : list) {
+			m += "" + l.getCode() + "\n";
+		    }
+		    throw new AssertionError(e.getMessage() + m);
+		}
 	}
 
 	@Then("I delete the lab procedure code")
@@ -124,7 +137,8 @@ public class LabProcedureStepDefs {
 		final List<LabProcedureCode> list = LabProcedureCode.getAll();
 		for (final LabProcedureCode l : list) {
 			if (l.getCode().equals(LAB_CODE)) {
-				l.delete();
+			    // TODO
+			    l.delete();
 			}
 		}
 	}
@@ -159,7 +173,15 @@ public class LabProcedureStepDefs {
 				found = true;
 			}
 		}
-		assertTrue(found);
+		try {
+		    assertTrue(found);
+		} catch (AssertionError e) {
+		    String m = "";
+		    for (final LabProcedureCode l : list) {
+			m += "" + l.getCode() + "\n";
+		    }
+		    throw new AssertionError(e.getMessage() + m);
+		}
 	}
 
 	@Then("the lab procedure code should no longer exist")
@@ -171,7 +193,15 @@ public class LabProcedureStepDefs {
 				found = true;
 			}
 		}
-		assertFalse(found);
+		try {
+		    assertFalse(found);
+		} catch (Exception e) {
+		    String m = "";
+		    for (final LabProcedureCode l : list) {
+			m += "" + l.getCode() + "\n";
+		    }
+		    throw new AssertionError(e.getMessage() + m);
+		}
 	}
 
 	@When("I update the lab procedure")
@@ -203,34 +233,46 @@ public class LabProcedureStepDefs {
 				found = true;
 			}
 		}
-		assertTrue(found);
+		try {
+		    assertTrue(found);
+		} catch (AssertionError e) {
+		    String m = "";
+		    for (final LabProcedure l : list) {
+			m += "" + l.getComments() + "\n";
+		    }
+		    throw new AssertionError(e.getMessage() + m);
+		}
+
 	}
 
 	@When("I reassign the lab procedure")
 	public void reassignLabProcedure() {
+		try {
 		search = "selectProcedure";
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
 		final WebElement codeElement = driver.findElement(By.name(search));
 		codeElement.click();
 
 		// changet the assignment
-		search = "assignTechRow";
+		search = "lt-labtech2";
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
 		final WebElement techElement = driver.findElement(By.name(search));
-		Select sel = new Select(techElement);
-		sel.selectByVisibleText("labtech2");
+		techElement.click();
 
 		search = "procSave";
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(search)));
 		final WebElement submit = driver.findElement(By.name(search));
 		submit.click();
+		} catch (Exception e) {
+			throw new AssertionError(e.getMessage() + driver.getPageSource());
+		}
 	}
 
 	@Then("the lab procedure should be reassigned")
 	public void assertLabCodeReassigned() {
 		boolean found = false;
 		final List<LabProcedure> list = LabProcedure.getByTech("labtech2");
-		found = list.size() > 0 ? true : false;
+		found = list.size() > 0 ? true : false;		
 		assertTrue(found);
 	}
 

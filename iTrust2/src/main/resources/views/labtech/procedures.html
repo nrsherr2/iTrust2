@@ -150,7 +150,7 @@
 							<div>
 								<label>Assign to:</label>
 								<select ng-model="selectedProcedure.assignedLabTech" name="assignTechRow">
-									<option ng-repeat="l in labtechs">{{l.username}}</option>
+									<option ng-repeat="l in labtechs" name="lt-{{l.username}}">{{l.username}}</option>
 								</select>
 							</div>
 						</div>
