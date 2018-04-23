@@ -5,6 +5,27 @@ Feature: As a developer, I want to automate
 		 representatives feature so that necessary
 		 functionality can easily be confirmed
 		 through the UI
+		 
+Scenario Outline: An HCP should be able to view and add personal representatives for patients
+Given I log in to iTrust2 with my username <hcp>
+When I navigate to the HCP personal representatives page
+And I assign representative <tive> for the patient <tee>
+Then I, as an HCP, see that <tive> now represents <tee>
+
+Examples:
+| hcp        | tive               | tee                  |
+| hcp        | TimTheOneYearOld   | BobTheFourYearOld    | 
+
+Scenario Outline: An HCP should be able to view and add personal representees for patients
+Given I log in to iTrust2 with my username <hcp>
+When I navigate to the HCP personal representatives page
+And I assign representee <tee> for the patient <tive>
+Then I, as an HCP, see that <tive> now represents <tee>
+
+Examples:
+| hcp        | tive               | tee                  |
+| hcp        | AliceThirteen      | BobTheFourYearOld    | 
+
 
 Scenario Outline: A patient should be able to view and add their own personal representatives
 Given I log in to iTrust2 with my username <name>
