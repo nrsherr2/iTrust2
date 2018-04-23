@@ -41,15 +41,15 @@ public class DocumentOfficeVisitStepDefs {
         java.util.logging.Logger.getLogger( "com.gargoylesoftware" ).setLevel( Level.OFF );
     }
 
-    private final WebDriver  driver       = new HtmlUnitDriver( true );
-    private final String     baseUrl      = "http://localhost:8080/iTrust2";
+    private final WebDriver driver       = new HtmlUnitDriver( true );
+    private final String    baseUrl      = "http://localhost:8080/iTrust2";
 
-    private final String     hospitalName = "Office Visit Hospital" + ( new Random() ).nextInt();
-    BasicHealthMetrics       expectedBhm;
+    private final String    hospitalName = "Office Visit Hospital" + ( new Random() ).nextInt();
+    BasicHealthMetrics      expectedBhm;
 
-    WebDriverWait            wait         = new WebDriverWait( driver, 2 );
+    WebDriverWait           wait         = new WebDriverWait( driver, 2 );
 
-    private final String     LAB_CODE     = "10191-1";
+    private final String    LAB_CODE     = "10191-1";
 
     @Given ( "The required facilities exist" )
     public void personnelExists () throws Exception {
@@ -305,9 +305,12 @@ public class DocumentOfficeVisitStepDefs {
 
     /**
      * Used to confirm the lab procedure has been deleted
+     * 
+     * @throws InterruptedException
      */
     @Then ( "the lab procedure should no longer exist" )
-    public void labProcedureAssertion () {
+    public void labProcedureAssertion () throws InterruptedException {
+        Thread.sleep( 3000 );
         boolean found = false;
         final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
         for ( final LabProcedure l : list ) {

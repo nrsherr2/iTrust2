@@ -11,7 +11,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import cucumber.api.java.Before;
@@ -92,6 +91,9 @@ public class LabProcedureStepDefs {
         logout.click();
     }
 
+    /**
+     * Used to navigate to the lab procedure codes page
+     */
     @When ( "I navigate to the lab procedure codes page" )
     public void navigateLabProcedures () {
         ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('manageLabProcedureCodes').click();" );
@@ -247,9 +249,12 @@ public class LabProcedureStepDefs {
 
     /**
      * Makes sure the lab procedure code was updated
+     *
+     * @throws InterruptedException
      */
     @Then ( "the lab procedure should be updated" )
-    public void assertLabCodeUpdated () {
+    public void assertLabCodeUpdated () throws InterruptedException {
+        Thread.sleep( 3000 );
         boolean found = false;
         final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
         for ( final LabProcedure l : list ) {
@@ -274,7 +279,7 @@ public class LabProcedureStepDefs {
         search = "lt-labtech2";
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
         final WebElement techElement = driver.findElement( By.name( search ) );
-	techElement.click();
+        techElement.click();
 
         search = "procSave";
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
@@ -284,9 +289,12 @@ public class LabProcedureStepDefs {
 
     /**
      * Makes sure the lab procedure was reassigned
+     *
+     * @throws InterruptedException
      */
     @Then ( "the lab procedure should be reassigned" )
-    public void assertLabCodeReassigned () {
+    public void assertLabCodeReassigned () throws InterruptedException {
+        Thread.sleep( 3000 );
         boolean found = false;
         final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
         found = list.size() > 0 ? true : false;
