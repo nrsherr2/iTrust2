@@ -17,7 +17,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.User;
 
@@ -138,14 +137,7 @@ public class LabProcedureStepDefs {
     @Then ( "the lab procedure code should be created successfully" )
     public void assertLabProcedureCode () throws InterruptedException {
         Thread.sleep( 3000 );
-        boolean found = false;
-        final List<LabProcedureCode> list = LabProcedureCode.getAll();
-        for ( final LabProcedureCode l : list ) {
-            if ( l.getCode().equals( LAB_CODE ) ) {
-                found = true;
-            }
-        }
-        assertTrue( found );
+        assertTrue( driver.getPageSource().contains( LAB_CODE ) );
     }
 
     /**
@@ -196,14 +188,7 @@ public class LabProcedureStepDefs {
     @Then ( "the lab procedure code should be updated" )
     public void assertLabProcCodeUp () throws InterruptedException {
         Thread.sleep( 3000 );
-        boolean found = false;
-        final List<LabProcedureCode> list = LabProcedureCode.getAll();
-        for ( final LabProcedureCode l : list ) {
-            if ( l.getCode().equals( LAB_CODE ) && l.getDescription().equals( NEW_DESC ) ) {
-                found = true;
-            }
-        }
-        assertTrue( found );
+        assertTrue( driver.getPageSource().contains( NEW_DESC ) );
     }
 
     /**
@@ -263,19 +248,7 @@ public class LabProcedureStepDefs {
     @Then ( "the lab procedure should be updated" )
     public void assertLabCodeUpdated () throws InterruptedException {
         Thread.sleep( 3000 );
-        boolean found = false;
-        final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
-        for ( final LabProcedure l : list ) {
-            if ( l.getComments().equals( NEW_DESC ) ) {
-                found = true;
-            }
-        }
-        try {
-            assertTrue( found );
-        }
-        catch ( final Exception e ) {
-            throw new AssertionError( e.getMessage() + driver.getPageSource() );
-        }
+        assertFalse( driver.getPageSource().contains( NEW_DESC ) );
     }
 
     /**
@@ -283,29 +256,23 @@ public class LabProcedureStepDefs {
      */
     @When ( "I reassign the lab procedure" )
     public void reassignLabProcedure () throws InterruptedException {
-        try {
-            Thread.sleep( 3000 );
-            search = "selectProcedure";
-            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-            final WebElement codeElement = driver.findElement( By.name( search ) );
-            codeElement.click();
+        // try {
+        Thread.sleep( 3000 );
+        search = "selectProcedure";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement codeElement = driver.findElement( By.name( search ) );
+        codeElement.click();
 
-            Thread.sleep( 3000 );
+        Thread.sleep( 3000 );
 
-            // changet the assignment
+        // changet the assignment
 
-            ( (JavascriptExecutor) driver ).executeScript( "(document.getElementsByName('lt-labtech2'))[0].click();" );
+        ( (JavascriptExecutor) driver ).executeScript( "(document.getElementsByName('lt-labtech2'))[0].click();" );
 
-            search = "procSave";
-            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-            final WebElement submit = driver.findElement( By.name( search ) );
-            submit.click();
-
-            throw new Exception();
-        }
-        catch ( final Exception e ) {
-            throw new AssertionError( e.getMessage() + driver.getPageSource() );
-        }
+        search = "procSave";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement submit = driver.findElement( By.name( search ) );
+        submit.click();
 
     }
 
@@ -316,16 +283,7 @@ public class LabProcedureStepDefs {
      */
     @Then ( "the lab procedure should be reassigned" )
     public void assertLabCodeReassigned () throws InterruptedException {
-        try {
-            Thread.sleep( 3000 );
-            boolean found = false;
-            final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
-            found = list.size() > 0 ? true : false;
-            assertTrue( found );
-        }
-        catch ( final Exception e ) {
-            throw new AssertionError( e.getMessage() + driver.getPageSource() );
-        }
-
+        Thread.sleep( 3000 );
+        assertFalse( driver.getPageSource().contains( LAB_CODE ) );
     }
 }
