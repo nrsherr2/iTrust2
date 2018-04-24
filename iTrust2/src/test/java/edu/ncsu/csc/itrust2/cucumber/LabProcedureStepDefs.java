@@ -229,29 +229,30 @@ public class LabProcedureStepDefs {
      */
     @When ( "I update the lab procedure" )
     public void updateLabProcedure () throws InterruptedException {
-	try {
-	    Thread.sleep( 3000 );
-	    search = "selectProcedure";
-	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-	    final WebElement codeElement = driver.findElement( By.name( search ) );
-	    codeElement.click();
+        try {
+            Thread.sleep( 3000 );
+            search = "selectProcedure";
+            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+            final WebElement codeElement = driver.findElement( By.name( search ) );
+            codeElement.click();
 
-	    Thread.sleep( 3000 );
+            Thread.sleep( 3000 );
 
-	    // changet the description
-	    search = "notes";
-	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-	    final WebElement noteElement = driver.findElement( By.name( search ) );
-	    noteElement.clear();
-	    noteElement.sendKeys( NEW_DESC );
+            // changet the description
+            search = "notes";
+            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+            final WebElement noteElement = driver.findElement( By.name( search ) );
+            noteElement.clear();
+            noteElement.sendKeys( NEW_DESC );
 
-	    search = "procSave";
-	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-	    final WebElement submit = driver.findElement( By.name( search ) );
-	    submit.click();
-	} catch (Exception e) {
-	    throw new AssertionError(e.getMessage() + driver.getPageSource());
-	}
+            search = "procSave";
+            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+            final WebElement submit = driver.findElement( By.name( search ) );
+            submit.click();
+        }
+        catch ( final Exception e ) {
+            throw new AssertionError( e.getMessage() + driver.getPageSource() );
+        }
     }
 
     /**
@@ -269,11 +270,12 @@ public class LabProcedureStepDefs {
                 found = true;
             }
         }
-	try {
-	    assertTrue( found );
-	} catch (Exception e) {
-	    throw new AssertionError(e.getMessage() + driver.getPageSource());
-	}
+        try {
+            assertTrue( found );
+        }
+        catch ( final Exception e ) {
+            throw new AssertionError( e.getMessage() + driver.getPageSource() );
+        }
     }
 
     /**
@@ -281,30 +283,29 @@ public class LabProcedureStepDefs {
      */
     @When ( "I reassign the lab procedure" )
     public void reassignLabProcedure () throws InterruptedException {
-	try {
-	    Thread.sleep( 3000 );
-	    search = "selectProcedure";
-	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-	    final WebElement codeElement = driver.findElement( By.name( search ) );
-	    codeElement.click();
+        try {
+            Thread.sleep( 3000 );
+            search = "selectProcedure";
+            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+            final WebElement codeElement = driver.findElement( By.name( search ) );
+            codeElement.click();
 
-	    Thread.sleep( 3000 );
+            Thread.sleep( 3000 );
 
-	    // changet the assignment
-	    search = "lt-labtech2";
-	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-	    final WebElement techElement = driver.findElement( By.name( search ) );
-	    techElement.click();
+            // changet the assignment
 
-	    search = "procSave";
-	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
-	    final WebElement submit = driver.findElement( By.name( search ) );
-	    submit.click();
+            ( (JavascriptExecutor) driver ).executeScript( "(document.getElementsByName('lt-labtech2'))[0].click();" );
 
-	    throw new Exception();
-	} catch (Exception e) {
-	    throw new AssertionError(e.getMessage() + driver.getPageSource());
-	}
+            search = "procSave";
+            wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+            final WebElement submit = driver.findElement( By.name( search ) );
+            submit.click();
+
+            throw new Exception();
+        }
+        catch ( final Exception e ) {
+            throw new AssertionError( e.getMessage() + driver.getPageSource() );
+        }
 
     }
 
@@ -315,15 +316,16 @@ public class LabProcedureStepDefs {
      */
     @Then ( "the lab procedure should be reassigned" )
     public void assertLabCodeReassigned () throws InterruptedException {
-	try {
-	    Thread.sleep( 3000 );
-	    boolean found = false;
-	    final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
-	    found = list.size() > 0 ? true : false;
-	    assertTrue( found );
-	} catch (Exception e) {
-	    throw new AssertionError(e.getMessage() + driver.getPageSource());
-	}
+        try {
+            Thread.sleep( 3000 );
+            boolean found = false;
+            final List<LabProcedure> list = LabProcedure.getByTech( "labtech2" );
+            found = list.size() > 0 ? true : false;
+            assertTrue( found );
+        }
+        catch ( final Exception e ) {
+            throw new AssertionError( e.getMessage() + driver.getPageSource() );
+        }
 
     }
 }
