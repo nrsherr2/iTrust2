@@ -256,7 +256,6 @@ public class LabProcedureStepDefs {
      */
     @When ( "I reassign the lab procedure" )
     public void reassignLabProcedure () throws InterruptedException {
-        // try {
         Thread.sleep( 3000 );
         search = "selectProcedure";
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
@@ -266,14 +265,13 @@ public class LabProcedureStepDefs {
         Thread.sleep( 3000 );
 
         // changet the assignment
-
+        search = "lt-labtech2";
         ( (JavascriptExecutor) driver ).executeScript( "(document.getElementsByName('lt-labtech2'))[0].click();" );
 
         search = "procSave";
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
         final WebElement submit = driver.findElement( By.name( search ) );
         submit.click();
-
     }
 
     /**
