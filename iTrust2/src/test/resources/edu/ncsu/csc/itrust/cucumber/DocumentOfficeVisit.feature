@@ -11,3 +11,4 @@ When I log in to iTrust2 as a HCP
 When I navigate to the Document Office Visit page
 When I fill in information on the office visit
 Then The office visit is documented successfully
+And The lab procedure was created

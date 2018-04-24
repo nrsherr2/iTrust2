@@ -144,17 +144,17 @@ public enum TransactionType {
     APPOINTMENT_REQUEST_UPDATED ( 652, "Appointment request was updated", true ),
 
     /**
-     * Create basic health metrics
+     * Create office visit
      */
     OFFICE_VISIT_CREATE ( 800, "Create office visit for patient", true ),
     /**
-     * HCP views basic health metrics
+     * HCP views office visit
      */
     OFFICE_VISIT_HCP_VIEW ( 801, "View office visit by HCP", true ),
     /**
-     * HCP edits basic health metrics
+     * HCP edits office visit
      */
-    OFFICE_VISIT_EDIT ( 802, "HCP edits basic health metrics", true ),
+    OFFICE_VISIT_EDIT ( 802, "HCP edits office visit", true ),
     /**
      * Patient views basic health metrics for an office visit
      */
@@ -302,7 +302,39 @@ public enum TransactionType {
     /**
      * An email would be sent but email address is missing.
      */
-    CREATE_MISSING_EMAIL_LOG ( 1404, "Email notification could not be sent due to missing email address", true );
+    CREATE_MISSING_EMAIL_LOG ( 1404, "Email notification could not be sent due to missing email address", true ),
+    /**
+     * Lab Procedure Code created
+     */
+    LAB_CODE_CREATE ( 1700, "Lab Procedure Code created", false ),
+    /**
+     * Lab Procedure Code Deleted
+     */
+    LAB_CODE_DELETE ( 1702, "Lab Procedure Code Deleted", false ),
+    /**
+     * View a list of all lab codes
+     */
+    LAB_CODES_VIEW ( 1703, "Lab Procedure codes viewed", false ),
+    /**
+     * Admin edits a lab code
+     */
+    LAB_CODE_EDIT ( 1704, "Lab Procedure code edited", false ),
+    /**
+     * Lab Procedure Created
+     */
+    LAB_PROCEDURE_CREATE ( 1723, "HCP creates a lab procedure", true ),
+    /**
+     * Lab Procedure Edited
+     */
+    LAB_PROCEDURE_EDIT ( 1724, "Lab procedure is edited", true ),
+    /**
+     * delete lab procedure
+     */
+    LAB_PROCEDURE_DELETE ( 1725, "Lab procedure is deleted", true );
+
+    /**
+     *
+     */
 
     /**
      * Creates a TransactionType for logging events

@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.PatientSmokingStatus;
 import edu.ncsu.csc.itrust2.models.persistent.Diagnosis;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.Prescription;
 
@@ -147,10 +148,15 @@ public class OfficeVisitForm implements Serializable {
      */
     private List<Diagnosis>        diagnoses;
 
+    /**
+     * Lab Procedures associated with this visit
+     */
+    private List<LabProcedure>     procedures;
+
     private List<PrescriptionForm> prescriptions;
 
     /**
-     * Creates an OfficeVisitForm from the OfficeVisit provided
+     * Creates an OfficeVisitForm from the OfficeVisit provideds
      *
      * @param ov
      *            OfficeVisit to turn into an OfficeVisitForm
@@ -166,6 +172,7 @@ public class OfficeVisitForm implements Serializable {
         setId( ov.getId().toString() );
         setPreScheduled( ( (Boolean) ( ov.getAppointment() != null ) ).toString() );
         setDiagnoses( new ArrayList<Diagnosis>() );
+        setProcedures( new ArrayList<LabProcedure>() );
         setPrescriptions( ov.getPrescriptions().stream().map( ( Prescription p ) -> new PrescriptionForm( p ) )
                 .collect( Collectors.toList() ) );
     }
@@ -548,6 +555,25 @@ public class OfficeVisitForm implements Serializable {
      */
     public List<Diagnosis> getDiagnoses () {
         return diagnoses;
+    }
+
+    /**
+     * Retrieves the lab procedures for this visit
+     *
+     * @return the list of lab procedures
+     */
+    public List<LabProcedure> getProcedures () {
+        return procedures;
+    }
+
+    /**
+     * Sets the lab procedures for this visit
+     *
+     * @param procedures
+     *            the list of lab procedures
+     */
+    public void setProcedures ( List<LabProcedure> procedures ) {
+        this.procedures = procedures;
     }
 
     /**

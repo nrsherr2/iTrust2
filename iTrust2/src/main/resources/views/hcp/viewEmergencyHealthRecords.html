@@ -77,11 +77,6 @@
 			</div>
 
 			<div class="col-md-5">
-			  <label>Age: </label>
-			  <p name="patientAge">{{data.age}}</p>
-			</div>
-
-			<div class="col-md-5">
 			  <label>Date Of Birth: </label>
 			  <p name="patientDOB">{{data.dateOfBirth}}</p>
 			</div>
@@ -184,7 +179,8 @@
 				$http.get("/iTrust2/api/v1/patients/" + $scope.searchname).then(function(response) {
 		                        $scope.data = response.data;
 		                        var date = $scope.data.dateOfBirth;
-		                        $scope.data.dateOfBirth = date.month + "/" + date.dayOfMonth + "/" + date.year;
+		                        $scope.data.dateOfBirth = (date.month + 1) + "/" + date.dayOfMonth + "/" + date.year;
+		                        $scope.data.age = 2018 - date.year;
 
 		                        $scope.message = "";
 				},

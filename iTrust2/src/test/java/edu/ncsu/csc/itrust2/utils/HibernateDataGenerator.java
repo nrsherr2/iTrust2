@@ -11,6 +11,7 @@ import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.State;
 import edu.ncsu.csc.itrust2.models.persistent.Drug;
 import edu.ncsu.csc.itrust2.models.persistent.Hospital;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedureCode;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.models.persistent.Personnel;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -96,6 +97,11 @@ public class HibernateDataGenerator {
 
         final Hospital hosp = new Hospital( "General Hostpital", "123 Main St", "12345", "NC" );
         hosp.save();
+
+        final LabProcedureCode labCode = new LabProcedureCode();
+        labCode.setCode( "10191-1" );
+        labCode.setDescription( "testCode" );
+        labCode.save();
     }
 
     /**

@@ -158,21 +158,16 @@
             $http.get("/iTrust2/api/v1/labtechs").then(
               function (response) {
                 $scope.labtechs = response.data[0];
-                $scope.numAssigned = response.data[1];
               });
             $http.get("/iTrust2/api/v1/priority").then(
               function (response) {
               	$scope.priority = response.data;
               });
-            $http.get("/iTrust2/api/v1/procstat")
-            .then(function (response) {
-              $scope.statuses = response.data;
-            });
 
             $scope.submit = function () {
               $scope.errorMsg = "";
               $scope.visit.hcp = /*[[${#httpServletRequest.remoteUser}]]*/null; /* Ugly hack; use this to retrieve the name of the HCP who is currently logged in.  This grabs it from Thymeleaf */
-              $scope.visit.status = $scope.statuses[0];
+              $scope.visit.status = "PENDING";
 
               if ($scope.visit.type == null) {
                 $scope.errorMsg += "Please select a visit type\n";
@@ -330,20 +325,16 @@
                 }
             }
             
-            $scope.getNumAssigned = function($index){
-            	return $scope.numAssigned[$index];
-            }
-            
          	// capture each lab procedure into an array
             $scope.procedures = [];
             $scope.fillProcedure = function () {
               $scope.procedures.push({
                 assignedLabTech: $scope.procTechEntry.username,
                 code: $scope.procCodeEntry,
-				comments: $scope.procNoteEntry,
-                priority: $scope.procPriorityEntry,
-				status: $scope.statuses[0]
+                note: $scope.procNoteEntry,
+                priority: $scope.procPriorityEntry
               });
+              resetProceduresForm();
             }
 
             //remove local diagnosis from list
@@ -800,12 +791,10 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="lc in labcodes">
-					               
-					                              	<div ng-model="$parent.procCodeEntry">
-					                                <input type="radio" ng-click="$parent.procCodeEntry = lc" name="labcode-{{lc.code}}" value="{{lc}}" required="false" /> 
-					                                </div>
-					                                {{lc.code}} ({{lc.description}})
-					                              	
+					                              <label>
+					                                <input type="radio" ng-model="$parent.procCodeEntry" ng-click="$parent.procCodeEntry = lc" name="labcode" value="{{lc}}" required="false" /> 
+					                                {{lc.code}}
+					                              </label>
 					                            </li>
                               				</ul>
                             			</div>
@@ -819,11 +808,10 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="p in priority">
-                                  					<div style="display:inline;" ng-model="$parent.procPriorityEntry">
-                                    					<input type="radio" ng-click="$parent.procPriorityEntry = p"  name="priority" value="{{p}}" required="true"/> 
-                                    				</div>
-                                    				{{p}}
-                                 					
+                                  					<label>
+                                    					<input type="radio" ng-model="$parent.procPriorityEntry" name="priority" value="{{p}}" required="true"/> 
+                                    					{{p}}
+                                 					</label>
                                 				</li>
                               				</ul>
                             			</div>
@@ -846,12 +834,10 @@
                             			<div class="form-check">
                               				<ul style="list-style: none;">
                                 				<li ng-repeat="l in labtechs">
-                                  					<div ng-model="$parent.procTechEntry">
-
-                                    					<input type="radio"  ng-click="$parent.procTechEntry = l" name="tech-{{l.username}}" value="{{l}}" required="true"/> 
-                                    					<span class="glyphicon glyphicon-user"></span>  {{l.username}} ({{$parent.getNumAssigned($index)}} assigned)
-
-                                 					</div>
+                                  					<label>
+                                    					<input type="radio" ng-model="$parent.procTechEntry" ng-click="$parent.procTechEntry = l" name="assignedLabtech" value="{{l}}" required="true"/> 
+                                    					<span class="glyphicon glyphicon-user"></span>{{l.username}}]
+                                 					</label>
                                 				</li>
                               				</ul>
                             			</div>
@@ -890,10 +876,10 @@
                             <div class="panel-body">
                             	<div class="row" ng-repeat="p in procedures">
                                 	<div class="col-md-3">
-                                    Code: {{p.code.code}} ({{p.code.description}})
+                                    Code: {{p.code.code}}
                                   	</div>
                                   	<div class="col-md-3">
-                                    Assigned Lab Tech ID: {{p.assignedLabTech}}
+                                    Assigned Lab Tech ID: {{p.assignedLabTech.username}}
                                   	</div>
                                   	<div class="col-md-3">
                                     Priority: {{p.priority}}

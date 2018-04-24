@@ -1,6 +1,7 @@
 package edu.ncsu.csc.itrust2.cucumber;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,6 +30,7 @@ import edu.ncsu.csc.itrust2.models.enums.State;
 import edu.ncsu.csc.itrust2.models.persistent.BasicHealthMetrics;
 import edu.ncsu.csc.itrust2.models.persistent.DomainObject;
 import edu.ncsu.csc.itrust2.models.persistent.Hospital;
+import edu.ncsu.csc.itrust2.models.persistent.LabProcedure;
 import edu.ncsu.csc.itrust2.models.persistent.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.persistent.Patient;
 import edu.ncsu.csc.itrust2.models.persistent.User;
@@ -47,8 +49,11 @@ public class DocumentOfficeVisitStepDefs {
 
     WebDriverWait           wait         = new WebDriverWait( driver, 2 );
 
+    private final String    LAB_CODE     = "10191-1";
+
     @Given ( "The required facilities exist" )
     public void personnelExists () throws Exception {
+        DomainObject.deleteAll( LabProcedure.class );
         OfficeVisit.deleteAll();
         DomainObject.deleteAll( BasicHealthMetrics.class );
 
@@ -174,6 +179,29 @@ public class DocumentOfficeVisitStepDefs {
                 .findElement( By.cssSelector( "input[value=\"" + PatientSmokingStatus.NEVER.toString() + "\"]" ) );
         patientSmokeElement.click();
 
+        // PROCEDURES
+
+        String search = "labcode-" + LAB_CODE;
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement codeElement = driver.findElement( By.name( search ) );
+        codeElement.click();
+
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.cssSelector( "input[value=\"PRIORITY_1\"]" ) ) );
+        final WebElement priorityElement = driver.findElement( By.cssSelector( "input[value=\"PRIORITY_1\"]" ) );
+        priorityElement.click();
+
+        search = "tech-labtech";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement techElement = driver.findElement( By.name( search ) );
+        techElement.click();
+
+        search = "fillProcedure";
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+        final WebElement addProcElement = driver.findElement( By.name( search ) );
+        addProcElement.click();
+
+        // END PROCEDURES
+
         wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "submit" ) ) );
         final WebElement submit = driver.findElement( By.name( "submit" ) );
         submit.click();
@@ -237,6 +265,89 @@ public class DocumentOfficeVisitStepDefs {
         assertEquals( expectedBhm.getSystolic(), actualBhm.getSystolic() );
         assertEquals( expectedBhm.getDiastolic(), actualBhm.getDiastolic() );
         assertEquals( expectedBhm.getHouseSmokingStatus(), actualBhm.getHouseSmokingStatus() );
+    }
+
+    /**
+     * Ensures that the lab procedure was created
+     *
+     * @throws InterruptedException
+     */
+    @Then ( "The lab procedure was created" )
+    public void labProceduresCorrect () throws InterruptedException {
+        boolean ret = false;
+        final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
+        for ( final LabProcedure l : list ) {
+            if ( l.getCode().getCode().equals( LAB_CODE ) ) {
+                ret = true;
+            }
+        }
+        assertTrue( ret );
+    }
+
+    /**
+     * Used to navigate to the edit office visit page
+     */
+    @When ( "I navigate to the Edit Office Visit page" )
+    public void navigateToEditOfficeVisit () {
+        ( (JavascriptExecutor) driver ).executeScript( "document.getElementById('editOfficeVisit').click();" );
+    }
+
+    /**
+     * Used to delete a lab procedure from an office visit
+     */
+    @When ( "I delete the lab procedure from the office visit" )
+    public void deleteLabProcedure () {
+	String visit = "";
+	final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
+        for ( final LabProcedure l : list ) {
+            if ( l.getCode().getCode().equals( LAB_CODE ) ) {
+                visit += l.getVisit().getId();
+		break;
+            }
+        }	
+
+	try {
+	    String search = visit;
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement sel = driver.findElement( By.name( search ) );
+	    sel.click();
+
+	    Thread.sleep(30000);
+	
+	    search = "removeProcedure";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement procedureElement = driver.findElement( By.name( search ) );
+	    procedureElement.click();
+	
+	    search = "submit";
+	    wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( search ) ) );
+	    final WebElement sub = driver.findElement( By.name( search ) );
+	    sub.click();
+
+	} catch (Exception e) {
+	    throw new AssertionError(e.getMessage() + driver.getPageSource());
+	}
+	
+	// wait for success
+	wait.until( ExpectedConditions.visibilityOfElementLocated( By.name( "success" ) ) );
+    }
+
+    /**
+     * Used to confirm the lab procedure has been deleted
+     * 
+     * @throws InterruptedException
+     */
+    @Then ( "the lab procedure should no longer exist" )
+    public void labProcedureAssertion () throws InterruptedException {
+        Thread.sleep( 3000 );
+        boolean found = false;
+        final List<LabProcedure> list = LabProcedure.getByTech( "labtech" );
+        for ( final LabProcedure l : list ) {
+            if ( l.getCode().getCode().equals( LAB_CODE ) ) {
+                found = true;
+            }
+        }
+        assertFalse( found );
     }
 
     /**
